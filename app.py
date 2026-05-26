@@ -6,24 +6,38 @@ import base64
 # 1. Configurazione della pagina (Dashboard Widescreen)
 st.set_page_config(page_title="OmniScience 3D Studio", layout="wide", initial_sidebar_state="expanded")
 
-# --- BARRA LATERALE: CONFIGURAZIONE E LIVE THEME SWITCHER ---
+# Gestione dello stato del tema prima di caricare il CSS per evitare sfarfallii
+if "tema_scelto" not in st.session_state:
+    st.session_state.tema_scelto = "Modalità Scura (Consigliata)"
+
+# --- INPUT BARRA LATERALE (I CONTROLLI VENGONO INSERITI DOPO IL CSS PERCORRETTO) ---
 st.sidebar.markdown("## ⚙️ CONFIGURAZIONE")
+tema = st.sidebar.selectbox("🎨 Scegli il Tema visivo:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
+st.session_state.tema_scelto = tema
 
-# Selettore di Tema (Dark vs Light)
-tema = st.sidebar.selectbox("🎨 Scegli il Tema visivo:", ["Modalità Scura (Consigliata)", "Modalità Chiara"])
-
-# Input Chiave API Gemini
 api_key = st.sidebar.text_input("Gemini API Key:", type="password", help="Inserisci la chiave ottenuta da Google AI Studio")
 
-# --- APPLICAZIONE DINAMICA DEL CSS IN BASE AL TEMA SELEZIONATO ---
-if tema == "Modalità Scura (Consigliata)":
+# --- INIEZIONE DEL CSS CORRETTO E COERENTE PER ENTRAMBI I TEMI ---
+if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
-        .stApp { background-color: #0f0f0f; color: #ffffff; }
+        /* Sfondo principale dell'applicazione */
+        .stApp { background-color: #0f0f0f !important; color: #ffffff !important; }
+        
+        /* FORZATURA TOTALE DELLA BARRA LATERALE IN MODALITÀ SCURA */
+        section[data-testid="stSidebar"] { background-color: #161616 !important; }
+        section[data-testid="stSidebar"] h2, section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span, section[data-testid="stSidebar"] label {
+            color: #ffffff !important;
+        }
+        /* Correzione del testo dentro i box informativi (st.info / st.warning) nella barra laterale */
+        section[data-testid="stSidebar"] div[data-testid="stNotification"] p {
+            color: #0f172a !important; /* Testo scuro dentro i banner colorati per staccare dallo sfondo del banner */
+            font-weight: 500;
+        }
         
         /* Pannelli stile carte di laboratorio scure */
         div[data-testid="stColumn"] {
-            background-color: #161616;
+            background-color: #161616 !important;
             border-radius: 12px;
             padding: 24px;
             border: 1px solid #262626;
@@ -31,66 +45,73 @@ if tema == "Modalità Scura (Consigliata)":
         }
         
         h1, h2, h3 { color: #00d4aa !important; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
-        p, li { color: #e0e0e0; }
+        p, li, span, label { color: #e0e0e0 !important; }
         
         /* Stile pulsanti di selezione */
         .stButton>button {
-            background-color: #1f1f1f;
-            color: #ffffff;
+            background-color: #1f1f1f !important;
+            color: #ffffff !important;
             border-radius: 6px;
-            border: 1px solid #333333;
+            border: 1px solid #333333 !important;
             width: 100%;
             text-align: left;
             padding: 10px 14px;
             font-weight: 500;
         }
-        .stButton>button:hover { background-color: #00d4aa; color: #0f0f0f; border-color: #00d4aa; }
+        .stButton>button:hover { background-color: #00d4aa !important; color: #0f0f0f !important; border-color: #00d4aa !important; }
         
-        /* Testo della barra laterale (sempre scuro sui widget chiari di Streamlit) */
-        div[data-testid="stSidebar"] div.stAlert p { color: #1e3a8a !important; font-weight: 500; }
-        div[data-testid="stSidebar"] p, div[data-testid="stSidebar"] li { color: #333333 !important; }
-        div[data-testid="stSidebar"] h2 { color: #007a60 !important; }
+        /* Correzione selettori e box di upload testo in nero */
+        div[data-baseweb="select"] > div { background-color: #1f1f1f !important; color: #ffffff !important; border-color: #333333 !important; }
+        div[data-testid="stFileUploader"] section { background-color: #1f1f1f !important; border: 1px dashed #444444 !important; color: #ffffff !important; }
+        input { background-color: #1f1f1f !important; color: #ffffff !important; }
         </style>
     """, unsafe_allow_html=True)
 else:
-    # MODALITÀ CHIARA (Ideale se la LIM fa riflesso o per proiezioni molto luminose)
+    # MODALITÀ CHIARA COMPLETAMENTE RIVISTA PER MASSIMO CONTRASTO ALLA LIM
     st.markdown("""
         <style>
-        .stApp { background-color: #f8f9fa; color: #212529; }
+        .stApp { background-color: #f8f9fa !important; color: #212529 !important; }
+        
+        /* FORZATURA BARRA LATERALE IN MODALITÀ CHIARA */
+        section[data-testid="stSidebar"] { background-color: #e9ecef !important; }
+        section[data-testid="stSidebar"] h2, section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span, section[data-testid="stSidebar"] label {
+            color: #212529 !important;
+        }
         
         /* Pannelli stile carte di laboratorio chiare */
         div[data-testid="stColumn"] {
-            background-color: #ffffff;
+            background-color: #ffffff !important;
             border-radius: 12px;
             padding: 24px;
-            border: 1px solid #dee2e6;
+            border: 1px solid #dee2e6 !important;
             min-height: 720px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         
         h1, h2, h3 { color: #007a60 !important; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
-        p, li { color: #212529; }
+        p, li, span, label { color: #212529 !important; }
         
         /* Stile pulsanti di selezione in modalità chiara */
         .stButton>button {
-            background-color: #f1f3f5;
-            color: #212529;
+            background-color: #f1f3f5 !important;
+            color: #212529 !important;
             border-radius: 6px;
-            border: 1px solid #ced4da;
+            border: 1px solid #ced4da !important;
             width: 100%;
             text-align: left;
             padding: 10px 14px;
             font-weight: 500;
         }
-        .stButton>button:hover { background-color: #007a60; color: #ffffff; border-color: #007a60; }
+        .stButton>button:hover { background-color: #007a60 !important; color: #ffffff !important; border-color: #007a60 !important; }
         
-        /* Testo della barra laterale */
-        div[data-testid="stSidebar"] div.stAlert p { color: #1e3a8a !important; font-weight: 500; }
-        div[data-testid="stSidebar"] p, div[data-testid="stSidebar"] li { color: #212529 !important; }
-        div[data-testid="stSidebar"] h2 { color: #007a60 !important; }
+        /* Input e caricatori in modalità chiara */
+        div[data-baseweb="select"] > div { background-color: #ffffff !important; color: #212529 !important; border-color: #ced4da !important; }
+        div[data-testid="stFileUploader"] section { background-color: #ffffff !important; border: 1px dashed #ced4da !important; color: #212529 !important; }
+        input { background-color: #ffffff !important; color: #212529 !important; }
         </style>
     """, unsafe_allow_html=True)
 
+# Contenuto informativo della barra laterale
 st.sidebar.markdown("---")
 st.sidebar.info("""
 **Guida rapida per la Classe A050:**
@@ -155,7 +176,7 @@ with col_menu:
 with col_3d:
     elemento = st.session_state.elemento_corrente
     st.markdown(f"### 🌐 MODELLO 3D: {elemento.upper()}")
-    st.caption("Trascina per ruotare l'oggetto in tutte le dimensioni, usa la rotella per lo zoom.")
+    st.caption("Trascina per ruotare l'oggetto in tutte le dimensions, usa la rotella per lo zoom.")
     
     # Caricatore universale di file .glb
     file_3d = st.file_uploader("Carica il file .glb corrispondente all'argomento della lezione", type=["glb"])
@@ -165,11 +186,12 @@ with col_3d:
         base64_3d = base64.b64encode(bytes_data).decode('utf-8')
         data_url = f"data:model/gltf-binary;base64,{base64_3d}"
     else:
-        # Modello neutro di default (Astronauta) se nessun file viene caricato
+        # Modello neutro di default se nessun file viene caricato
         data_url = "https://modelviewer.dev/shared-assets/models/Astronaut.glb"
 
     # Colore di sfondo del visualizzatore 3D adattivo in base al tema scelto
-    bg_viewer = "#111111" if tema == "Modalità Scura (Consigliata)" else "#f1f3f5"
+    bg_viewer = "#111111" if st.session_state.tema_scelto == "Modalità Scura (Consigliata)" else "#ffffff"
+    border_viewer = "#333333" if st.session_state.tema_scelto == "Modalità Scura (Consigliata)" else "#ced4da"
 
     # Renderizzazione del visualizzatore 3D fluido di Google
     html_code = f"""
@@ -180,7 +202,7 @@ with col_3d:
                       camera-controls
                       auto-rotate
                       touch-action="pan-y"
-                      style="width: 100%; height: 430px; background-color: {bg_viewer}; border-radius: 8px; border: 1px solid #ced4da;">
+                      style="width: 100%; height: 430px; background-color: {bg_viewer}; border-radius: 8px; border: 1px solid {border_viewer};">
         </model-viewer>
     </div>
     """
@@ -191,7 +213,7 @@ with col_3d:
     st.write("💡 *Suggerimento per la lezione: proietta al centro il modello 3D e confrontalo con gli schemi dei tuoi libri di testo.*")
 
 # ==========================================
-# COLONNA 3 (DESTRA): Infografica Dinamica con Gemini (Corretta!)
+# COLONNA 3 (DESTRA): Infografica Dinamica con Gemini
 # ==========================================
 with col_ai:
     st.markdown(f"### 📋 DASHBOARD DIDATTICA")
@@ -213,7 +235,7 @@ with col_ai:
                 
                 ### 📐 PROPRIETÀ E CARATTERISTICHE
                 - **Natura scientifica:** [Descrivi cos'è brevemente]
-                - **Scala di grandezza:** [Indica l'ordine di grandezza es. nanometri, micrometri, chilometri, ecc.]
+                - **Scala di grandezza:** [Indica l'ordine di grandezza]
                 
                 ### 📝 PRINCIPIO DI FUNZIONAMENTO / SIGNIFICATO
                 [Spiega come funziona o perché è fondamentale questo elemento, massimo 4 righe, evidenzia in grassetto i termini chiave]
