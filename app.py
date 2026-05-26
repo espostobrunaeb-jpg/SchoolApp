@@ -71,6 +71,16 @@ else:
         button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
         div[data-baseweb="select"] > div { background-color: #ffffff !important; color: #212529 !important; border-color: #ced4da !important; }
         input { background-color: #ffffff !important; color: #212529 !important; }
+        
+        div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { 
+            background-color: #ffffff !important; color: #212529 !important; 
+        }
+        li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { 
+            background-color: #007a60 !important; color: #ffffff !important; 
+        }
+        div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div {
+            background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -90,16 +100,16 @@ col_sinistra, col_destra = st.columns([0.25, 0.75], gap="large")
 # ==========================================
 with col_sinistra:
     st.markdown("### ✍️ IMPOSTA LEZIONE")
-    argomento = st.text_input("Argomento:", value="Membrana Cellulare")
+    argomento = st.text_input("Argomento della lezione:", value="Membrana Cellulare")
     
     st.markdown("---")
     st.markdown("### 🎯 TARGET")
     livello_scuola = st.selectbox("Grado scolastico:", ["Scuola Elementare", "Scuola Media", "Superiori (Biennio)", "Superiori (Triennio)", "Università"], index=3)
-    profilo_studente = st.selectbox("Profilo:", ["Standard", "BES (Bisogni Educativi Speciali)", "DSA (Disturbi Specifici Apprendimento)"])
+    profilo_studente = st.selectbox("Profilo cognitivo/didattico:", ["Standard", "BES (Bisogni Educativi Speciali)", "DSA (Alta Leggibilità)"])
     
     st.markdown("---")
     st.markdown("### 📦 MODELLO 3D")
-    file_3d = st.file_uploader("Carica file .glb:", type=["glb"])
+    file_3d = st.file_uploader("Carica file .glb (Opzionale):", type=["glb"])
 
 # ==========================================
 # COLONNA DI DESTRA: Visualizzatore 3D e Progettazione
@@ -131,10 +141,10 @@ with col_destra:
     
     st.markdown("<br><hr><br>", unsafe_allow_html=True)
     
-    # 2. PROGETTAZIONE DIDATTICA (Nuovo Tab Spiegazione al primo posto)
+    # 2. SEZIONE DIDATTICA CON I 7 TAB (Spiegazione al primo posto)
     st.markdown(f"## 📚 DIDATTICA E PROGETTAZIONE: {argomento.upper()}")
     
-    tabs = st.tabs([
+    tab_spiegazione, tab_prerequisiti, tab_competenze, tab_obiettivi, tab_inclusione, tab_valutazione, tab_collegamenti = st.tabs([
         "✨ Spiegazione Lezione",
         "1. Prerequisiti", 
         "2. Competenze", 
@@ -144,103 +154,123 @@ with col_destra:
         "6. Collegamenti"
     ])
     
-    # Funzioni di supporto
-    contesto = f"Stai parlando a studenti di {livello_scuola} con profilo {profilo_studente}."
+    # Funzione di supporto per chiamare Gemini in modo pulito e gestire gli errori
+    contesto_prompt = f"Target: studenti di {livello_scuola}, Profilo: {profilo_studente}."
     
-    def call_gemini(prompt_text):
+    def interroga_gemini(testo_prompt):
         try:
             client = genai.Client(api_key=api_key)
-            response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt_text)
+            response = client.models.generate_content(model='gemini-2.5-flash', contents=testo_prompt)
             return response.text
         except Exception as e:
-            if "503" in str(e): return "⏳ Server occupato. Riprova tra 30 secondi."
-            return f"Errore: {e}"
+            if "503" in str(e): 
+                return "⏳ **Attenzione:** I server di Google sono molto occupati in questo momento. Aspetta 10 secondi e riprova cliccando il bottone!"
+            return f"❌ Errore tecnico: {e}"
 
-    # --- TAB 0: SPIEGAZIONE LEZIONE ---
-    with tabs[0]:
-        st.markdown(f"### ✨ Spiegazione per la classe ({profilo_studente})")
-        st.write("Genera un testo pronto per essere letto o proiettato, adattato perfettamente al target scelto.")
-        if st.button("🚀 Genera Spiegazione Lezione"):
+    # =========================================================
+    # TAB 0: ✨ SPIEGAZIONE LEZIONE (Il primo che si apre)
+    # =========================================================
+    with tab_spiegazione:
+        st.markdown(f"### 📖 La Spiegazione Adattiva per la classe ({profilo_studente})")
+        st.write("Usa questo strumento per generare una spiegazione discorsiva pronta da leggere o da proiettare sulla LIM, perfettamente calibrata per i tuoi alunni.")
+        
+        if st.button("🚀 Genera Spiegazione Lezione", key="btn_spiegazione"):
             if api_key:
-                with st.spinner("Generazione spiegazione in corso..."):
-                    p = f"""Sei una docente di scienze esperta. Spiega l'argomento '{argomento}' in modo affascinante.
-                    {contesto}
-                    REGOLE DI LINGUAGGIO:
-                    - Se DSA: usa paragrafi molto brevi, elenchi puntati e grassetti sulle parole chiave.
-                    - Se BES: usa un linguaggio semplice, diretto e rassicurante, evitando astrazioni complesse.
-                    - Se Standard: usa un linguaggio scientifico corretto ma coinvolgente.
-                    Includi una metafora iniziale per catturare l'attenzione."""
+                with st.spinner("Scrittura della lezione in corso..."):
+                    prompt_spiegazione = f"""
+                    Sei una professoressa di scienze. Devi spiegare a voce l'argomento '{argomento}'.
+                    {contesto_prompt}
+                    REGOLE FONDAMENTALI DI LINGUAGGIO:
+                    - Se il profilo è "DSA": usa paragrafi brevissimi (massimo 2 frasi l'uno), abbonda con elenchi puntati e metti in grassetto SOLO le parole chiave per facilitare la scansione visiva.
+                    - Se il profilo è "BES": usa un linguaggio rassicurante, evita concetti troppo astratti e usa parole semplici e di uso comune.
+                    - Se il profilo è "Standard": usa un linguaggio scientifico rigoroso ma coinvolgente.
+                    Inizia la spiegazione con una metafora molto potente e chiara per catturare subito l'attenzione.
+                    """
+                    risultato = interroga_gemini(prompt_spiegazione)
                     st.markdown("---")
-                    st.markdown(call_gemini(p))
-            else: st.warning("Inserisci la API Key a sinistra.")
+                    st.markdown(risultato)
+            else: 
+                st.warning("⚠️ Per favore, inserisci la Gemini API Key nella barra laterale sinistra per sbloccare questa funzione.")
 
-    # --- TAB 1: PREREQUISITI ---
-    with tabs[1]:
+    # =========================================================
+    # TAB 1: PREREQUISITI
+    # =========================================================
+    with tab_prerequisiti:
         st.markdown("**Conoscenze di base richieste:**")
         st.write("- Comprensione testi informativi/narrativi.\n- Individuazione parole chiave.\n- Lessico disciplinare essenziale.\n- Collaborazione in gruppo e competenze digitali.")
         if st.button("🔍 Genera Prerequisiti Specifici"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    p = f"{contesto} Elenca 3 conoscenze scientifiche specifiche che gli studenti devono avere per capire '{argomento}'."
+                    p = f"{contesto_prompt} Elenca 3 conoscenze scientifiche specifiche che gli studenti devono avere per capire '{argomento}'."
                     st.markdown("---")
-                    st.markdown(call_gemini(p))
+                    st.markdown(interroga_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
 
-    # --- TAB 2: COMPETENZE ATTESE ---
-    with tabs[2]:
+    # =========================================================
+    # TAB 2: COMPETENZE ATTESE
+    # =========================================================
+    with tab_competenze:
         st.markdown("**Competenze disciplinari e trasversali:**")
         st.write("- Analizzare fonti e materiali multimediali.\n- Collegare l'argomento al contesto sociale/geografico.\n- Usare il lessico specifico e strumenti digitali.")
         if st.button("🎯 Genera Focus Competenze"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    p = f"{contesto} Descrivi come lo studio di '{argomento}' sviluppa le competenze di analisi e sintesi scientifica."
+                    p = f"{contesto_prompt} Descrivi come lo studio di '{argomento}' sviluppa le competenze di analisi e sintesi scientifica."
                     st.markdown("---")
-                    st.markdown(call_gemini(p))
+                    st.markdown(interroga_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
 
-    # --- TAB 3: OBIETTIVI DI APPRENDIMENTO ---
-    with tabs[3]:
+    # =========================================================
+    # TAB 3: OBIETTIVI DI APPRENDIMENTO
+    # =========================================================
+    with tab_obiettivi:
         st.markdown(f"**Traguardi per '{argomento}':**")
         st.write("- Riconoscere i concetti fondamentali.\n- Analizzare elementi, cause e conseguenze.\n- Rielaborare e argomentare quanto appreso.")
         if st.button("📊 Genera Obiettivi Operativi"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    p = f"{contesto} Scrivi 3 obiettivi misurabili (es. 'Saper descrivere...') per la lezione su '{argomento}'."
+                    p = f"{contesto_prompt} Scrivi 3 obiettivi misurabili operativi (es. 'Saper descrivere...') per la lezione su '{argomento}'."
                     st.markdown("---")
-                    st.markdown(call_gemini(p))
+                    st.markdown(interroga_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
 
-    # --- TAB 4: INCLUSIONE E PERSONALIZZAZIONE ---
-    with tabs[4]:
+    # =========================================================
+    # TAB 4: INCLUSIONE E PERSONALIZZAZIONE
+    # =========================================================
+    with tab_inclusione:
         st.markdown("**Strategie Inclusive:**")
         st.write("- Consegne scandite, mappe concettuali e parole chiave.\n- Testi ad alta leggibilità e strumenti compensativi.\n- Valutazione centrata sul percorso.")
         if st.button("🌈 Genera Schema Semplificato"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    p = f"{contesto} Crea uno schema ultra-semplificato con 5 concetti chiave su '{argomento}' adatto a studenti con difficoltà di apprendimento."
+                    p = f"{contesto_prompt} Crea uno schema ultra-semplificato con 5 concetti chiave su '{argomento}' adatto a studenti con difficoltà di apprendimento. Sii molto visivo."
                     st.markdown("---")
-                    st.markdown(call_gemini(p))
+                    st.markdown(interroga_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
 
-    # --- TAB 5: VALUTAZIONE ---
-    with tabs[5]:
+    # =========================================================
+    # TAB 5: VALUTAZIONE
+    # =========================================================
+    with tab_valutazione:
         st.markdown("**Criteri di Valutazione:**")
         st.write("- Partecipazione e collaborazione.\n- Uso del lessico e capacità di collegamento.\n- Livelli: Base, Intermedio, Avanzato, Eccellente.")
         if st.button("📝 Genera Esempio di Verifica"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    p = f"{contesto} Crea una prova formativa su '{argomento}' con 2 domande chiuse e 1 domanda aperta di ragionamento."
+                    p = f"{contesto_prompt} Crea una prova formativa su '{argomento}' con 2 domande chiuse (multiple choice) e 1 domanda aperta di ragionamento."
                     st.markdown("---")
-                    st.markdown(call_gemini(p))
+                    st.markdown(interroga_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
 
-    # --- TAB 6: COLLEGAMENTI INTERDISCIPLINARI ---
-    with tabs[6]:
-        st.write("Connessioni con Educazione Civica, Storia, Fisica o altre scienze.")
+    # =========================================================
+    # TAB 6: COLLEGAMENTI INTERDISCIPLINARI
+    # =========================================================
+    with tab_collegamenti:
+        st.write("Connessioni con Educazione Civica, Storia, Fisica o altre scienze per una visione d'insieme.")
         if st.button("🔗 Genera Collegamenti Creativi"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    p = f"{contesto} Suggerisci 3 collegamenti interdisciplinari curiosi partendo da '{argomento}'."
+                    p = f"{contesto_prompt} Suggerisci 3 collegamenti interdisciplinari curiosi partendo da '{argomento}' per ampliare la visione della classe."
                     st.markdown("---")
-                    st.markdown(call_gemini(p))
+                    st.markdown(interroga_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
