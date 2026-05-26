@@ -16,7 +16,19 @@ st.session_state.tema_scelto = tema
 
 api_key = st.sidebar.text_input("Gemini API Key:", type="password", help="Inserisci la chiave di Google AI Studio")
 
-# --- INIEZIONE CSS PERSONALIZZATO (Con FIX aggressivo per le tendine) ---
+# NUOVO MENU ESPANDIBILE CON LA GUIDA PER L'API KEY
+with st.sidebar.expander("🔑 Come ottenere una API Key gratuita"):
+    st.markdown("""
+    1. Vai sul sito [Google AI Studio](https://aistudio.google.com/).
+    2. Fai l'accesso con il tuo normale **account Google** (lo stesso che usi per Gmail).
+    3. Nel menu a sinistra, clicca su **"Get API key"**.
+    4. Clicca sul pulsante **"Create API key"** e segui la procedura per generarla.
+    5. Copia la lunga stringa di testo che appare e incollala nel riquadro qui sopra.
+    
+    *(Il servizio è fornito gratuitamente da Google per uso sperimentale e didattico).*
+    """)
+
+# --- INIEZIONE CSS PERSONALIZZATO (Con FIX per le tendine e i Tooltip/Punti interrogativi) ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
@@ -45,6 +57,13 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
             background-color: #00d4aa !important; 
             color: #0f0f0f !important; 
         }
+        
+        /* FIX PER I TOOLTIP (PUNTO INTERROGATIVO) IN DARK MODE */
+        div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div {
+            background-color: #1f1f1f !important;
+            color: #ffffff !important;
+            border: 1px solid #333333 !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 else:
@@ -64,7 +83,7 @@ else:
         div[data-baseweb="select"] > div { background-color: #ffffff !important; color: #212529 !important; border-color: #ced4da !important; }
         input { background-color: #ffffff !important; color: #212529 !important; }
         
-        /* TENDINE IN LIGHT MODE */
+        /* TENDINE E TOOLTIP IN LIGHT MODE */
         div[data-baseweb="popover"] > div,
         ul[role="listbox"], 
         li[role="option"] { 
@@ -74,6 +93,11 @@ else:
         li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { 
             background-color: #007a60 !important; 
             color: #ffffff !important; 
+        }
+        div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+            border: 1px solid #ced4da !important;
         }
         </style>
     """, unsafe_allow_html=True)
