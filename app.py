@@ -10,14 +10,14 @@ st.set_page_config(page_title="OmniScience 3D Studio", layout="wide", initial_si
 if "tema_scelto" not in st.session_state:
     st.session_state.tema_scelto = "Modalità Scura (Consigliata)"
 
-# --- INPUT BARRA LATERALE (I CONTROLLI VENGONO INSERITI DOPO IL CSS PERCORRETTO) ---
+# --- INPUT BARRA LATERALE ---
 st.sidebar.markdown("## ⚙️ CONFIGURAZIONE")
 tema = st.sidebar.selectbox("🎨 Scegli il Tema visivo:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
 st.session_state.tema_scelto = tema
 
 api_key = st.sidebar.text_input("Gemini API Key:", type="password", help="Inserisci la chiave ottenuta da Google AI Studio")
 
-# --- INIEZIONE DEL CSS CORRETTO E COERENTE PER ENTRAMBI I TEMI ---
+# --- INIEZIONE DEL CSS CORRETTO CON FIX PER I MENU A TENDINA ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
@@ -29,9 +29,9 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         section[data-testid="stSidebar"] h2, section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span, section[data-testid="stSidebar"] label {
             color: #ffffff !important;
         }
-        /* Correzione del testo dentro i box informativi (st.info / st.warning) nella barra laterale */
+        /* Correzione del testo dentro i box informativi nella barra laterale */
         section[data-testid="stSidebar"] div[data-testid="stNotification"] p {
-            color: #0f172a !important; /* Testo scuro dentro i banner colorati per staccare dallo sfondo del banner */
+            color: #0f172a !important; 
             font-weight: 500;
         }
         
@@ -60,14 +60,24 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         }
         .stButton>button:hover { background-color: #00d4aa !important; color: #0f0f0f !important; border-color: #00d4aa !important; }
         
-        /* Correzione selettori e box di upload testo in nero */
+        /* FIX FONDAMENTALE: Forza lo sfondo scuro e il testo bianco nei menu a tendina a comparsa (tendina aperta) */
+        div[data-baseweb="popover"], div[role="listbox"], li[role="option"] {
+            background-color: #161616 !important;
+            color: #ffffff !important;
+        }
+        li[role="option"]:hover {
+            background-color: #00d4aa !important;
+            color: #0f0f0f !important;
+        }
+        
+        /* Selettori e box di upload a tendina chiusa */
         div[data-baseweb="select"] > div { background-color: #1f1f1f !important; color: #ffffff !important; border-color: #333333 !important; }
         div[data-testid="stFileUploader"] section { background-color: #1f1f1f !important; border: 1px dashed #444444 !important; color: #ffffff !important; }
         input { background-color: #1f1f1f !important; color: #ffffff !important; }
         </style>
     """, unsafe_allow_html=True)
 else:
-    # MODALITÀ CHIARA COMPLETAMENTE RIVISTA PER MASSIMO CONTRASTO ALLA LIM
+    # MODALITÀ CHIARA COMPLETAMENTE COERENTE
     st.markdown("""
         <style>
         .stApp { background-color: #f8f9fa !important; color: #212529 !important; }
@@ -104,6 +114,16 @@ else:
         }
         .stButton>button:hover { background-color: #007a60 !important; color: #ffffff !important; border-color: #007a60 !important; }
         
+        /* Menu a tendina a comparsa aperti in modalità chiara */
+        div[data-baseweb="popover"], div[role="listbox"], li[role="option"] {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+        }
+        li[role="option"]:hover {
+            background-color: #007a60 !important;
+            color: #ffffff !important;
+        }
+        
         /* Input e caricatori in modalità chiara */
         div[data-baseweb="select"] > div { background-color: #ffffff !important; color: #212529 !important; border-color: #ced4da !important; }
         div[data-testid="stFileUploader"] section { background-color: #ffffff !important; border: 1px dashed #ced4da !important; color: #212529 !important; }
@@ -138,11 +158,9 @@ with col_menu:
     st.markdown("---")
     st.markdown("### 🔍 ELEMENTO SOTTO ESAME")
     
-    # Inizializziamo la variabile di stato per l'elemento da analizzare
     if 'elemento_corrente' not in st.session_state:
         st.session_state.elemento_corrente = "Nucleo Cellulare"
 
-    # Cambiamo le opzioni dei pulsanti dinamicamente in base alla materia scelta
     if materia == "Biologia":
         st.write("Strutture biologiche tipiche:")
         if st.button("🧫 Nucleo Cellulare"): st.session_state.elemento_corrente = "Nucleo Cellulare"
@@ -165,7 +183,6 @@ with col_menu:
         if st.button("💎 Silicati (Reticolo)"): st.session_state.elemento_corrente = "Struttura cristallina dei Silicati"
 
     st.markdown("<br>", unsafe_allow_html=True)
-    # Input libero per argomenti Jolly
     input_libero = st.text_input("✍️ Oppure scrivi un argomento personalizzato:", placeholder="Es. Apparato di Golgi, Legame Ionico...")
     if input_libero:
         st.session_state.elemento_corrente = input_libero
@@ -176,9 +193,8 @@ with col_menu:
 with col_3d:
     elemento = st.session_state.elemento_corrente
     st.markdown(f"### 🌐 MODELLO 3D: {elemento.upper()}")
-    st.caption("Trascina per ruotare l'oggetto in tutte le dimensions, usa la rotella per lo zoom.")
+    st.caption("Trascina per ruotare l'oggetto in tutte le dimensioni, usa la rotella per lo zoom.")
     
-    # Caricatore universale di file .glb
     file_3d = st.file_uploader("Carica il file .glb corrispondente all'argomento della lezione", type=["glb"])
     
     if file_3d is not None:
@@ -186,14 +202,11 @@ with col_3d:
         base64_3d = base64.b64encode(bytes_data).decode('utf-8')
         data_url = f"data:model/gltf-binary;base64,{base64_3d}"
     else:
-        # Modello neutro di default se nessun file viene caricato
         data_url = "https://modelviewer.dev/shared-assets/models/Astronaut.glb"
 
-    # Colore di sfondo del visualizzatore 3D adattivo in base al tema scelto
     bg_viewer = "#111111" if st.session_state.tema_scelto == "Modalità Scura (Consigliata)" else "#ffffff"
     border_viewer = "#333333" if st.session_state.tema_scelto == "Modalità Scura (Consigliata)" else "#ced4da"
 
-    # Renderizzazione del visualizzatore 3D fluido di Google
     html_code = f"""
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <div style="width: 100%; display: flex; justify-content: center;">
@@ -208,7 +221,6 @@ with col_3d:
     """
     components.html(html_code, height=440)
     
-    # Sezione immagini di supporto scientifico inferiore
     st.markdown("### 📸 SUPPORTI DIDATTICI INTEGRATIVI")
     st.write("💡 *Suggerimento per la lezione: proietta al centro il modello 3D e confrontalo con gli schemi dei tuoi libri di testo.*")
 
