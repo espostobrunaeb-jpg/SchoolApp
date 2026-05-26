@@ -16,19 +16,17 @@ st.session_state.tema_scelto = tema
 
 api_key = st.sidebar.text_input("Gemini API Key:", type="password", help="Inserisci la chiave di Google AI Studio")
 
-# NUOVO MENU ESPANDIBILE CON LA GUIDA PER L'API KEY
+# GUIDA PER L'API KEY
 with st.sidebar.expander("🔑 Come ottenere una API Key gratuita"):
     st.markdown("""
-    1. Vai sul sito [Google AI Studio](https://aistudio.google.com/).
-    2. Fai l'accesso con il tuo normale **account Google** (lo stesso che usi per Gmail).
-    3. Nel menu a sinistra, clicca su **"Get API key"**.
-    4. Clicca sul pulsante **"Create API key"** e segui la procedura per generarla.
-    5. Copia la lunga stringa di testo che appare e incollala nel riquadro qui sopra.
-    
-    *(Il servizio è fornito gratuitamente da Google per uso sperimentale e didattico).*
+    1. Vai su [Google AI Studio](https://aistudio.google.com/).
+    2. Fai l'accesso con il tuo **account Google**.
+    3. Clicca su **"Get API key"**.
+    4. Clicca su **"Create API key"**.
+    5. Copia la chiave e incollala qui sopra.
     """)
 
-# --- INIEZIONE CSS PERSONALIZZATO (Con FIX per le tendine e i Tooltip/Punti interrogativi) ---
+# --- INIEZIONE CSS PERSONALIZZATO (Con FIX per tendine, tooltip e dark mode) ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
@@ -46,23 +44,14 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         div[data-baseweb="select"] > div { background-color: #1f1f1f !important; color: #ffffff !important; border-color: #333333 !important; }
         input { background-color: #1f1f1f !important; color: #ffffff !important; }
         
-        /* FIX DEFINITIVO PER I MENU A TENDINA IN DARK MODE */
-        div[data-baseweb="popover"] > div,
-        ul[role="listbox"], 
-        li[role="option"] { 
-            background-color: #1f1f1f !important; 
-            color: #ffffff !important; 
+        div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { 
+            background-color: #1f1f1f !important; color: #ffffff !important; 
         }
         li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { 
-            background-color: #00d4aa !important; 
-            color: #0f0f0f !important; 
+            background-color: #00d4aa !important; color: #0f0f0f !important; 
         }
-        
-        /* FIX PER I TOOLTIP (PUNTO INTERROGATIVO) IN DARK MODE */
         div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div {
-            background-color: #1f1f1f !important;
-            color: #ffffff !important;
-            border: 1px solid #333333 !important;
+            background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333333 !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -82,28 +71,11 @@ else:
         button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
         div[data-baseweb="select"] > div { background-color: #ffffff !important; color: #212529 !important; border-color: #ced4da !important; }
         input { background-color: #ffffff !important; color: #212529 !important; }
-        
-        /* TENDINE E TOOLTIP IN LIGHT MODE */
-        div[data-baseweb="popover"] > div,
-        ul[role="listbox"], 
-        li[role="option"] { 
-            background-color: #ffffff !important; 
-            color: #212529 !important; 
-        }
-        li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { 
-            background-color: #007a60 !important; 
-            color: #ffffff !important; 
-        }
-        div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div {
-            background-color: #ffffff !important;
-            color: #212529 !important;
-            border: 1px solid #ced4da !important;
-        }
         </style>
     """, unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
-st.sidebar.info("💡 **Modalità Progettazione Attiva**: Lezione strutturata con modello 3D integrato e modulo di pianificazione didattica.")
+st.sidebar.info("💡 **OmniScience Studio**: Inserisci l'argomento e il target per generare una lezione inclusiva e visualizzarla in 3D.")
 
 # --- INTESTAZIONE ---
 st.title("🧪 OmniScience 3D Studio")
@@ -123,7 +95,7 @@ with col_sinistra:
     st.markdown("---")
     st.markdown("### 🎯 TARGET")
     livello_scuola = st.selectbox("Grado scolastico:", ["Scuola Elementare", "Scuola Media", "Superiori (Biennio)", "Superiori (Triennio)", "Università"], index=3)
-    profilo_studente = st.selectbox("Profilo:", ["Standard", "BES (Bisogni Educativi Speciali)", "DSA (Alta Leggibilità)"])
+    profilo_studente = st.selectbox("Profilo:", ["Standard", "BES (Bisogni Educativi Speciali)", "DSA (Disturbi Specifici Apprendimento)"])
     
     st.markdown("---")
     st.markdown("### 📦 MODELLO 3D")
@@ -159,11 +131,11 @@ with col_destra:
     
     st.markdown("<br><hr><br>", unsafe_allow_html=True)
     
-    # 2. PROGETTAZIONE DIDATTICA (6 Tab)
-    st.markdown(f"## 📚 PROGETTAZIONE DIDATTICA: {argomento.upper()}")
-    st.caption("Il framework metodologico della lezione, adattato tramite I.A. all'argomento scelto.")
+    # 2. PROGETTAZIONE DIDATTICA (Nuovo Tab Spiegazione al primo posto)
+    st.markdown(f"## 📚 DIDATTICA E PROGETTAZIONE: {argomento.upper()}")
     
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    tabs = st.tabs([
+        "✨ Spiegazione Lezione",
         "1. Prerequisiti", 
         "2. Competenze", 
         "3. Obiettivi", 
@@ -172,139 +144,103 @@ with col_destra:
         "6. Collegamenti"
     ])
     
-    # Costruzione del prompt di base per l'inclusione
-    contesto = f"Target: studenti di {livello_scuola}, Profilo: {profilo_studente}."
+    # Funzioni di supporto
+    contesto = f"Stai parlando a studenti di {livello_scuola} con profilo {profilo_studente}."
     
-    def gestisci_errore_gemini(e):
-        if "503" in str(e):
-            st.warning("⏳ I server di Google sono momentaneamente affollati. Attendi 30 secondi e riprova!")
-        else:
-            st.error(f"Errore imprevisto: {e}")
+    def call_gemini(prompt_text):
+        try:
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt_text)
+            return response.text
+        except Exception as e:
+            if "503" in str(e): return "⏳ Server occupato. Riprova tra 30 secondi."
+            return f"Errore: {e}"
+
+    # --- TAB 0: SPIEGAZIONE LEZIONE ---
+    with tabs[0]:
+        st.markdown(f"### ✨ Spiegazione per la classe ({profilo_studente})")
+        st.write("Genera un testo pronto per essere letto o proiettato, adattato perfettamente al target scelto.")
+        if st.button("🚀 Genera Spiegazione Lezione"):
+            if api_key:
+                with st.spinner("Generazione spiegazione in corso..."):
+                    p = f"""Sei una docente di scienze esperta. Spiega l'argomento '{argomento}' in modo affascinante.
+                    {contesto}
+                    REGOLE DI LINGUAGGIO:
+                    - Se DSA: usa paragrafi molto brevi, elenchi puntati e grassetti sulle parole chiave.
+                    - Se BES: usa un linguaggio semplice, diretto e rassicurante, evitando astrazioni complesse.
+                    - Se Standard: usa un linguaggio scientifico corretto ma coinvolgente.
+                    Includi una metafora iniziale per catturare l'attenzione."""
+                    st.markdown("---")
+                    st.markdown(call_gemini(p))
+            else: st.warning("Inserisci la API Key a sinistra.")
 
     # --- TAB 1: PREREQUISITI ---
-    with tab1:
-        st.markdown("""
-        **Framework Metodologico Base:**
-        Gli studenti dovrebbero già possedere alcune conoscenze di base:
-        - Comprensione di testi informativi, narrativi o argomentativi.
-        - Capacità di individuare parole chiave e concetti principali.
-        - Uso essenziale del lessico disciplinare.
-        - Capacità di lavorare in coppia o in piccolo gruppo.
-        - Competenze digitali di base per l’uso di LIM, piattaforme condivise, mappe.
-        """)
-        if st.button("Genera Prerequisiti Specifici", key="btn_pre"):
+    with tabs[1]:
+        st.markdown("**Conoscenze di base richieste:**")
+        st.write("- Comprensione testi informativi/narrativi.\n- Individuazione parole chiave.\n- Lessico disciplinare essenziale.\n- Collaborazione in gruppo e competenze digitali.")
+        if st.button("🔍 Genera Prerequisiti Specifici"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    try:
-                        client = genai.Client(api_key=api_key)
-                        prompt = f"{contesto} Elenca 3 prerequisiti di conoscenza scientifica che gli studenti devono avere prima di affrontare la lezione su '{argomento}'."
-                        st.markdown("---")
-                        st.markdown(client.models.generate_content(model='gemini-2.5-flash', contents=prompt).text)
-                    except Exception as e: gestisci_errore_gemini(e)
+                    p = f"{contesto} Elenca 3 conoscenze scientifiche specifiche che gli studenti devono avere per capire '{argomento}'."
+                    st.markdown("---")
+                    st.markdown(call_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
 
     # --- TAB 2: COMPETENZE ATTESE ---
-    with tab2:
-        st.markdown("""
-        **La lezione mira a sviluppare competenze disciplinari e trasversali.**
-        Gli studenti saranno guidati a:
-        - Comprendere e analizzare testi, documenti o materiali multimediali.
-        - Individuare informazioni principali e secondarie.
-        - Collegare l’argomento al contesto storico, culturale, sociale o geografico.
-        - Utilizzare il lessico specifico della disciplina.
-        - Confrontare punti di vista diversi e rielaborare in modo personale.
-        - Collaborare con i compagni e usare strumenti digitali consapevolmente.
-        """)
-        if st.button("Genera Focus Competenze", key="btn_comp"):
+    with tabs[2]:
+        st.markdown("**Competenze disciplinari e trasversali:**")
+        st.write("- Analizzare fonti e materiali multimediali.\n- Collegare l'argomento al contesto sociale/geografico.\n- Usare il lessico specifico e strumenti digitali.")
+        if st.button("🎯 Genera Focus Competenze"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    try:
-                        client = genai.Client(api_key=api_key)
-                        prompt = f"{contesto} Come si applicano le competenze di analisi scientifica e l'uso del lessico specifico quando studiano '{argomento}'?"
-                        st.markdown("---")
-                        st.markdown(client.models.generate_content(model='gemini-2.5-flash', contents=prompt).text)
-                    except Exception as e: gestisci_errore_gemini(e)
+                    p = f"{contesto} Descrivi come lo studio di '{argomento}' sviluppa le competenze di analisi e sintesi scientifica."
+                    st.markdown("---")
+                    st.markdown(call_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
 
     # --- TAB 3: OBIETTIVI DI APPRENDIMENTO ---
-    with tab3:
-        st.markdown(f"""
-        **Al termine della lezione, gli studenti saranno in grado di:**
-        - Riconoscere i concetti fondamentali relativi a **{argomento}**.
-        - Comprendere il significato di testi, fonti o materiali proposti.
-        - Analizzare elementi, cause, conseguenze, temi o parole chiave.
-        - Collegare l’argomento al contesto disciplinare più ampio.
-        - Rielaborare oralmente o per iscritto quanto appreso.
-        - Argomentare una posizione personale, se coerente con la traccia.
-        """)
-        if st.button("Genera Traguardi Specifici", key="btn_ob"):
+    with tabs[3]:
+        st.markdown(f"**Traguardi per '{argomento}':**")
+        st.write("- Riconoscere i concetti fondamentali.\n- Analizzare elementi, cause e conseguenze.\n- Rielaborare e argomentare quanto appreso.")
+        if st.button("📊 Genera Obiettivi Operativi"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    try:
-                        client = genai.Client(api_key=api_key)
-                        prompt = f"{contesto} Scrivi 3 obiettivi di apprendimento operativi e misurabili specifici per l'argomento '{argomento}'."
-                        st.markdown("---")
-                        st.markdown(client.models.generate_content(model='gemini-2.5-flash', contents=prompt).text)
-                    except Exception as e: gestisci_errore_gemini(e)
+                    p = f"{contesto} Scrivi 3 obiettivi misurabili (es. 'Saper descrivere...') per la lezione su '{argomento}'."
+                    st.markdown("---")
+                    st.markdown(call_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
 
     # --- TAB 4: INCLUSIONE E PERSONALIZZAZIONE ---
-    with tab4:
-        st.markdown("""
-        **La progettazione tiene conto dei diversi bisogni degli studenti.**
-        Per gli studenti con DSA/BES sono previsti:
-        - Consegne chiare e scandite per punti; mappe concettuali; parole chiave.
-        - Testi semplificati o ad alta leggibilità.
-        - Tempi più distesi e possibilità di rispondere oralmente.
-        - Uso di strumenti compensativi.
-        - Valutazione centrata sui contenuti e sul percorso, non solo sulla forma.
-        
-        *La classe lavora secondo una logica inclusiva: non si semplifica il sapere, ma si diversificano le vie di accesso all’apprendimento.*
-        """)
-        if st.button("Genera Parole Chiave / Schema Inclusivo", key="btn_inc"):
+    with tabs[4]:
+        st.markdown("**Strategie Inclusive:**")
+        st.write("- Consegne scandite, mappe concettuali e parole chiave.\n- Testi ad alta leggibilità e strumenti compensativi.\n- Valutazione centrata sul percorso.")
+        if st.button("🌈 Genera Schema Semplificato"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    try:
-                        client = genai.Client(api_key=api_key)
-                        prompt = f"{contesto} Crea un elenco puntato ad altissima leggibilità con le 5 parole chiave fondamentali per capire '{argomento}'. Affianca a ogni parola una definizione di 1 riga molto semplice."
-                        st.markdown("---")
-                        st.markdown(client.models.generate_content(model='gemini-2.5-flash', contents=prompt).text)
-                    except Exception as e: gestisci_errore_gemini(e)
+                    p = f"{contesto} Crea uno schema ultra-semplificato con 5 concetti chiave su '{argomento}' adatto a studenti con difficoltà di apprendimento."
+                    st.markdown("---")
+                    st.markdown(call_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
 
     # --- TAB 5: VALUTAZIONE ---
-    with tab5:
-        st.markdown("""
-        **La valutazione sarà prevalentemente formativa e terrà conto di:**
-        Partecipazione, comprensione, individuazione concetti chiave, uso del lessico, collaborazione, rielaborazione e rispetto della consegna.
-        
-        **Rubrica (4 Livelli):**
-        - **Base:** comprende solo gli elementi essenziali.
-        - **Intermedio:** comprende e organizza le informazioni principali.
-        - **Avanzato:** collega, interpreta e usa un lessico adeguato.
-        - **Eccellente:** rielabora criticamente e propone collegamenti pertinenti.
-        """)
-        if st.button("Genera Esempio di Prova Formativa", key="btn_val"):
+    with tabs[5]:
+        st.markdown("**Criteri di Valutazione:**")
+        st.write("- Partecipazione e collaborazione.\n- Uso del lessico e capacità di collegamento.\n- Livelli: Base, Intermedio, Avanzato, Eccellente.")
+        if st.button("📝 Genera Esempio di Verifica"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    try:
-                        client = genai.Client(api_key=api_key)
-                        prompt = f"{contesto} Crea una brevissima prova di verifica formativa su '{argomento}'. Includi 2 domande a risposta breve e 1 domanda di ragionamento/collegamento."
-                        st.markdown("---")
-                        st.markdown(client.models.generate_content(model='gemini-2.5-flash', contents=prompt).text)
-                    except Exception as e: gestisci_errore_gemini(e)
+                    p = f"{contesto} Crea una prova formativa su '{argomento}' con 2 domande chiuse e 1 domanda aperta di ragionamento."
+                    st.markdown("---")
+                    st.markdown(call_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
 
     # --- TAB 6: COLLEGAMENTI INTERDISCIPLINARI ---
-    with tab6:
-        st.write("Esplorazione delle connessioni tra materie per una visione sistemica del sapere (es. Educazione Civica, Storia, Fisica, Chimica).")
-        if st.button("Genera Spunti Interdisciplinari", key="btn_coll"):
+    with tabs[6]:
+        st.write("Connessioni con Educazione Civica, Storia, Fisica o altre scienze.")
+        if st.button("🔗 Genera Collegamenti Creativi"):
             if api_key:
                 with st.spinner("Elaborazione..."):
-                    try:
-                        client = genai.Client(api_key=api_key)
-                        prompt = f"{contesto} Suggerisci 3 collegamenti interdisciplinari affascinanti e creativi partendo dall'argomento '{argomento}'."
-                        st.markdown("---")
-                        st.markdown(client.models.generate_content(model='gemini-2.5-flash', contents=prompt).text)
-                    except Exception as e: gestisci_errore_gemini(e)
+                    p = f"{contesto} Suggerisci 3 collegamenti interdisciplinari curiosi partendo da '{argomento}'."
+                    st.markdown("---")
+                    st.markdown(call_gemini(p))
             else: st.warning("Inserisci la API Key a sinistra.")
