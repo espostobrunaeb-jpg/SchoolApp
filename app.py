@@ -146,7 +146,7 @@ with col_3d:
 # ==========================================
 # COLONNA 3 (DESTRA): Infografica Dinamica Multidisciplinare con Gemini
 # ==========================================
-with col_details := col_ai:
+with col_ai:
     st.markdown(f"### 📋 DASHBOARD DIDATTICA")
     st.info(f"Focus su: **{elemento}** ({materia})")
     
