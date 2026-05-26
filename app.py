@@ -4,7 +4,7 @@ from google import genai
 import base64
 
 # Configurazione della pagina in modalità Dashboard (Widescreen)
-st.set_page_config(page_title="Cell Architecture Studio", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Bruna Esposto 3D Studio SchoolApp", layout="wide", initial_sidebar_state="expanded")
 
 # STILE CSS (Ripreso esattamente dal look-and-feel dell'articolo: Dark mode, dettagli teal/azzurro)
 st.markdown("""
