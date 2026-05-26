@@ -1,0 +1,45 @@
+I file .glb (chiamati anche gLTF binari) sono il formato standard per il 3D sul web: sono leggeri, includono già i colori e le texture, e sono perfetti per l'applicazione che abbiamo creato.
+
+Ecco le migliori risorse online, divise per categorie, dove puoi scaricare gratuitamente migliaia di modelli 3D scientifici pronti per le tue lezioni della classe A050.
+
+1. I Grandi Portali di Modelli 3D (Gratuiti con filtri)
+🪐 Sketchfab (sketchfab.com)
+È il "Google" dei modelli 3D. Contiene la più grande collezione al mondo di file biologici, chimici e geologici.
+
+Come cercare: Nella barra di ricerca scrivi termini in inglese (es. plant cell, volcano, molecule).
+
+Il trucco fondamentale: Dopo aver cercato, attiva il filtro "Downloadable" (Scaricabili) in alto. Moltissimi autori ed università lasciano i loro modelli gratuiti.
+
+Come scaricare: Clicca sul modello, poi sul pulsante Download 3D Model e scegli il formato gLTF o GLB. Se scarichi un file .zip (gLTF), ti basterà estrarlo per trovare il file .glb all'interno.
+
+🏛️ Smithsonian Ocean & NASA 3D
+Le grandi istituzioni scientifiche americane mettono a disposizione interi database gratuiti e di altissima qualità:
+
+NASA 3D Resources (gdc.nasa.gov o cerca "NASA 3D models"): Perfetto per scienze della Terra, astronomia, modelli di pianeti, asteroidi e strutture satellitari. Forniscono direttamente i file .glb.
+
+Smithsonian 3D (3d.si.edu): Contiene scansioni 3D reali di fossili, scheletri di dinosauri, minerali e reperti biologici.
+
+2. Piattaforme Didattiche Specifiche per la Scuola
+🧬 Sketchfab Cultural Heritage & Science
+All'interno di Sketchfab c'è una sezione dedicata interamente ai musei e alla scienza. Cerca gli account ufficiali di:
+
+BioDigital (modelli anatomici umani pazzeschi).
+
+Invisible Exhibition (molecole e virus).
+
+3. Il "Trucco" per creare GLB da zero con l'Intelligenza Artificiale
+Se per una lezione ti serve una struttura particolare (ad esempio, una specifica faglia geologica o una molecola complessa) e non la trovi in giro, puoi chiederla a un'I.A. generativa 3D, proprio come spiegato nell'articolo che hai letto!
+
+Il sito migliore si chiama Tripo3D (tripo3d.ai):
+
+Registrati gratuitamente.
+
+Vai nella sezione Text-to-3D.
+
+Scrivi nel box cosa desideri (usa l'inglese per una precisione scientifica maggiore).
+
+Esempio per Chimica: 3D model of a methane molecule CH4, ball and stick model, scientific style, transparent background
+
+Esempio per Scienze della Terra: 3D model of a cross-section of a tectonic plate subduction zone, geology textbook style
+
+L'I.A. genererà il modello in circa 60 secondi. Ti basterà cliccare su Download e selezionare il formato GLB.
