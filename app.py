@@ -1,4 +1,3 @@
-```python
 import streamlit as st
 import streamlit.components.v1 as components
 from google import genai
@@ -681,4 +680,3 @@ with col_main:
                 file_name=f"Lezione_{argomento}.html",
                 mime="text/html"
             )
-```
