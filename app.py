@@ -12,7 +12,7 @@ if "chat_history" not in st.session_state: st.session_state.chat_history = []
 if "tema_scelto" not in st.session_state: st.session_state.tema_scelto = "Modalità Scura (Consigliata)"
 
 # --- BARRA LATERALE: REGIA DOCENTE ---
-st.sidebar.markdown("## ⚙️ REGIA DOCENTE (A050)")
+st.sidebar.markdown("## ⚙️ REGIA DOCENTE")
 tema = st.sidebar.selectbox("🎨 Tema Visivo:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
 st.session_state.tema_scelto = tema
 
@@ -118,10 +118,9 @@ else:
         </style>
     """, unsafe_allow_html=True)
 
-
 # --- HEADER ---
 st.title("🧪 OmniScience 3D Studio Pro")
-st.caption(f"🔬 *Laboratorio e Progettazione Didattica MIUR | Classe A050*")
+st.caption(f"🔬 *Laboratorio e Progettazione Didattica | ESPOSTO BRUNA Classe A050*")
 
 col_regia, col_main = st.columns([0.27, 0.73], gap="large")
 
@@ -131,18 +130,20 @@ with col_regia:
     
     st.markdown("---")
     st.markdown("### 📦 CARICA MODELLO 3D")
-    file_3d = st.file_uploader("Seleziona file .glb (Opzionale):", type=["glb"])
+    file_3d = st.file_uploader("1. Seleziona file .glb (Opzionale):", type=["glb"])
+    
+    # NUOVO CARICATORE PER LA COPERTINA OFFLINE
+    img_copertina = st.file_uploader("2. Copertina Offline (Opzionale):", type=["jpg", "png", "jpeg"], help="Immagine che verrà mostrata nell'esportazione se apri il file senza connessione internet.")
     
     with st.expander("🔍 Guida ai file .glb e Risorse Gratuite"):
         st.write("""
         I file **.glb** (chiamati anche gLTF binari) sono il formato standard per il 3D sul web.
         * 🪐 **Sketchfab:** Cerca in inglese. Filtro **"Downloadable"**.
         * 🏛️ **NASA 3D & Smithsonian:** (3d.si.edu).
-        * 🤖 **Tripo3D (tripo3d.ai):** Genera modelli 3D con intelligenza artificiale testuale.
+        * 🤖 **Tripo3D (tripo3d.ai):** Genera modelli 3D con intelligenza artificiale.
         """)
     
     st.markdown("---")
-    # NUOVA SEZIONE GALLERIA MULTIPLA
     st.markdown("### 🖼️ GALLERIA IMMAGINI")
     st.caption("Carica immagini per l'infografica finale.")
     immagini_lezione = st.file_uploader("Puoi selezionare più file:", type=["jpg", "png", "jpeg"], accept_multiple_files=True)
@@ -150,13 +151,14 @@ with col_regia:
 with col_main:
     # 1. VIEWPORT 3D
     st.markdown(f"## 🌐 VISUALIZZATORE: {argomento.upper()}")
-    data_url = "https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+    data_url_online = "https://modelviewer.dev/shared-assets/models/Astronaut.glb"
     if file_3d:
-        data_url = f"data:model/gltf-binary;base64,{base64.b64encode(file_3d.getvalue()).decode()}"
+        file_3d.seek(0)
+        data_url_online = f"data:model/gltf-binary;base64,{base64.b64encode(file_3d.read()).decode()}"
     
     bg_v = "#111111" if "Scura" in st.session_state.tema_scelto else "#ffffff"
     border_v = "#333333" if "Scura" in st.session_state.tema_scelto else "#ced4da"
-    html_3d = f'<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script><model-viewer src="{data_url}" camera-controls auto-rotate style="width: 100%; height: 450px; background-color: {bg_v}; border: 1px solid {border_v}; border-radius: 12px;"></model-viewer>'
+    html_3d = f'<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script><model-viewer src="{data_url_online}" camera-controls auto-rotate style="width: 100%; height: 450px; background-color: {bg_v}; border: 1px solid {border_v}; border-radius: 12px;"></model-viewer>'
     components.html(html_3d, height=460)
 
     # 2. CHAT INTERATTIVA
@@ -172,7 +174,7 @@ with col_main:
 
     st.markdown("---")
     
-    # 3. DASHBOARD DIDATTICA CON IL NUOVO TAB GALLERIA
+    # 3. DASHBOARD DIDATTICA
     st.markdown(f"## 📚 PROGETTAZIONE E METODOLOGIA")
     tabs = st.tabs(["✨ Spiegazione", "🎯 Progettazione UDA", "🌍 Compito di Realtà", "🌈 Inclusione (PDP/PEI)", "📝 SuperQuiz 10", "🖼️ Infografica", "💾 Esporta"])
     
@@ -205,48 +207,49 @@ with col_main:
         if st.button("📝 Genera Quiz (10 Domande) e Griglia"):
             st.markdown(run_ai(f"{prompt_normativo} Crea un test di 10 domande a risposta multipla su '{argomento}' e una griglia valutativa MIUR a 4 livelli alla fine."))
 
-    # IL NUOVO TAB: INFOGRAFICA (Costruttore della Galleria)
     didascalie = {}
     with tabs[5]:
         st.markdown("### 🖼️ Costruisci l'Infografica della Lezione")
-        st.write("Aggiungi una spiegazione a ogni immagine che hai caricato nella barra sinistra. Verranno tutte impaginate assieme nel PDF/HTML finale esportato.")
-        
         if immagini_lezione:
             for idx, img_file in enumerate(immagini_lezione):
                 img = Image.open(img_file)
                 col_img, col_text = st.columns([1, 2], gap="large")
-                with col_img:
-                    st.image(img, use_column_width=True)
-                with col_text:
-                    didascalie[img_file.name] = st.text_area(f"Spiegazione / Didascalia per l'immagine {idx+1}:", key=f"desc_{img_file.name}", height=150)
+                with col_img: st.image(img, use_column_width=True)
+                with col_text: didascalie[img_file.name] = st.text_area(f"Spiegazione per l'immagine {idx+1}:", key=f"desc_{img_file.name}", height=150)
                 st.markdown("---")
         else:
-            st.info("💡 Carica le immagini nella barra laterale sinistra alla voce 'GALLERIA IMMAGINI' per iniziare a costruire l'infografica.")
+            st.info("💡 Carica le immagini nella barra laterale per costruire l'infografica.")
 
-    # TAB ESPORTAZIONE: Crea un bellissimo HTML con le immagini incluse
+    # TAB ESPORTAZIONE: LOGICA SMART ONLINE/OFFLINE
     with tabs[6]:
-        st.markdown("### 💾 Esporta Infografica Offline")
-        if st.button("📦 Prepara Lezione Completa per Download"):
+        st.markdown("### 💾 Esporta Lezione Interattiva (Smart Offline)")
+        if st.button("📦 Scarica File HTML"):
             
-            # Genera il blocco HTML per le immagini
+            # 1. Prepara il Fallback Visivo (Offline)
+            fallback_html = "<div style='padding: 50px; background: #e9ecef; color: #666; text-align: center; border-radius: 12px; border: 2px dashed #ccc; font-size: 1.2em;'>⚠️ Sei offline. Collegati a Internet per visualizzare il modello 3D interattivo.</div>"
+            if img_copertina:
+                img_copertina.seek(0)
+                b64_cover = base64.b64encode(img_copertina.read()).decode()
+                fallback_html = f"<img src='data:image/png;base64,{b64_cover}' style='width: 100%; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>"
+
+            # 2. Prepara la Galleria Immagini
             html_images = ""
             if immagini_lezione:
-                html_images += "<h2 style='color:#007a60; border-bottom:2px solid #00d4aa; padding-bottom:10px;'>🖼️ Galleria Scientifica</h2>"
+                html_images += "<h2 style='color:#007a60; border-bottom:2px solid #00d4aa; padding-bottom:10px; margin-top: 50px;'>🖼️ Galleria Scientifica</h2>"
                 for img_file in immagini_lezione:
                     img_file.seek(0)
                     b64 = base64.b64encode(img_file.read()).decode()
-                    desc = didascalie.get(img_file.name, "")
-                    desc_html = desc.replace("\n", "<br>")
+                    desc = didascalie.get(img_file.name, "").replace("\n", "<br>")
                     html_images += f"""
                     <div style='margin-bottom: 40px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background: #fafafa; text-align: center;'>
                         <img src='data:image/png;base64,{b64}' style='max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>
                         <div style='margin-top: 15px; font-size: 18px; color: #444; text-align: left; line-height: 1.6; padding: 15px; background: #fff; border-left: 5px solid #00d4aa; border-radius: 4px;'>
-                            {desc_html if desc_html else '<i>Nessuna didascalia fornita.</i>'}
+                            {desc if desc else '<i>Nessuna didascalia fornita.</i>'}
                         </div>
                     </div>
                     """
             
-            # Assemblaggio del documento HTML finale
+            # 3. Assemblaggio HTML con Script Rilevamento Rete
             lezione_html = f"""
             <html>
             <head>
@@ -256,19 +259,28 @@ with col_main:
                     .container {{ max-width: 900px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }}
                     h1 {{ color: #007a60; text-align: center; font-size: 3em; margin-bottom: 10px; }}
                     .info-box {{ background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 1.2em; text-align: center; }}
+                    #viewer-container {{ width: 100%; height: 500px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; }}
+                    model-viewer {{ width: 100%; height: 100%; background-color: #111; border-radius: 12px; }}
                 </style>
             </head>
             <body>
                 <div class="container">
                     <h1>{argomento}</h1>
                     <div class="info-box">
-                        <strong>Target:</strong> {scuola_tipo}<br>
-                        <strong>Profilo Normativo:</strong> {profilo}
+                        <strong>Target:</strong> {scuola_tipo} | <strong>Profilo:</strong> {profilo}
                     </div>
+                    
+                    <div id="offline-fallback">
+                        {fallback_html}
+                    </div>
+                    <div id="online-3d" style="display: none;">
+                        <model-viewer src="{data_url_online}" camera-controls auto-rotate></model-viewer>
+                    </div>
+                    
                     {html_images}
                 </div>
-            </body>
-            </html>
-            """
-            
-            st.download_button("Scarica Infografica (HTML)", lezione_html, file_name=f"Infografica_{argomento.replace(' ', '_')}.html", mime="text/html")
+
+                <script>
+                    function checkConnection() {{
+                        if (navigator.onLine) {{
+                            document.getElementById
