@@ -44,7 +44,7 @@ scuola_tipo = st.sidebar.selectbox("Indirizzo di Studi:", [
 ], index=3)
 
 profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
-    "Classe Standard (Nessun PDP/PEI)", 
+    "Standard (Nessun PDP/PEI)", 
     "DSA (Legge 170/2010 - PDP)", 
     "BES (Dir. Min. 2012 - PDP)", 
     "Sostegno (Legge 104/92 - PEI)"
