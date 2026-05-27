@@ -5,7 +5,7 @@ import base64
 from PIL import Image
 
 # =========================================================
-# CONFIG PAGINA
+# CONFIGURAZIONE PAGINA
 # =========================================================
 
 st.set_page_config(
@@ -24,24 +24,19 @@ if "chat_history" not in st.session_state:
 if "tema_scelto" not in st.session_state:
     st.session_state.tema_scelto = "Modalità Scura (Consigliata)"
 
-# Persistenza contenuti TAB
-if "spiegazione" not in st.session_state:
-    st.session_state.spiegazione = ""
+# Persistenza TAB
+tabs_state = {
+    "spiegazione_output": "",
+    "uda_output": "",
+    "reality_output": "",
+    "inclusione_output": "",
+    "quiz_output": "",
+    "didascalie": {}
+}
 
-if "uda" not in st.session_state:
-    st.session_state.uda = ""
-
-if "compito_realta" not in st.session_state:
-    st.session_state.compito_realta = ""
-
-if "inclusione" not in st.session_state:
-    st.session_state.inclusione = ""
-
-if "quiz" not in st.session_state:
-    st.session_state.quiz = ""
-
-if "didascalie" not in st.session_state:
-    st.session_state.didascalie = {}
+for key, value in tabs_state.items():
+    if key not in st.session_state:
+        st.session_state[key] = value
 
 # =========================================================
 # SIDEBAR
@@ -76,8 +71,8 @@ with st.sidebar.expander("🔑 Come ottenere una API Key gratuita"):
     st.markdown("""
     1. Vai su Google AI Studio  
     2. Accedi con Google  
-    3. Clicca "Get API Key"  
-    4. Crea una nuova chiave API  
+    3. Clicca su "Get API Key"  
+    4. Crea una nuova API Key  
     """)
 
 st.sidebar.markdown("---")
@@ -111,7 +106,7 @@ profilo = st.sidebar.selectbox(
 )
 
 # =========================================================
-# CSS DARK MODE
+# DARK MODE CSS
 # =========================================================
 
 if "Scura" in st.session_state.tema_scelto:
@@ -120,7 +115,7 @@ if "Scura" in st.session_state.tema_scelto:
     <style>
 
     .stApp {
-        background-color: #0d1117;
+        background-color: #0e1117;
         color: white;
     }
 
@@ -129,21 +124,54 @@ if "Scura" in st.session_state.tema_scelto:
         border-right: 1px solid #30363d;
     }
 
-    h1, h2, h3 {
-        color: #7ee787 !important;
+    section[data-testid="stSidebar"] * {
+        color: white !important;
     }
 
-    p, label, span, div {
-        color: #f0f6fc;
+    h1, h2, h3 {
+        color: #7ee787 !important;
+        font-weight: 700 !important;
+    }
+
+    p, label {
+        color: white !important;
     }
 
     input, textarea {
         background-color: #21262d !important;
         color: white !important;
+        border: 1px solid #30363d !important;
     }
 
     div[data-baseweb="select"] > div {
         background-color: #21262d !important;
+        color: white !important;
+        border: 1px solid #30363d !important;
+    }
+
+    div[data-baseweb="popover"] {
+        background-color: #21262d !important;
+    }
+
+    ul[role="listbox"] {
+        background-color: #21262d !important;
+    }
+
+    li[role="option"] {
+        background-color: #21262d !important;
+        color: white !important;
+    }
+
+    li[role="option"]:hover {
+        background-color: #30363d !important;
+    }
+
+    section[data-testid="stFileUploaderDropzone"] {
+        background-color: #161b22 !important;
+        border: 2px dashed #30363d !important;
+    }
+
+    section[data-testid="stFileUploaderDropzone"] * {
         color: white !important;
     }
 
@@ -152,25 +180,22 @@ if "Scura" in st.session_state.tema_scelto:
         color: white !important;
         border-radius: 10px !important;
         border: none !important;
-        font-weight: bold;
+        font-weight: 600;
     }
 
     .stButton > button:hover {
         background-color: #2ea043 !important;
+        color: white !important;
     }
 
     button[data-baseweb="tab"] {
         color: #8b949e !important;
+        font-weight: 600;
     }
 
     button[data-baseweb="tab"][aria-selected="true"] {
         color: #7ee787 !important;
         border-bottom: 3px solid #7ee787 !important;
-    }
-
-    section[data-testid="stFileUploaderDropzone"] {
-        background-color: #161b22 !important;
-        border: 2px dashed #30363d !important;
     }
 
     div[data-testid="stExpander"] details {
@@ -247,15 +272,9 @@ with col_regia:
 
 with col_main:
 
-    # =====================================================
-    # VIEWER 3D
-    # =====================================================
-
     st.markdown(f"## 🌐 VISUALIZZATORE: {argomento.upper()}")
 
-    data_url_online = (
-        "https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-    )
+    data_url_online = "https://modelviewer.dev/shared-assets/models/Astronaut.glb"
 
     if file_3d:
 
@@ -294,9 +313,7 @@ with col_main:
 
         for m in st.session_state.chat_history:
 
-            st.chat_message(m["role"]).write(
-                m["content"]
-            )
+            st.chat_message(m["role"]).write(m["content"])
 
         if prompt_chat := st.chat_input(
             "Chiedi qualcosa all'oggetto scientifico..."
@@ -313,7 +330,7 @@ with col_main:
 
                     client = genai.Client(api_key=api_key)
 
-                    resp = client.models.generate_content(
+                    response = client.models.generate_content(
                         model=modello_gemini,
                         contents=f"""
                         Rispondi in prima persona come:
@@ -332,7 +349,7 @@ with col_main:
 
                     st.session_state.chat_history.append({
                         "role": "assistant",
-                        "content": resp.text
+                        "content": response.text
                     })
 
                     st.rerun()
@@ -360,15 +377,11 @@ with col_main:
     ])
 
     prompt_normativo = f"""
-    Agisci come un Esperto Docente di Scienze A050.
-    Target: {scuola_tipo}
-    Profilo: {profilo}
+    Agisci come un Esperto Docente di Scienze (A050) italiano.
+    Target: {scuola_tipo}.
+    Profilo: {profilo}.
     Usa terminologia MIUR.
     """
-
-    # =====================================================
-    # FUNZIONE AI
-    # =====================================================
 
     def run_ai(prompt):
 
@@ -398,23 +411,18 @@ with col_main:
 
         if st.button("🚀 Genera Spiegazione Adattiva"):
 
-            st.session_state.spiegazione = run_ai(
+            st.session_state.spiegazione_output = run_ai(
                 f"""
                 {prompt_normativo}
 
                 Scrivi una spiegazione completa di:
                 {argomento}
-
-                Usa metafore potenti e linguaggio adatto al profilo:
-                {profilo}
                 """
             )
 
-        if st.session_state.spiegazione:
+        if st.session_state.spiegazione_output:
 
-            st.markdown(
-                st.session_state.spiegazione
-            )
+            st.markdown(st.session_state.spiegazione_output)
 
     # =====================================================
     # TAB 2
@@ -424,27 +432,18 @@ with col_main:
 
         if st.button("🎯 Genera Progettazione UDA"):
 
-            st.session_state.uda = run_ai(
+            st.session_state.uda_output = run_ai(
                 f"""
                 {prompt_normativo}
 
                 Crea una UDA completa per:
                 {argomento}
-
-                Includi:
-                - Prerequisiti
-                - Obiettivi
-                - Competenze
-                - Attività
-                - Valutazione
                 """
             )
 
-        if st.session_state.uda:
+        if st.session_state.uda_output:
 
-            st.markdown(
-                st.session_state.uda
-            )
+            st.markdown(st.session_state.uda_output)
 
     # =====================================================
     # TAB 3
@@ -454,27 +453,18 @@ with col_main:
 
         if st.button("🌍 Progetta Compito di Realtà"):
 
-            st.session_state.compito_realta = run_ai(
+            st.session_state.reality_output = run_ai(
                 f"""
                 {prompt_normativo}
 
                 Crea un Compito di Realtà per:
                 {argomento}
-
-                Includi:
-                - Scenario reale
-                - Ruoli
-                - Fasi
-                - Prodotto finale
-                - Rubrica valutativa
                 """
             )
 
-        if st.session_state.compito_realta:
+        if st.session_state.reality_output:
 
-            st.markdown(
-                st.session_state.compito_realta
-            )
+            st.markdown(st.session_state.reality_output)
 
     # =====================================================
     # TAB 4
@@ -484,26 +474,18 @@ with col_main:
 
         if st.button("🌈 Genera Piano Inclusivo"):
 
-            st.session_state.inclusione = run_ai(
+            st.session_state.inclusione_output = run_ai(
                 f"""
                 {prompt_normativo}
 
                 Crea un piano inclusivo per:
                 {argomento}
-
-                Includi:
-                - Obiettivi minimi
-                - Strumenti compensativi
-                - Misure dispensative
-                - Schema semplificato
                 """
             )
 
-        if st.session_state.inclusione:
+        if st.session_state.inclusione_output:
 
-            st.markdown(
-                st.session_state.inclusione
-            )
+            st.markdown(st.session_state.inclusione_output)
 
     # =====================================================
     # TAB 5
@@ -511,27 +493,25 @@ with col_main:
 
     with tabs[4]:
 
-        if st.button("📝 Genera Quiz e Griglia"):
+        if st.button("📝 Genera Quiz"):
 
-            st.session_state.quiz = run_ai(
+            st.session_state.quiz_output = run_ai(
                 f"""
                 {prompt_normativo}
 
                 Crea:
-                - 10 domande a risposta multipla
+                - 10 domande
                 - Soluzioni
-                - Griglia valutativa MIUR
+                - Griglia valutativa
                 """
             )
 
-        if st.session_state.quiz:
+        if st.session_state.quiz_output:
 
-            st.markdown(
-                st.session_state.quiz
-            )
+            st.markdown(st.session_state.quiz_output)
 
     # =====================================================
-    # TAB 6 INFOGRAFICA
+    # TAB INFOGRAFICA
     # =====================================================
 
     with tabs[5]:
@@ -547,18 +527,12 @@ with col_main:
                 col1, col2 = st.columns([1, 2])
 
                 with col1:
-
-                    st.image(
-                        img,
-                        use_container_width=True
-                    )
+                    st.image(img, use_container_width=True)
 
                 with col2:
 
-                    st.session_state.didascalie[
-                        img_file.name
-                    ] = st.text_area(
-                        f"Didascalia immagine {idx+1}",
+                    st.session_state.didascalie[img_file.name] = st.text_area(
+                        f"Didascalia {idx+1}",
                         value=st.session_state.didascalie.get(
                             img_file.name,
                             ""
@@ -567,13 +541,9 @@ with col_main:
                         height=150
                     )
 
-                st.markdown("---")
-
         else:
 
-            st.info(
-                "Carica immagini nella sidebar."
-            )
+            st.info("Carica immagini nella sidebar.")
 
     # =====================================================
     # TAB EXPORT
@@ -587,27 +557,24 @@ with col_main:
 
             html_content = f"""
             <html>
-            <head>
-                <title>{argomento}</title>
-            </head>
             <body style='font-family:Arial;padding:40px;'>
 
-                <h1>{argomento}</h1>
+            <h1>{argomento}</h1>
 
-                <h2>Spiegazione</h2>
-                {st.session_state.spiegazione}
+            <h2>Spiegazione</h2>
+            {st.session_state.spiegazione_output}
 
-                <h2>UDA</h2>
-                {st.session_state.uda}
+            <h2>UDA</h2>
+            {st.session_state.uda_output}
 
-                <h2>Compito di Realtà</h2>
-                {st.session_state.compito_realta}
+            <h2>Compito di Realtà</h2>
+            {st.session_state.reality_output}
 
-                <h2>Inclusione</h2>
-                {st.session_state.inclusione}
+            <h2>Inclusione</h2>
+            {st.session_state.inclusione_output}
 
-                <h2>Quiz</h2>
-                {st.session_state.quiz}
+            <h2>Quiz</h2>
+            {st.session_state.quiz_output}
 
             </body>
             </html>
