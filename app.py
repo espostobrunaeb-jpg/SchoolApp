@@ -13,12 +13,11 @@ if "tema_scelto" not in st.session_state: st.session_state.tema_scelto = "Modali
 
 # --- BARRA LATERALE: REGIA DOCENTE ---
 st.sidebar.markdown("## ⚙️ REGIA DOCENTE (A050)")
-tema = st.sidebar.selectbox("🎨 Tema:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
+tema = st.sidebar.selectbox("🎨 Tema Visivo:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
 st.session_state.tema_scelto = tema
 
 api_key = st.sidebar.text_input("Gemini API Key:", type="password")
 
-# GUIDA PER L'API KEY
 with st.sidebar.expander("🔑 Come ottenere una API Key gratuita"):
     st.markdown("""
     1. Vai su [Google AI Studio](https://aistudio.google.com/).
@@ -43,19 +42,68 @@ profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS (Fix Tendine, Tooltip e Layout) ---
-css_style = """
-<style>
-    .stApp { background-color: """ + ("#0f0f0f" if "Scura" in st.session_state.tema_scelto else "#f8f9fa") + """ !important; color: """ + ("#ffffff" if "Scura" in st.session_state.tema_scelto else "#212529") + """ !important; }
-    div[data-testid="stColumn"] { background-color: """ + ("#161616" if "Scura" in st.session_state.tema_scelto else "#ffffff") + """ !important; border-radius: 12px; padding: 20px; border: 1px solid #2d2d2d; }
-    button[data-baseweb="tab"] { font-size: 14px !important; font-weight: 600 !important; }
-    div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #1f1f1f !important; color: #ffffff !important; }
-    li[role="option"]:hover { background-color: #00d4aa !important; color: #000 !important; }
-    div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333; }
-    .stButton>button { width: 100%; border-radius: 8px; font-weight: 600; }
-</style>
-"""
-st.markdown(css_style, unsafe_allow_html=True)
+# --- INIEZIONE CSS COMPLETO E CORRETTO ---
+if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
+    st.markdown("""
+        <style>
+        /* Sfondo generale */
+        .stApp, .stApp > header { background-color: #0f0f0f !important; color: #ffffff !important; }
+        
+        /* Barra laterale */
+        section[data-testid="stSidebar"] { background-color: #161616 !important; border-right: 1px solid #2d2d2d !important; }
+        section[data-testid="stSidebar"] * { color: #ffffff !important; }
+        
+        /* Colonne centrali */
+        div[data-testid="stColumn"] { background-color: #161616 !important; border-radius: 12px; padding: 20px; border: 1px solid #2d2d2d !important; }
+        h1, h2, h3 { color: #00d4aa !important; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
+        p, li, span, label { color: #e0e0e0 !important; }
+        
+        /* Pulsanti */
+        .stButton>button { background-color: #1f1f1f !important; color: #ffffff !important; border-radius: 8px; border: 1px solid #333333 !important; width: 100%; padding: 10px; font-weight: 600; }
+        .stButton>button:hover { background-color: #00d4aa !important; color: #0f0f0f !important; border-color: #00d4aa !important; }
+        
+        /* Input, Select e File Uploader */
+        input, div[data-baseweb="select"] > div { background-color: #1f1f1f !important; color: #ffffff !important; border-color: #333333 !important; }
+        div[data-testid="stFileUploader"] section { background-color: #1f1f1f !important; border: 1px dashed #444444 !important; color: #ffffff !important; }
+        
+        /* Tab Didattici (Correzione scritte scure) */
+        button[data-baseweb="tab"] { color: #8a94a6 !important; font-weight: 600 !important; font-size: 15px !important; }
+        button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
+        
+        /* Tendine (Popover) */
+        div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #1f1f1f !important; color: #ffffff !important; }
+        li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { background-color: #00d4aa !important; color: #0f0f0f !important; }
+        
+        /* Tooltip (Punto interrogativo) */
+        div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333333 !important; }
+        </style>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+        <style>
+        .stApp, .stApp > header { background-color: #f8f9fa !important; color: #212529 !important; }
+        section[data-testid="stSidebar"] { background-color: #e9ecef !important; border-right: 1px solid #dee2e6 !important; }
+        section[data-testid="stSidebar"] * { color: #212529 !important; }
+        
+        div[data-testid="stColumn"] { background-color: #ffffff !important; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6 !important; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1, h2, h3 { color: #007a60 !important; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
+        p, li, span, label { color: #212529 !important; }
+        
+        .stButton>button { background-color: #f1f3f5 !important; color: #212529 !important; border-radius: 8px; border: 1px solid #ced4da !important; width: 100%; padding: 10px; font-weight: 600; }
+        .stButton>button:hover { background-color: #007a60 !important; color: #ffffff !important; border-color: #007a60 !important; }
+        
+        input, div[data-baseweb="select"] > div { background-color: #ffffff !important; color: #212529 !important; border-color: #ced4da !important; }
+        div[data-testid="stFileUploader"] section { background-color: #ffffff !important; border: 1px dashed #ced4da !important; color: #212529 !important; }
+        
+        button[data-baseweb="tab"] { color: #64748b !important; font-weight: 600 !important; font-size: 15px !important; }
+        button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
+        
+        div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #ffffff !important; color: #212529 !important; }
+        li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { background-color: #007a60 !important; color: #ffffff !important; }
+        div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
+        </style>
+    """, unsafe_allow_html=True)
+
 
 # --- HEADER ---
 st.title("🧪 OmniScience 3D Studio Pro")
@@ -71,26 +119,17 @@ with col_regia:
     st.markdown("### 📦 CARICA MODELLO 3D")
     file_3d = st.file_uploader("Seleziona file .glb (Opzionale):", type=["glb"])
     
-    # --- NUOVA GUIDA AI FILE GLB RICHIESTA ---
     with st.expander("🔍 Guida ai file .glb e Risorse Gratuite"):
         st.write("""
-        I file **.glb** (chiamati anche gLTF binari) sono il formato standard per il 3D sul web: sono leggeri, includono già i colori e le texture, e sono perfetti per l'applicazione che abbiamo creato.
+        I file **.glb** (chiamati anche gLTF binari) sono il formato standard per il 3D sul web: leggeri, con colori e texture inclusi.
+        
+        **1. Portali 3D Gratuiti**
+        * **Sketchfab (sketchfab.com):** Cerca in inglese (es. *plant cell*). **Attiva il filtro "Downloadable"**.
+        * **NASA 3D (gdc.nasa.gov):** Modelli astronomici e geologici.
+        * **Smithsonian (3d.si.edu):** Fossili e reperti.
 
-        Ecco le migliori risorse online dove puoi scaricare gratuitamente modelli 3D scientifici pronti per le tue lezioni:
-
-        **1. Grandi Portali (Usa i filtri!)**
-        *   🪐 **Sketchfab (sketchfab.com):** Il "Google" del 3D. Cerca in inglese (es. *plant cell, volcano, molecule*). **Trucco:** attiva il filtro **"Downloadable"**.
-        *   🏛️ **NASA 3D & Smithsonian:** Modelli di pianeti, asteroidi e reperti biologici/fossili reali (3d.si.edu).
-
-        **2. Piattaforme Didattiche**
-        *   🧬 **BioDigital:** Modelli anatomici umani.
-        *   Invisible Exhibition: Molecole e virus.
-
-        **3. Creare GLB con l'I.A.**
-        Se non trovi quello che cerchi, usa **Tripo3D (tripo3d.ai)**:
-        1. Registrati gratis e vai su **Text-to-3D**.
-        2. Scrivi cosa desideri in inglese.
-        3. Scarica il risultato in formato **GLB** in 60 secondi.
+        **2. Generare 3D con l'I.A.**
+        Usa **Tripo3D (tripo3d.ai)**: Registrati gratis, vai su *Text-to-3D*, scrivi cosa ti serve in inglese (es. *3D model of methane molecule CH4*) e scarica il file GLB.
         """)
     
     st.markdown("---")
@@ -105,7 +144,8 @@ with col_main:
         data_url = f"data:model/gltf-binary;base64,{base64.b64encode(file_3d.getvalue()).decode()}"
     
     bg_v = "#111111" if "Scura" in st.session_state.tema_scelto else "#ffffff"
-    html_3d = f'<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script><model-viewer src="{data_url}" camera-controls auto-rotate style="width: 100%; height: 450px; background-color: {bg_v}; border-radius: 12px;"></model-viewer>'
+    border_v = "#333333" if "Scura" in st.session_state.tema_scelto else "#ced4da"
+    html_3d = f'<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script><model-viewer src="{data_url}" camera-controls auto-rotate style="width: 100%; height: 450px; background-color: {bg_v}; border: 1px solid {border_v}; border-radius: 12px;"></model-viewer>'
     components.html(html_3d, height=460)
 
     # 2. CHAT INTERATTIVA
@@ -121,7 +161,7 @@ with col_main:
 
     st.markdown("---")
     
-    # 3. DASHBOARD DIDATTICA (Tab Professionali MIUR)
+    # 3. DASHBOARD DIDATTICA
     st.markdown(f"## 📚 PROGETTAZIONE E METODOLOGIA")
     tabs = st.tabs(["✨ Spiegazione", "🎯 Progettazione UDA", "🌍 Compito di Realtà", "🌈 Inclusione (PDP/PEI)", "📝 SuperQuiz 10", "📊 Valutazione", "📸 Visione AI", "💾 Esporta"])
     
