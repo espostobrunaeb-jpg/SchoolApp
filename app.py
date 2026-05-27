@@ -13,7 +13,7 @@ if "tema_scelto" not in st.session_state: st.session_state.tema_scelto = "Modali
 
 # --- BARRA LATERALE: REGIA DOCENTE ---
 st.sidebar.markdown("## ⚙️ REGIA DOCENTE (A050)")
-tema = st.sidebar.selectbox("🎨 Tema:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
+tema = st.sidebar.selectbox("🎨 Tema Visivo:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
 st.session_state.tema_scelto = tema
 
 api_key = st.sidebar.text_input("Gemini API Key:", type="password")
@@ -76,9 +76,13 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #1f1f1f !important; color: #ffffff !important; }
         li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { background-color: #00d4aa !important; color: #0f0f0f !important; }
 
-        /* FILE UPLOADER (Carica file .glb / Immagini) */
+        /* FILE UPLOADER (Box tratteggiato) */
         div[data-testid="stFileUploader"] section, div[data-testid="stFileUploaderDropzone"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px dashed #444 !important; }
         div[data-testid="stFileUploader"] span, div[data-testid="stFileUploader"] small, div[data-testid="stFileUploader"] label { color: #ffffff !important; }
+        
+        /* PULSANTE 'BROWSE FILES' INTERNO AL CARICATORE */
+        div[data-testid="stFileUploader"] button { background-color: #333333 !important; color: #ffffff !important; border: 1px solid #444444 !important; border-radius: 6px; font-weight: 500; }
+        div[data-testid="stFileUploader"] button:hover { background-color: #00d4aa !important; color: #0f0f0f !important; border-color: #00d4aa !important; }
 
         /* EXPANDER (Menu a scomparsa) */
         div[data-testid="stExpander"] details { background-color: #1f1f1f !important; border: 1px solid #333 !important; border-radius: 8px; }
@@ -93,7 +97,7 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         div[data-testid="stChatMessage"] { background-color: transparent !important; color: #ffffff !important; }
         div[data-testid="stChatMessage"] * { color: #ffffff !important; }
 
-        /* BOTTONI */
+        /* BOTTONI NORMALI */
         .stButton>button { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; border-radius: 8px; font-weight: 600; width: 100%; }
         .stButton>button:hover { background-color: #00d4aa !important; color: #0f0f0f !important; border-color: #00d4aa !important; }
 
@@ -125,6 +129,10 @@ else:
         
         div[data-testid="stFileUploader"] section, div[data-testid="stFileUploaderDropzone"] { background-color: #ffffff !important; color: #212529 !important; border: 1px dashed #ced4da !important; }
         div[data-testid="stFileUploader"] span, div[data-testid="stFileUploader"] small, div[data-testid="stFileUploader"] label { color: #212529 !important; }
+        
+        /* PULSANTE 'BROWSE FILES' INTERNO AL CARICATORE IN LIGHT MODE */
+        div[data-testid="stFileUploader"] button { background-color: #e9ecef !important; color: #212529 !important; border: 1px solid #ced4da !important; border-radius: 6px; font-weight: 500; }
+        div[data-testid="stFileUploader"] button:hover { background-color: #007a60 !important; color: #ffffff !important; border-color: #007a60 !important; }
         
         div[data-testid="stExpander"] details { background-color: #ffffff !important; border: 1px solid #ced4da !important; border-radius: 8px; }
         div[data-testid="stExpander"] summary { background-color: #ffffff !important; color: #007a60 !important; }
