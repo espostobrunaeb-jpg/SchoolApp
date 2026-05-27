@@ -18,6 +18,14 @@ st.session_state.tema_scelto = tema
 
 api_key = st.sidebar.text_input("Gemini API Key:", type="password")
 
+# NUOVA SCELTA DEL MODELLO
+modello_gemini = st.sidebar.selectbox("🤖 Modello AI:", [
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro"
+], index=0, help="Scegli la potenza dell'IA. 'Flash' è velocissimo, 'Pro' è più profondo nei ragionamenti complessi.")
+
 # GUIDA PER L'API KEY
 with st.sidebar.expander("🔑 Come ottenere una API Key gratuita"):
     st.markdown("""
@@ -167,7 +175,8 @@ with col_main:
             st.session_state.chat_history.append({"role": "user", "content": prompt_chat})
             if api_key:
                 client = genai.Client(api_key=api_key)
-                resp = client.models.generate_content(model='gemini-2.5-flash', contents=f"Rispondi in prima persona come '{argomento}' parlando a un alunno di {scuola_tipo} (Profilo {profilo}). Domanda: {prompt_chat}")
+                # Qui usiamo il modello scelto dall'utente!
+                resp = client.models.generate_content(model=modello_gemini, contents=f"Rispondi in prima persona come '{argomento}' parlando a un alunno di {scuola_tipo} (Profilo {profilo}). Domanda: {prompt_chat}")
                 st.session_state.chat_history.append({"role": "assistant", "content": resp.text})
                 st.rerun()
 
@@ -183,7 +192,8 @@ with col_main:
         if not api_key: return "⚠️ Inserisci API Key nella barra laterale."
         try:
             client = genai.Client(api_key=api_key)
-            return client.models.generate_content(model='gemini-2.5-flash', contents=p).text
+            # Qui usiamo il modello scelto dall'utente!
+            return client.models.generate_content(model=modello_gemini, contents=p).text
         except Exception as e: return f"❌ Errore tecnico: {e}"
 
     with tabs[0]:
@@ -224,14 +234,12 @@ with col_main:
         st.markdown("### 💾 Esporta Lezione Interattiva (Smart Offline)")
         if st.button("📦 Scarica File HTML"):
             
-            # 1. Prepara il Fallback Visivo (Offline)
             fallback_html = "<div style='padding: 50px; background: #e9ecef; color: #666; text-align: center; border-radius: 12px; border: 2px dashed #ccc; font-size: 1.2em;'>⚠️ Sei offline. Collegati a Internet per visualizzare il modello 3D interattivo.</div>"
             if img_copertina:
                 img_copertina.seek(0)
                 b64_cover = base64.b64encode(img_copertina.read()).decode()
                 fallback_html = f"<img src='data:image/png;base64,{b64_cover}' style='width: 100%; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>"
 
-            # 2. Prepara la Galleria Immagini
             html_images = ""
             if immagini_lezione:
                 html_images += "<h2 style='color:#007a60; border-bottom:2px solid #00d4aa; padding-bottom:10px; margin-top: 50px;'>🖼️ Galleria Scientifica</h2>"
@@ -248,7 +256,6 @@ with col_main:
                     </div>
                     """
             
-            # 3. Assemblaggio HTML senza f-string per evitare errori di sintassi CSS/JS
             template_html = """
             <html>
             <head>
@@ -298,7 +305,6 @@ with col_main:
             </html>
             """
             
-            # Sostituzione sicura dei dati
             lezione_html = template_html.replace("__ARGOMENTO__", argomento)
             lezione_html = lezione_html.replace("__SCUOLA_TIPO__", scuola_tipo)
             lezione_html = lezione_html.replace("__PROFILO__", profilo)
