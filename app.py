@@ -12,7 +12,7 @@ if "chat_history" not in st.session_state: st.session_state.chat_history = []
 if "tema_scelto" not in st.session_state: st.session_state.tema_scelto = "Modalità Scura (Consigliata)"
 
 # --- BARRA LATERALE: REGIA DOCENTE ---
-st.sidebar.markdown("## ⚙️ REGIA DOCENTE")
+st.sidebar.markdown("## ⚙️ REGIA DOCENTE (A050)")
 tema = st.sidebar.selectbox("🎨 Tema Visivo:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
 st.session_state.tema_scelto = tema
 
@@ -44,70 +44,44 @@ scuola_tipo = st.sidebar.selectbox("Indirizzo di Studi:", [
 ], index=3)
 
 profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
-    "Standard (Nessun PDP/PEI)", 
+    "Classe Standard (Nessun PDP/PEI)", 
     "DSA (Legge 170/2010 - PDP)", 
     "BES (Dir. Min. 2012 - PDP)", 
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS BLINDATA (Dark Mode & Light Mode assoluti) ---
+# --- INIEZIONE CSS BLINDATA ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
-        /* Sfondo principale e Top Header */
         .stApp, header[data-testid="stHeader"] { background-color: #0f0f0f !important; color: #ffffff !important; }
-        
-        /* Barra Laterale Completa */
         section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div { background-color: #161616 !important; border-right: 1px solid #2d2d2d !important; }
         section[data-testid="stSidebar"] * { color: #ffffff !important; }
-
-        /* Colonne centrali (i box grigio scuro) */
         div[data-testid="stColumn"] { background-color: #161616 !important; border-radius: 12px; padding: 20px; border: 1px solid #2d2d2d !important; }
         div[data-testid="stColumn"] p, div[data-testid="stColumn"] span, div[data-testid="stColumn"] label { color: #ffffff !important; }
-
-        /* Titolazioni colorate */
         h1, h2, h3 { color: #00d4aa !important; font-weight: 600; }
-
-        /* Input generici, Selectbox, Password */
-        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div { background-color: #1f1f1f !important; border-color: #333333 !important; color: #ffffff !important; }
-        input { color: #ffffff !important; background-color: transparent !important; }
-
-        /* MENU A TENDINA (Popover) */
+        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div, div[data-baseweb="textarea"] > div { background-color: #1f1f1f !important; border-color: #333333 !important; color: #ffffff !important; }
+        input, textarea { color: #ffffff !important; background-color: transparent !important; }
         div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #1f1f1f !important; color: #ffffff !important; }
         li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { background-color: #00d4aa !important; color: #0f0f0f !important; }
-
-        /* FILE UPLOADER (Box tratteggiato) */
         div[data-testid="stFileUploader"] section, div[data-testid="stFileUploaderDropzone"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px dashed #444 !important; }
         div[data-testid="stFileUploader"] span, div[data-testid="stFileUploader"] small, div[data-testid="stFileUploader"] label { color: #ffffff !important; }
-        
-        /* PULSANTE 'BROWSE FILES' INTERNO AL CARICATORE */
         div[data-testid="stFileUploader"] button { background-color: #333333 !important; color: #ffffff !important; border: 1px solid #444444 !important; border-radius: 6px; font-weight: 500; }
         div[data-testid="stFileUploader"] button:hover { background-color: #00d4aa !important; color: #0f0f0f !important; border-color: #00d4aa !important; }
-
-        /* EXPANDER (Menu a scomparsa) */
         div[data-testid="stExpander"] details { background-color: #1f1f1f !important; border: 1px solid #333 !important; border-radius: 8px; }
         div[data-testid="stExpander"] summary { background-color: #1f1f1f !important; color: #00d4aa !important; }
         div[data-testid="stExpander"] summary:hover { color: #ffffff !important; }
         div[data-testid="stExpander"] div { color: #e0e0e0 !important; }
-
-        /* CHAT INPUT E MESSAGGI */
         div[data-testid="stChatInput"] { background-color: transparent !important; }
         div[data-testid="stChatInput"] > div { background-color: #1f1f1f !important; border: 1px solid #333 !important; }
         div[data-testid="stChatInput"] textarea, div[data-testid="stChatInput"] input { color: #ffffff !important; background-color: transparent !important; }
         div[data-testid="stChatMessage"] { background-color: transparent !important; color: #ffffff !important; }
         div[data-testid="stChatMessage"] * { color: #ffffff !important; }
-
-        /* BOTTONI NORMALI */
         .stButton>button { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; border-radius: 8px; font-weight: 600; width: 100%; }
         .stButton>button:hover { background-color: #00d4aa !important; color: #0f0f0f !important; border-color: #00d4aa !important; }
-
-        /* TABS */
         button[data-baseweb="tab"] { color: #8a94a6 !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
-
-        /* TOOLTIP E INFO BOX */
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
-        div[data-testid="stNotification"] p { color: #0f172a !important; font-weight: 500; }
         </style>
     """, unsafe_allow_html=True)
 else:
@@ -116,41 +90,30 @@ else:
         .stApp, header[data-testid="stHeader"] { background-color: #f8f9fa !important; color: #212529 !important; }
         section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div { background-color: #e9ecef !important; border-right: 1px solid #dee2e6 !important; }
         section[data-testid="stSidebar"] * { color: #212529 !important; }
-        
         div[data-testid="stColumn"] { background-color: #ffffff !important; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6 !important; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         div[data-testid="stColumn"] p, div[data-testid="stColumn"] span, div[data-testid="stColumn"] label { color: #212529 !important; }
         h1, h2, h3 { color: #007a60 !important; font-weight: 600; }
-        
-        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div { background-color: #ffffff !important; border-color: #ced4da !important; color: #212529 !important; }
-        input { color: #212529 !important; background-color: transparent !important; }
-        
+        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div, div[data-baseweb="textarea"] > div { background-color: #ffffff !important; border-color: #ced4da !important; color: #212529 !important; }
+        input, textarea { color: #212529 !important; background-color: transparent !important; }
         div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #ffffff !important; color: #212529 !important; }
         li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { background-color: #007a60 !important; color: #ffffff !important; }
-        
         div[data-testid="stFileUploader"] section, div[data-testid="stFileUploaderDropzone"] { background-color: #ffffff !important; color: #212529 !important; border: 1px dashed #ced4da !important; }
         div[data-testid="stFileUploader"] span, div[data-testid="stFileUploader"] small, div[data-testid="stFileUploader"] label { color: #212529 !important; }
-        
-        /* PULSANTE 'BROWSE FILES' INTERNO AL CARICATORE IN LIGHT MODE */
         div[data-testid="stFileUploader"] button { background-color: #e9ecef !important; color: #212529 !important; border: 1px solid #ced4da !important; border-radius: 6px; font-weight: 500; }
         div[data-testid="stFileUploader"] button:hover { background-color: #007a60 !important; color: #ffffff !important; border-color: #007a60 !important; }
-        
         div[data-testid="stExpander"] details { background-color: #ffffff !important; border: 1px solid #ced4da !important; border-radius: 8px; }
         div[data-testid="stExpander"] summary { background-color: #ffffff !important; color: #007a60 !important; }
         div[data-testid="stExpander"] summary:hover { color: #212529 !important; }
         div[data-testid="stExpander"] div { color: #212529 !important; }
-        
         div[data-testid="stChatInput"] { background-color: transparent !important; }
         div[data-testid="stChatInput"] > div { background-color: #ffffff !important; border: 1px solid #ced4da !important; }
         div[data-testid="stChatInput"] textarea, div[data-testid="stChatInput"] input { color: #212529 !important; background-color: transparent !important; }
         div[data-testid="stChatMessage"] { background-color: transparent !important; color: #212529 !important; }
         div[data-testid="stChatMessage"] * { color: #212529 !important; }
-        
         .stButton>button { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; border-radius: 8px; font-weight: 600; width: 100%; }
         .stButton>button:hover { background-color: #007a60 !important; color: #ffffff !important; border-color: #007a60 !important; }
-        
         button[data-baseweb="tab"] { color: #64748b !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
-        
         div[data-testid="stTooltipContent"] { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
         </style>
     """, unsafe_allow_html=True)
@@ -158,7 +121,7 @@ else:
 
 # --- HEADER ---
 st.title("🧪 OmniScience 3D Studio Pro")
-st.caption(f"🔬 *Laboratorio e Progettazione Didattica | ESPOSTO BRUNA Classe A050*")
+st.caption(f"🔬 *Laboratorio e Progettazione Didattica MIUR | Classe A050*")
 
 col_regia, col_main = st.columns([0.27, 0.73], gap="large")
 
@@ -170,26 +133,19 @@ with col_regia:
     st.markdown("### 📦 CARICA MODELLO 3D")
     file_3d = st.file_uploader("Seleziona file .glb (Opzionale):", type=["glb"])
     
-    # GUIDA AI FILE GLB
     with st.expander("🔍 Guida ai file .glb e Risorse Gratuite"):
         st.write("""
-        I file **.glb** (chiamati anche gLTF binari) sono il formato standard per il 3D sul web: sono leggeri, includono già i colori e le texture.
-
-        Ecco le migliori risorse online:
-        * 🪐 **Sketchfab (sketchfab.com):** Cerca in inglese. **Trucco:** attiva il filtro **"Downloadable"**.
-        * 🏛️ **NASA 3D & Smithsonian:** Modelli astronomici e fossili (3d.si.edu).
-        * 🧬 **BioDigital:** Modelli anatomici.
-
-        **Creare GLB con l'I.A.**
-        Usa **Tripo3D (tripo3d.ai)**:
-        1. Vai su **Text-to-3D**.
-        2. Scrivi cosa desideri in inglese.
-        3. Scarica in formato **GLB**.
+        I file **.glb** (chiamati anche gLTF binari) sono il formato standard per il 3D sul web.
+        * 🪐 **Sketchfab:** Cerca in inglese. Filtro **"Downloadable"**.
+        * 🏛️ **NASA 3D & Smithsonian:** (3d.si.edu).
+        * 🤖 **Tripo3D (tripo3d.ai):** Genera modelli 3D con intelligenza artificiale testuale.
         """)
     
     st.markdown("---")
-    st.markdown("### 👁️ LABORATORIO VISIONE")
-    img_alunno = st.file_uploader("Carica schema/disegno alunno:", type=["jpg", "png", "jpeg"])
+    # NUOVA SEZIONE GALLERIA MULTIPLA
+    st.markdown("### 🖼️ GALLERIA IMMAGINI")
+    st.caption("Carica immagini per l'infografica finale.")
+    immagini_lezione = st.file_uploader("Puoi selezionare più file:", type=["jpg", "png", "jpeg"], accept_multiple_files=True)
 
 with col_main:
     # 1. VIEWPORT 3D
@@ -210,15 +166,15 @@ with col_main:
             st.session_state.chat_history.append({"role": "user", "content": prompt_chat})
             if api_key:
                 client = genai.Client(api_key=api_key)
-                resp = client.models.generate_content(model='gemini-2.5-flash', contents=f"Rispondi come se fossi in prima persona '{argomento}' parlando a un alunno di {scuola_tipo} (Profilo {profilo}). Sii chiaro, empatico e scientificamente preciso. Domanda: {prompt_chat}")
+                resp = client.models.generate_content(model='gemini-2.5-flash', contents=f"Rispondi in prima persona come '{argomento}' parlando a un alunno di {scuola_tipo} (Profilo {profilo}). Domanda: {prompt_chat}")
                 st.session_state.chat_history.append({"role": "assistant", "content": resp.text})
                 st.rerun()
 
     st.markdown("---")
     
-    # 3. DASHBOARD DIDATTICA (Tab Professionali MIUR)
+    # 3. DASHBOARD DIDATTICA CON IL NUOVO TAB GALLERIA
     st.markdown(f"## 📚 PROGETTAZIONE E METODOLOGIA")
-    tabs = st.tabs(["✨ Spiegazione", "🎯 Progettazione UDA", "🌍 Compito di Realtà", "🌈 Inclusione (PDP/PEI)", "📝 SuperQuiz 10", "📊 Valutazione", "📸 Visione AI", "💾 Esporta"])
+    tabs = st.tabs(["✨ Spiegazione", "🎯 Progettazione UDA", "🌍 Compito di Realtà", "🌈 Inclusione (PDP/PEI)", "📝 SuperQuiz 10", "🖼️ Infografica", "💾 Esporta"])
     
     prompt_normativo = f"Agisci come un Esperto Docente di Scienze (A050) italiano. Target: {scuola_tipo}. Profilo: {profilo}. Usa terminologia MIUR (UDA, rubriche, competenze chiave)."
     
@@ -227,9 +183,7 @@ with col_main:
         try:
             client = genai.Client(api_key=api_key)
             return client.models.generate_content(model='gemini-2.5-flash', contents=p).text
-        except Exception as e: 
-            if "503" in str(e): return "⏳ Server occupati. Riprova tra pochi secondi!"
-            return f"❌ Errore tecnico: {e}"
+        except Exception as e: return f"❌ Errore tecnico: {e}"
 
     with tabs[0]:
         if st.button("🚀 Genera Spiegazione Adattiva"): 
@@ -248,25 +202,73 @@ with col_main:
             st.markdown(run_ai(f"{prompt_normativo} Definisci per '{argomento}': Obiettivi minimi, Strumenti compensativi, Misure dispensative e uno schema testuale semplificato."))
 
     with tabs[4]:
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("📝 Genera Quiz (10 Domande)"):
-                st.markdown(run_ai(f"{prompt_normativo} Crea un test di 10 domande a risposta multipla su '{argomento}'. Soluzioni commentate alla fine."))
-        with col2:
-            if st.button("📊 Genera Griglia Valutativa"):
-                st.markdown(run_ai(f"{prompt_normativo} Crea una rubrica valutativa MIUR a 4 livelli per '{argomento}'. Focus su: Conoscenza, Lessico e Rielaborazione."))
+        if st.button("📝 Genera Quiz (10 Domande) e Griglia"):
+            st.markdown(run_ai(f"{prompt_normativo} Crea un test di 10 domande a risposta multipla su '{argomento}' e una griglia valutativa MIUR a 4 livelli alla fine."))
 
+    # IL NUOVO TAB: INFOGRAFICA (Costruttore della Galleria)
+    didascalie = {}
     with tabs[5]:
-        if img_alunno:
-            if st.button("📸 Analizza Elaborato"):
-                client = genai.Client(api_key=api_key)
-                img = Image.open(img_alunno)
-                resp = client.models.generate_content(model='gemini-2.5-flash', contents=[f"{prompt_normativo} Analizza questo disegno/schema di un alunno su '{argomento}'. Dai feedback formativo incoraggiante.", img])
-                st.image(img, width=400)
-                st.markdown(resp.text)
-        else: st.info("💡 Carica un'immagine a sinistra per attivare l'analisi.")
+        st.markdown("### 🖼️ Costruisci l'Infografica della Lezione")
+        st.write("Aggiungi una spiegazione a ogni immagine che hai caricato nella barra sinistra. Verranno tutte impaginate assieme nel PDF/HTML finale esportato.")
+        
+        if immagini_lezione:
+            for idx, img_file in enumerate(immagini_lezione):
+                img = Image.open(img_file)
+                col_img, col_text = st.columns([1, 2], gap="large")
+                with col_img:
+                    st.image(img, use_column_width=True)
+                with col_text:
+                    didascalie[img_file.name] = st.text_area(f"Spiegazione / Didascalia per l'immagine {idx+1}:", key=f"desc_{img_file.name}", height=150)
+                st.markdown("---")
+        else:
+            st.info("💡 Carica le immagini nella barra laterale sinistra alla voce 'GALLERIA IMMAGINI' per iniziare a costruire l'infografica.")
 
+    # TAB ESPORTAZIONE: Crea un bellissimo HTML con le immagini incluse
     with tabs[6]:
-        if st.button("📦 Prepara Lezione per Download"):
-            lezione_html = f"<html><head><title>Lezione: {argomento}</title><style>body{{font-family:sans-serif; padding:40px;}} .box{{border:2px solid #00d4aa; padding:20px; border-radius:10px;}}</style></head><body><h1>{argomento}</h1><div class='box'><strong>Scuola:</strong> {scuola_tipo}<br><strong>Profilo:</strong> {profilo}</div></body></html>"
-            st.download_button("Scarica File Offline (HTML)", lezione_html, file_name=f"Lezione_{argomento.replace(' ', '_')}.html", mime="text/html")
+        st.markdown("### 💾 Esporta Infografica Offline")
+        if st.button("📦 Prepara Lezione Completa per Download"):
+            
+            # Genera il blocco HTML per le immagini
+            html_images = ""
+            if immagini_lezione:
+                html_images += "<h2 style='color:#007a60; border-bottom:2px solid #00d4aa; padding-bottom:10px;'>🖼️ Galleria Scientifica</h2>"
+                for img_file in immagini_lezione:
+                    img_file.seek(0)
+                    b64 = base64.b64encode(img_file.read()).decode()
+                    desc = didascalie.get(img_file.name, "")
+                    desc_html = desc.replace("\n", "<br>")
+                    html_images += f"""
+                    <div style='margin-bottom: 40px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background: #fafafa; text-align: center;'>
+                        <img src='data:image/png;base64,{b64}' style='max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>
+                        <div style='margin-top: 15px; font-size: 18px; color: #444; text-align: left; line-height: 1.6; padding: 15px; background: #fff; border-left: 5px solid #00d4aa; border-radius: 4px;'>
+                            {desc_html if desc_html else '<i>Nessuna didascalia fornita.</i>'}
+                        </div>
+                    </div>
+                    """
+            
+            # Assemblaggio del documento HTML finale
+            lezione_html = f"""
+            <html>
+            <head>
+                <title>Lezione: {argomento}</title>
+                <style>
+                    body {{ font-family: 'Segoe UI', sans-serif; padding: 40px; background-color: #f0f4f8; color: #333; }}
+                    .container {{ max-width: 900px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }}
+                    h1 {{ color: #007a60; text-align: center; font-size: 3em; margin-bottom: 10px; }}
+                    .info-box {{ background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 1.2em; text-align: center; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>{argomento}</h1>
+                    <div class="info-box">
+                        <strong>Target:</strong> {scuola_tipo}<br>
+                        <strong>Profilo Normativo:</strong> {profilo}
+                    </div>
+                    {html_images}
+                </div>
+            </body>
+            </html>
+            """
+            
+            st.download_button("Scarica Infografica (HTML)", lezione_html, file_name=f"Infografica_{argomento.replace(' ', '_')}.html", mime="text/html")
