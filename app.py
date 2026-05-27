@@ -2,275 +2,176 @@ import streamlit as st
 import streamlit.components.v1 as components
 from google import genai
 import base64
+from PIL import Image
+import io
 
 # 1. CONFIGURAZIONE INTERFACCIA
-st.set_page_config(page_title="OmniScience 3D Studio", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="OmniScience 3D Studio Pro", layout="wide", initial_sidebar_state="expanded")
 
-if "tema_scelto" not in st.session_state:
-    st.session_state.tema_scelto = "Modalità Scura (Consigliata)"
+if "chat_history" not in st.session_state: st.session_state.chat_history = []
+if "tema_scelto" not in st.session_state: st.session_state.tema_scelto = "Modalità Scura (Consigliata)"
 
-# --- BARRA LATERALE ---
-st.sidebar.markdown("## ⚙️ IMPOSTAZIONI")
-tema = st.sidebar.selectbox("🎨 Tema Visivo:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
+# --- BARRA LATERALE: REGIA DOCENTE ---
+st.sidebar.markdown("## ⚙️ REGIA DOCENTE (A050)")
+tema = st.sidebar.selectbox("🎨 Tema:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
 st.session_state.tema_scelto = tema
 
-api_key = st.sidebar.text_input("Gemini API Key:", type="password", help="Inserisci la chiave di Google AI Studio")
+api_key = st.sidebar.text_input("Gemini API Key:", type="password")
 
 # GUIDA PER L'API KEY
 with st.sidebar.expander("🔑 Come ottenere una API Key gratuita"):
     st.markdown("""
     1. Vai su [Google AI Studio](https://aistudio.google.com/).
     2. Fai l'accesso con il tuo **account Google**.
-    3. Clicca su **"Get API key"**.
-    4. Clicca su **"Create API key"**.
-    5. Copia la chiave e incollala qui sopra.
+    3. Clicca su **"Get API key"** -> **"Create API key"**.
+    4. Copia la chiave e incollala qui sopra.
     """)
 
-# --- INIEZIONE CSS PERSONALIZZATO (Con FIX per tendine, tooltip e dark mode) ---
-if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
-    st.markdown("""
-        <style>
-        .stApp { background-color: #0f0f0f !important; color: #ffffff !important; }
-        section[data-testid="stSidebar"] { background-color: #161616 !important; }
-        section[data-testid="stSidebar"] h2, section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span, section[data-testid="stSidebar"] label { color: #ffffff !important; }
-        div[data-testid="stColumn"] { background-color: #161616 !important; border-radius: 12px; padding: 24px; border: 1px solid #262626; }
-        h1, h2, h3 { color: #00d4aa !important; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
-        p, li, span, label { color: #e0e0e0 !important; }
-        .stButton>button { background-color: #1f1f1f !important; color: #ffffff !important; border-radius: 6px; border: 1px solid #333333 !important; width: 100%; padding: 10px; font-weight: 500; }
-        .stButton>button:hover { background-color: #00d4aa !important; color: #0f0f0f !important; border-color: #00d4aa !important; }
-        div[data-baseweb="tab-list"] { gap: 10px; }
-        button[data-baseweb="tab"] { color: #8a94a6 !important; font-weight: 600 !important; font-size: 15px !important; padding: 10px 15px !important; }
-        button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
-        div[data-baseweb="select"] > div { background-color: #1f1f1f !important; color: #ffffff !important; border-color: #333333 !important; }
-        input { background-color: #1f1f1f !important; color: #ffffff !important; }
-        
-        div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { 
-            background-color: #1f1f1f !important; color: #ffffff !important; 
-        }
-        li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { 
-            background-color: #00d4aa !important; color: #0f0f0f !important; 
-        }
-        div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div {
-            background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333333 !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-else:
-    st.markdown("""
-        <style>
-        .stApp { background-color: #f8f9fa !important; color: #212529 !important; }
-        section[data-testid="stSidebar"] { background-color: #e9ecef !important; }
-        section[data-testid="stSidebar"] h2, section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span, section[data-testid="stSidebar"] label { color: #212529 !important; }
-        div[data-testid="stColumn"] { background-color: #ffffff !important; border-radius: 12px; padding: 24px; border: 1px solid #dee2e6 !important; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h1, h2, h3 { color: #007a60 !important; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
-        p, li, span, label { color: #212529 !important; }
-        .stButton>button { background-color: #f1f3f5 !important; color: #212529 !important; border-radius: 6px; border: 1px solid #ced4da !important; width: 100%; padding: 10px; font-weight: 500; }
-        .stButton>button:hover { background-color: #007a60 !important; color: #ffffff !important; border-color: #007a60 !important; }
-        div[data-baseweb="tab-list"] { gap: 10px; }
-        button[data-baseweb="tab"] { color: #64748b !important; font-weight: 600 !important; font-size: 15px !important; padding: 10px 15px !important; }
-        button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
-        div[data-baseweb="select"] > div { background-color: #ffffff !important; color: #212529 !important; border-color: #ced4da !important; }
-        input { background-color: #ffffff !important; color: #212529 !important; }
-        
-        div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { 
-            background-color: #ffffff !important; color: #212529 !important; 
-        }
-        li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { 
-            background-color: #007a60 !important; color: #ffffff !important; 
-        }
-        div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div {
-            background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
+# --- CONTESTO NORMATIVO E ISTITUZIONALE ---
 st.sidebar.markdown("---")
-st.sidebar.info("💡 **OmniScience Studio**: Inserisci l'argomento e il target per generare una lezione inclusiva e visualizzarla in 3D.")
+st.sidebar.markdown("### 🏛️ CONTESTO ISTITUZIONALE")
+scuola_tipo = st.sidebar.selectbox("Indirizzo di Studi:", [
+    "Liceo (Scientifico/Classico/Scienze Umane)", 
+    "Istituto Tecnico (Settore Tecnologico)", 
+    "Istituto Professionale",
+    "Scuola Secondaria di I Grado"
+])
+profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
+    "Classe Standard (Nessun PDP/PEI)", 
+    "DSA (Legge 170/2010 - PDP)", 
+    "BES (Dir. Min. 2012 - PDP)", 
+    "Sostegno (Legge 104/92 - PEI)"
+])
 
-# --- INTESTAZIONE ---
-st.title("🧪 OmniScience 3D Studio")
-st.caption("🔬 *Piattaforma Multimediale e Progettazione Didattica - Classe di Concorso A050*")
-st.markdown("<br>", unsafe_allow_html=True)
+# --- INIEZIONE CSS (Fix Tendine, Tooltip e Layout) ---
+css_style = """
+<style>
+    .stApp { background-color: """ + ("#0f0f0f" if "Scura" in st.session_state.tema_scelto else "#f8f9fa") + """ !important; color: """ + ("#ffffff" if "Scura" in st.session_state.tema_scelto else "#212529") + """ !important; }
+    div[data-testid="stColumn"] { background-color: """ + ("#161616" if "Scura" in st.session_state.tema_scelto else "#ffffff") + """ !important; border-radius: 12px; padding: 20px; border: 1px solid #2d2d2d; }
+    button[data-baseweb="tab"] { font-size: 14px !important; font-weight: 600 !important; }
+    div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #1f1f1f !important; color: #ffffff !important; }
+    li[role="option"]:hover { background-color: #00d4aa !important; color: #000 !important; }
+    div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333; }
+    .stButton>button { width: 100%; border-radius: 8px; font-weight: 600; }
+</style>
+"""
+st.markdown(css_style, unsafe_allow_html=True)
 
-# --- LAYOUT A DUE COLONNE ---
-col_sinistra, col_destra = st.columns([0.25, 0.75], gap="large")
+# --- HEADER ---
+st.title("🧪 OmniScience 3D Studio Pro")
+st.caption(f"🔬 *Laboratorio e Progettazione Didattica MIUR | Classe A050*")
 
-# ==========================================
-# COLONNA DI SINISTRA: Impostazioni Lezione
-# ==========================================
-with col_sinistra:
-    st.markdown("### ✍️ IMPOSTA LEZIONE")
-    argomento = st.text_input("Argomento della lezione:", value="Membrana Cellulare")
+col_regia, col_main = st.columns([0.27, 0.73], gap="large")
+
+with col_regia:
+    st.markdown("### ✍️ LEZIONE")
+    argomento = st.text_input("Oggetto Scientifico:", value="Mitosi e Meiosi")
     
     st.markdown("---")
-    st.markdown("### 🎯 TARGET")
-    livello_scuola = st.selectbox("Grado scolastico:", ["Scuola Elementare", "Scuola Media", "Superiori (Biennio)", "Superiori (Triennio)", "Università"], index=3)
-    profilo_studente = st.selectbox("Profilo cognitivo/didattico:", ["Standard", "BES (Bisogni Educativi Speciali)", "DSA (Alta Leggibilità)"])
+    st.markdown("### 📦 CARICA MODELLO 3D")
+    file_3d = st.file_uploader("Seleziona file .glb (Opzionale):", type=["glb"])
+    
+    # --- NUOVA GUIDA AI FILE GLB RICHIESTA ---
+    with st.expander("🔍 Guida ai file .glb e Risorse Gratuite"):
+        st.write("""
+        I file **.glb** (chiamati anche gLTF binari) sono il formato standard per il 3D sul web: sono leggeri, includono già i colori e le texture, e sono perfetti per l'applicazione che abbiamo creato.
+
+        Ecco le migliori risorse online dove puoi scaricare gratuitamente modelli 3D scientifici pronti per le tue lezioni:
+
+        **1. Grandi Portali (Usa i filtri!)**
+        *   🪐 **Sketchfab (sketchfab.com):** Il "Google" del 3D. Cerca in inglese (es. *plant cell, volcano, molecule*). **Trucco:** attiva il filtro **"Downloadable"**.
+        *   🏛️ **NASA 3D & Smithsonian:** Modelli di pianeti, asteroidi e reperti biologici/fossili reali (3d.si.edu).
+
+        **2. Piattaforme Didattiche**
+        *   🧬 **BioDigital:** Modelli anatomici umani.
+        *   Invisible Exhibition: Molecole e virus.
+
+        **3. Creare GLB con l'I.A.**
+        Se non trovi quello che cerchi, usa **Tripo3D (tripo3d.ai)**:
+        1. Registrati gratis e vai su **Text-to-3D**.
+        2. Scrivi cosa desideri in inglese.
+        3. Scarica il risultato in formato **GLB** in 60 secondi.
+        """)
     
     st.markdown("---")
-    st.markdown("### 📦 MODELLO 3D")
-    file_3d = st.file_uploader("Carica file .glb (Opzionale):", type=["glb"])
+    st.markdown("### 👁️ LABORATORIO VISIONE")
+    img_alunno = st.file_uploader("Carica schema/disegno alunno:", type=["jpg", "png", "jpeg"])
 
-# ==========================================
-# COLONNA DI DESTRA: Visualizzatore 3D e Progettazione
-# ==========================================
-with col_destra:
+with col_main:
+    # 1. VIEWPORT 3D
+    st.markdown(f"## 🌐 VISUALIZZATORE: {argomento.upper()}")
+    data_url = "https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+    if file_3d:
+        data_url = f"data:model/gltf-binary;base64,{base64.b64encode(file_3d.getvalue()).decode()}"
     
-    # 1. VISUALIZZATORE 3D
-    st.markdown(f"## 🌐 ESPOSITORE: {argomento.upper()}")
-    
-    if file_3d is not None:
-        bytes_data = file_3d.getvalue()
-        base64_3d = base64.b64encode(bytes_data).decode('utf-8')
-        data_url = f"data:model/gltf-binary;base64,{base64_3d}"
-    else:
-        data_url = "https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+    bg_v = "#111111" if "Scura" in st.session_state.tema_scelto else "#ffffff"
+    html_3d = f'<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script><model-viewer src="{data_url}" camera-controls auto-rotate style="width: 100%; height: 450px; background-color: {bg_v}; border-radius: 12px;"></model-viewer>'
+    components.html(html_3d, height=460)
 
-    bg_viewer = "#111111" if st.session_state.tema_scelto == "Modalità Scura (Consigliata)" else "#ffffff"
-    border_viewer = "#333333" if st.session_state.tema_scelto == "Modalità Scura (Consigliata)" else "#ced4da"
+    # 2. CHAT INTERATTIVA
+    with st.expander("💬 Chat Interattiva con l'Oggetto (Simulazione Alunni)"):
+        for m in st.session_state.chat_history: st.chat_message(m["role"]).write(m["content"])
+        if prompt_chat := st.chat_input("Chiedi qualcosa all'oggetto scientifico..."):
+            st.session_state.chat_history.append({"role": "user", "content": prompt_chat})
+            if api_key:
+                client = genai.Client(api_key=api_key)
+                resp = client.models.generate_content(model='gemini-2.5-flash', contents=f"Rispondi come se fossi in prima persona '{argomento}' parlando a un alunno di {scuola_tipo} (Profilo {profilo}). Sii chiaro, empatico e scientificamente preciso. Domanda: {prompt_chat}")
+                st.session_state.chat_history.append({"role": "assistant", "content": resp.text})
+                st.rerun()
 
-    html_code = f"""
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    <div style="display: flex; justify-content: center;">
-        <model-viewer src="{data_url}" camera-controls auto-rotate touch-action="pan-y"
-                      style="width: 100%; height: 400px; background-color: {bg_viewer}; border-radius: 12px; border: 1px solid {border_viewer};">
-        </model-viewer>
-    </div>
-    """
-    components.html(html_code, height=410)
+    st.markdown("---")
     
-    st.markdown("<br><hr><br>", unsafe_allow_html=True)
+    # 3. DASHBOARD DIDATTICA (Tab Professionali MIUR)
+    st.markdown(f"## 📚 PROGETTAZIONE E METODOLOGIA")
+    tabs = st.tabs(["✨ Spiegazione", "🎯 Progettazione UDA", "🌍 Compito di Realtà", "🌈 Inclusione (PDP/PEI)", "📝 SuperQuiz 10", "📊 Valutazione", "📸 Visione AI", "💾 Esporta"])
     
-    # 2. SEZIONE DIDATTICA CON I 7 TAB (Spiegazione al primo posto)
-    st.markdown(f"## 📚 DIDATTICA E PROGETTAZIONE: {argomento.upper()}")
+    prompt_normativo = f"Agisci come un Esperto Docente di Scienze (A050) italiano. Target: {scuola_tipo}. Profilo: {profilo}. Usa terminologia MIUR (UDA, rubriche, competenze chiave)."
     
-    tab_spiegazione, tab_prerequisiti, tab_competenze, tab_obiettivi, tab_inclusione, tab_valutazione, tab_collegamenti = st.tabs([
-        "✨ Spiegazione Lezione",
-        "1. Prerequisiti", 
-        "2. Competenze", 
-        "3. Obiettivi", 
-        "4. Inclusione", 
-        "5. Valutazione", 
-        "6. Collegamenti"
-    ])
-    
-    # Funzione di supporto per chiamare Gemini in modo pulito e gestire gli errori
-    contesto_prompt = f"Target: studenti di {livello_scuola}, Profilo: {profilo_studente}."
-    
-    def interroga_gemini(testo_prompt):
+    def run_ai(p):
+        if not api_key: return "⚠️ Inserisci API Key nella barra laterale."
         try:
             client = genai.Client(api_key=api_key)
-            response = client.models.generate_content(model='gemini-2.5-flash', contents=testo_prompt)
-            return response.text
-        except Exception as e:
-            if "503" in str(e): 
-                return "⏳ **Attenzione:** I server di Google sono molto occupati in questo momento. Aspetta 10 secondi e riprova cliccando il bottone!"
+            return client.models.generate_content(model='gemini-2.5-flash', contents=p).text
+        except Exception as e: 
+            if "503" in str(e): return "⏳ Server occupati. Riprova tra pochi secondi!"
             return f"❌ Errore tecnico: {e}"
 
-    # =========================================================
-    # TAB 0: ✨ SPIEGAZIONE LEZIONE (Il primo che si apre)
-    # =========================================================
-    with tab_spiegazione:
-        st.markdown(f"### 📖 La Spiegazione Adattiva per la classe ({profilo_studente})")
-        st.write("Usa questo strumento per generare una spiegazione discorsiva pronta da leggere o da proiettare sulla LIM, perfettamente calibrata per i tuoi alunni.")
-        
-        if st.button("🚀 Genera Spiegazione Lezione", key="btn_spiegazione"):
-            if api_key:
-                with st.spinner("Scrittura della lezione in corso..."):
-                    prompt_spiegazione = f"""
-                    Sei una professoressa di scienze. Devi spiegare a voce l'argomento '{argomento}'.
-                    {contesto_prompt}
-                    REGOLE FONDAMENTALI DI LINGUAGGIO:
-                    - Se il profilo è "DSA": usa paragrafi brevissimi (massimo 2 frasi l'uno), abbonda con elenchi puntati e metti in grassetto SOLO le parole chiave per facilitare la scansione visiva.
-                    - Se il profilo è "BES": usa un linguaggio rassicurante, evita concetti troppo astratti e usa parole semplici e di uso comune.
-                    - Se il profilo è "Standard": usa un linguaggio scientifico rigoroso ma coinvolgente.
-                    Inizia la spiegazione con una metafora molto potente e chiara per catturare subito l'attenzione.
-                    """
-                    risultato = interroga_gemini(prompt_spiegazione)
-                    st.markdown("---")
-                    st.markdown(risultato)
-            else: 
-                st.warning("⚠️ Per favore, inserisci la Gemini API Key nella barra laterale sinistra per sbloccare questa funzione.")
+    with tabs[0]:
+        if st.button("🚀 Genera Spiegazione Adattiva"): 
+            st.markdown(run_ai(f"{prompt_normativo} Scrivi la spiegazione di '{argomento}'. Inizia con una metafora potente. Adatta linguaggio e formattazione al profilo {profilo}."))
 
-    # =========================================================
-    # TAB 1: PREREQUISITI
-    # =========================================================
-    with tab_prerequisiti:
-        st.markdown("**Conoscenze di base richieste:**")
-        st.write("- Comprensione testi informativi/narrativi.\n- Individuazione parole chiave.\n- Lessico disciplinare essenziale.\n- Collaborazione in gruppo e competenze digitali.")
-        if st.button("🔍 Genera Prerequisiti Specifici"):
-            if api_key:
-                with st.spinner("Elaborazione..."):
-                    p = f"{contesto_prompt} Elenca 3 conoscenze scientifiche specifiche che gli studenti devono avere per capire '{argomento}'."
-                    st.markdown("---")
-                    st.markdown(interroga_gemini(p))
-            else: st.warning("Inserisci la API Key a sinistra.")
+    with tabs[1]:
+        if st.button("🎯 Genera Progettazione UDA"):
+            st.markdown(run_ai(f"{prompt_normativo} Struttura l'UDA per '{argomento}': 1. Prerequisiti, 2. Obiettivi (Conoscenze/Abilità), 3. Competenze chiave europee."))
 
-    # =========================================================
-    # TAB 2: COMPETENZE ATTESE
-    # =========================================================
-    with tab_competenze:
-        st.markdown("**Competenze disciplinari e trasversali:**")
-        st.write("- Analizzare fonti e materiali multimediali.\n- Collegare l'argomento al contesto sociale/geografico.\n- Usare il lessico specifico e strumenti digitali.")
-        if st.button("🎯 Genera Focus Competenze"):
-            if api_key:
-                with st.spinner("Elaborazione..."):
-                    p = f"{contesto_prompt} Descrivi come lo studio di '{argomento}' sviluppa le competenze di analisi e sintesi scientifica."
-                    st.markdown("---")
-                    st.markdown(interroga_gemini(p))
-            else: st.warning("Inserisci la API Key a sinistra.")
+    with tabs[2]:
+        if st.button("🌍 Progetta Compito di Realtà"):
+            st.markdown(run_ai(f"{prompt_normativo} Crea un Compito di Realtà su '{argomento}'. Includi: Scenario reale, Ruolo studenti, Prodotto finale, Fasi e Criteri di valutazione."))
 
-    # =========================================================
-    # TAB 3: OBIETTIVI DI APPRENDIMENTO
-    # =========================================================
-    with tab_obiettivi:
-        st.markdown(f"**Traguardi per '{argomento}':**")
-        st.write("- Riconoscere i concetti fondamentali.\n- Analizzare elementi, cause e conseguenze.\n- Rielaborare e argomentare quanto appreso.")
-        if st.button("📊 Genera Obiettivi Operativi"):
-            if api_key:
-                with st.spinner("Elaborazione..."):
-                    p = f"{contesto_prompt} Scrivi 3 obiettivi misurabili operativi (es. 'Saper descrivere...') per la lezione su '{argomento}'."
-                    st.markdown("---")
-                    st.markdown(interroga_gemini(p))
-            else: st.warning("Inserisci la API Key a sinistra.")
+    with tabs[3]:
+        if st.button("🌈 Genera Piano Inclusivo"):
+            st.markdown(run_ai(f"{prompt_normativo} Definisci per '{argomento}': Obiettivi minimi, Strumenti compensativi, Misure dispensative e uno schema testuale semplificato."))
 
-    # =========================================================
-    # TAB 4: INCLUSIONE E PERSONALIZZAZIONE
-    # =========================================================
-    with tab_inclusione:
-        st.markdown("**Strategie Inclusive:**")
-        st.write("- Consegne scandite, mappe concettuali e parole chiave.\n- Testi ad alta leggibilità e strumenti compensativi.\n- Valutazione centrata sul percorso.")
-        if st.button("🌈 Genera Schema Semplificato"):
-            if api_key:
-                with st.spinner("Elaborazione..."):
-                    p = f"{contesto_prompt} Crea uno schema ultra-semplificato con 5 concetti chiave su '{argomento}' adatto a studenti con difficoltà di apprendimento. Sii molto visivo."
-                    st.markdown("---")
-                    st.markdown(interroga_gemini(p))
-            else: st.warning("Inserisci la API Key a sinistra.")
+    with tabs[4]:
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("📝 Genera Quiz (10 Domande)"):
+                st.markdown(run_ai(f"{prompt_normativo} Crea un test di 10 domande a risposta multipla su '{argomento}'. Soluzioni commentate alla fine."))
+        with col2:
+            if st.button("📊 Genera Griglia Valutativa"):
+                st.markdown(run_ai(f"{prompt_normativo} Crea una rubrica valutativa MIUR a 4 livelli per '{argomento}'. Focus su: Conoscenza, Lessico e Rielaborazione."))
 
-    # =========================================================
-    # TAB 5: VALUTAZIONE
-    # =========================================================
-    with tab_valutazione:
-        st.markdown("**Criteri di Valutazione:**")
-        st.write("- Partecipazione e collaborazione.\n- Uso del lessico e capacità di collegamento.\n- Livelli: Base, Intermedio, Avanzato, Eccellente.")
-        if st.button("📝 Genera Esempio di Verifica"):
-            if api_key:
-                with st.spinner("Elaborazione..."):
-                    p = f"{contesto_prompt} Crea una prova formativa su '{argomento}' con 2 domande chiuse (multiple choice) e 1 domanda aperta di ragionamento."
-                    st.markdown("---")
-                    st.markdown(interroga_gemini(p))
-            else: st.warning("Inserisci la API Key a sinistra.")
+    with tabs[5]:
+        if img_alunno:
+            if st.button("📸 Analizza Elaborato"):
+                client = genai.Client(api_key=api_key)
+                img = Image.open(img_alunno)
+                resp = client.models.generate_content(model='gemini-2.5-flash', contents=[f"{prompt_normativo} Analizza questo disegno/schema di un alunno su '{argomento}'. Dai feedback formativo incoraggiante.", img])
+                st.image(img, width=400)
+                st.markdown(resp.text)
+        else: st.info("💡 Carica un'immagine a sinistra per attivare l'analisi.")
 
-    # =========================================================
-    # TAB 6: COLLEGAMENTI INTERDISCIPLINARI
-    # =========================================================
-    with tab_collegamenti:
-        st.write("Connessioni con Educazione Civica, Storia, Fisica o altre scienze per una visione d'insieme.")
-        if st.button("🔗 Genera Collegamenti Creativi"):
-            if api_key:
-                with st.spinner("Elaborazione..."):
-                    p = f"{contesto_prompt} Suggerisci 3 collegamenti interdisciplinari curiosi partendo da '{argomento}' per ampliare la visione della classe."
-                    st.markdown("---")
-                    st.markdown(interroga_gemini(p))
-            else: st.warning("Inserisci la API Key a sinistra.")
+    with tabs[6]:
+        if st.button("📦 Prepara Lezione per Download"):
+            lezione_html = f"<html><head><title>Lezione: {argomento}</title><style>body{{font-family:sans-serif; padding:40px;}} .box{{border:2px solid #00d4aa; padding:20px; border-radius:10px;}}</style></head><body><h1>{argomento}</h1><div class='box'><strong>Scuola:</strong> {scuola_tipo}<br><strong>Profilo:</strong> {profilo}</div></body></html>"
+            st.download_button("Scarica File Offline (HTML)", lezione_html, file_name=f"Lezione_{argomento}.html", mime="text/html")
