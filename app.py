@@ -4,11 +4,9 @@ import streamlit.components.v1 as components
 from google import genai
 import base64
 from PIL import Image
+import io
 
-# =========================================================
-# CONFIGURAZIONE PAGINA
-# =========================================================
-
+# 1. CONFIGURAZIONE INTERFACCIA
 st.set_page_config(
     page_title="OmniScience 3D Studio Pro",
     layout="wide",
@@ -19,34 +17,38 @@ st.set_page_config(
 # SESSION STATE
 # =========================================================
 
-defaults = {
-    "chat_history": [],
-    "tema_scelto": "Modalità Scura (Consigliata)",
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-    # OUTPUT AI
-    "spiegazione": "",
-    "uda": "",
-    "compito_realta": "",
-    "inclusione": "",
-    "quiz": "",
+if "tema_scelto" not in st.session_state:
+    st.session_state.tema_scelto = "Modalità Scura (Consigliata)"
 
-    # INFOGRAFICA
-    "didascalie": {}
-}
+# PERSISTENZA TAB
+if "spiegazione" not in st.session_state:
+    st.session_state.spiegazione = ""
 
-for key, value in defaults.items():
-    if key not in st.session_state:
-        st.session_state[key] = value
+if "uda" not in st.session_state:
+    st.session_state.uda = ""
 
-# =========================================================
-# SIDEBAR
-# =========================================================
+if "compito_realta" not in st.session_state:
+    st.session_state.compito_realta = ""
 
+if "inclusione" not in st.session_state:
+    st.session_state.inclusione = ""
+
+if "quiz" not in st.session_state:
+    st.session_state.quiz = ""
+
+if "didascalie" not in st.session_state:
+    st.session_state.didascalie = {}
+
+# --- BARRA LATERALE: REGIA DOCENTE ---
 st.sidebar.markdown("## ⚙️ REGIA DOCENTE")
 
 tema = st.sidebar.selectbox(
     "🎨 Tema Visivo:",
-    ["Modalità Scura (Consigliata)", "Modalità Chiara"]
+    ["Modalità Scura (Consigliata)", "Modalità Chiara"],
+    key="tema_selector"
 )
 
 st.session_state.tema_scelto = tema
@@ -56,6 +58,7 @@ api_key = st.sidebar.text_input(
     type="password"
 )
 
+# SCELTA DEL MODELLO
 modello_gemini = st.sidebar.selectbox(
     "🤖 Modello AI:",
     [
@@ -64,21 +67,20 @@ modello_gemini = st.sidebar.selectbox(
         "gemini-1.5-flash",
         "gemini-1.5-pro"
     ],
-    index=0
+    index=0,
+    help="Scegli la potenza dell'IA."
 )
 
+# GUIDA PER L'API KEY
 with st.sidebar.expander("🔑 Come ottenere una API Key gratuita"):
     st.markdown("""
-    1. Vai su https://aistudio.google.com/
-    2. Accedi con Google
+    1. Vai su Google AI Studio
+    2. Fai login con Google
     3. Clicca "Get API key"
     4. Crea una nuova API key
     """)
 
-# =========================================================
-# CONTESTO ISTITUZIONALE
-# =========================================================
-
+# --- CONTESTO NORMATIVO ---
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 🏛️ CONTESTO ISTITUZIONALE")
 
@@ -99,12 +101,12 @@ scuola_tipo = st.sidebar.selectbox(
 )
 
 profilo = st.sidebar.selectbox(
-    "Profilo Normativo:",
+    "Profilo Normativo (MIUR):",
     [
-        "Standard",
-        "DSA",
-        "BES",
-        "Sostegno"
+        "Standard (Nessun PDP/PEI)",
+        "DSA (Legge 170/2010 - PDP)",
+        "BES (Dir. Min. 2012 - PDP)",
+        "Sostegno (Legge 104/92 - PEI)"
     ]
 )
 
@@ -112,37 +114,35 @@ profilo = st.sidebar.selectbox(
 # CSS
 # =========================================================
 
-if "Scura" in st.session_state.tema_scelto:
+if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
 
     st.markdown("""
-    <style>
+        <style>
 
-    .stApp {
-        background-color: #0f0f0f;
-        color: white;
-    }
+        .stApp {
+            background-color: #0f0f0f !important;
+            color: #ffffff !important;
+        }
 
-    h1,h2,h3 {
-        color: #00d4aa !important;
-    }
+        h1, h2, h3 {
+            color: #00d4aa !important;
+        }
 
-    .stButton button {
-        background-color: #1f1f1f !important;
-        color: white !important;
-        border-radius: 10px !important;
-        border: 1px solid #333 !important;
-    }
+        .stButton>button {
+            background-color: #1f1f1f !important;
+            color: #ffffff !important;
+            border: 1px solid #333 !important;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+        }
 
-    .stButton button:hover {
-        background-color: #00d4aa !important;
-        color: black !important;
-    }
+        .stButton>button:hover {
+            background-color: #00d4aa !important;
+            color: #0f0f0f !important;
+        }
 
-    textarea, input {
-        color: white !important;
-    }
-
-    </style>
+        </style>
     """, unsafe_allow_html=True)
 
 # =========================================================
@@ -152,14 +152,10 @@ if "Scura" in st.session_state.tema_scelto:
 st.title("🧪 OmniScience 3D Studio Pro")
 
 st.caption(
-    "🔬 Laboratorio e Progettazione Didattica"
+    "🔬 Laboratorio e Progettazione Didattica | ESPOSTO BRUNA Classe A050"
 )
 
-# =========================================================
-# LAYOUT
-# =========================================================
-
-col_regia, col_main = st.columns([0.28, 0.72])
+col_regia, col_main = st.columns([0.27, 0.73], gap="large")
 
 # =========================================================
 # COLONNA SINISTRA
@@ -176,24 +172,24 @@ with col_regia:
 
     st.markdown("---")
 
-    st.markdown("### 📦 MODELLO 3D")
+    st.markdown("### 📦 CARICA MODELLO 3D")
 
     file_3d = st.file_uploader(
-        "Carica file .glb",
+        "1. Seleziona file .glb (Opzionale):",
         type=["glb"]
     )
 
     img_copertina = st.file_uploader(
-        "Copertina offline",
+        "2. Copertina Offline (Opzionale):",
         type=["jpg", "png", "jpeg"]
     )
 
     st.markdown("---")
 
-    st.markdown("### 🖼️ GALLERIA")
+    st.markdown("### 🖼️ GALLERIA IMMAGINI")
 
     immagini_lezione = st.file_uploader(
-        "Carica immagini",
+        "Puoi selezionare più file:",
         type=["jpg", "png", "jpeg"],
         accept_multiple_files=True
     )
@@ -208,7 +204,7 @@ with col_main:
     # VIEWER 3D
     # =====================================================
 
-    st.markdown(f"## 🌐 {argomento.upper()}")
+    st.markdown(f"## 🌐 VISUALIZZATORE: {argomento.upper()}")
 
     data_url_online = (
         "https://modelviewer.dev/shared-assets/models/Astronaut.glb"
@@ -219,11 +215,11 @@ with col_main:
         file_3d.seek(0)
 
         data_url_online = (
-            "data:model/gltf-binary;base64,"
-            + base64.b64encode(file_3d.read()).decode()
+            f"data:model/gltf-binary;base64,"
+            f"{base64.b64encode(file_3d.read()).decode()}"
         )
 
-    html_3d = f"""
+    html_3d = f'''
     <script type="module"
     src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
@@ -231,9 +227,12 @@ with col_main:
         src="{data_url_online}"
         camera-controls
         auto-rotate
-        style="width:100%;height:450px;background:#111;border-radius:12px;">
+        style="width: 100%;
+               height: 450px;
+               background-color: #111111;
+               border-radius: 12px;">
     </model-viewer>
-    """
+    '''
 
     components.html(html_3d, height=460)
 
@@ -241,12 +240,17 @@ with col_main:
     # CHAT
     # =====================================================
 
-    with st.expander("💬 Chat Interattiva"):
+    with st.expander("💬 Chat Interattiva con l'Oggetto"):
 
-        for msg in st.session_state.chat_history:
-            st.chat_message(msg["role"]).write(msg["content"])
+        for m in st.session_state.chat_history:
 
-        if prompt_chat := st.chat_input("Fai una domanda..."):
+            st.chat_message(m["role"]).write(
+                m["content"]
+            )
+
+        if prompt_chat := st.chat_input(
+            "Chiedi qualcosa all'oggetto scientifico..."
+        ):
 
             st.session_state.chat_history.append({
                 "role": "user",
@@ -257,13 +261,13 @@ with col_main:
 
                 client = genai.Client(api_key=api_key)
 
-                response = client.models.generate_content(
+                resp = client.models.generate_content(
                     model=modello_gemini,
                     contents=f"""
-                    Rispondi come se fossi:
-                    {argomento}
+                    Rispondi in prima persona come:
+                    '{argomento}'
 
-                    Target:
+                    parlando a uno studente di:
                     {scuola_tipo}
 
                     Profilo:
@@ -276,7 +280,7 @@ with col_main:
 
                 st.session_state.chat_history.append({
                     "role": "assistant",
-                    "content": response.text
+                    "content": resp.text
                 })
 
                 st.rerun()
@@ -284,48 +288,49 @@ with col_main:
     st.markdown("---")
 
     # =====================================================
+    # TABS
+    # =====================================================
+
+    st.markdown("## 📚 PROGETTAZIONE E METODOLOGIA")
+
+    tabs = st.tabs([
+        "✨ Spiegazione",
+        "🎯 Progettazione UDA",
+        "🌍 Compito di Realtà",
+        "🌈 Inclusione (PDP/PEI)",
+        "📝 SuperQuiz 10",
+        "🖼️ Infografica",
+        "💾 Esporta"
+    ])
+
+    prompt_normativo = f"""
+    Agisci come un Esperto Docente di Scienze (A050) italiano.
+    Target: {scuola_tipo}.
+    Profilo: {profilo}.
+    Usa terminologia MIUR.
+    """
+
+    # =====================================================
     # FUNZIONE AI
     # =====================================================
 
-    prompt_normativo = f"""
-    Agisci come docente esperto di Scienze.
-    Target: {scuola_tipo}
-    Profilo: {profilo}
-    """
-
-    def run_ai(prompt):
+    def run_ai(p):
 
         if not api_key:
-            return "⚠️ Inserisci API Key."
+            return "⚠️ Inserisci API Key nella barra laterale."
 
         try:
 
             client = genai.Client(api_key=api_key)
 
-            response = client.models.generate_content(
+            return client.models.generate_content(
                 model=modello_gemini,
-                contents=prompt
-            )
-
-            return response.text
+                contents=p
+            ).text
 
         except Exception as e:
 
-            return f"❌ Errore: {e}"
-
-    # =====================================================
-    # TABS
-    # =====================================================
-
-    tabs = st.tabs([
-        "✨ Spiegazione",
-        "🎯 UDA",
-        "🌍 Compito di Realtà",
-        "🌈 Inclusione",
-        "📝 Quiz",
-        "🖼️ Infografica",
-        "💾 Esporta"
-    ])
+            return f"❌ Errore tecnico: {e}"
 
     # =====================================================
     # TAB 1
@@ -333,18 +338,14 @@ with col_main:
 
     with tabs[0]:
 
-        if st.button(
-            "🚀 Genera Spiegazione",
-            key="btn_spiegazione"
-        ):
+        if st.button("🚀 Genera Spiegazione Adattiva"):
 
             st.session_state.spiegazione = run_ai(
-                f"""
-                {prompt_normativo}
-
-                Scrivi una spiegazione completa di:
-                {argomento}
-                """
+                f"{prompt_normativo} "
+                f"Scrivi la spiegazione di '{argomento}'. "
+                f"Inizia con una metafora potente. "
+                f"Adatta rigorosamente linguaggio e formattazione "
+                f"al profilo {profilo}."
             )
 
         if st.session_state.spiegazione:
@@ -356,18 +357,14 @@ with col_main:
 
     with tabs[1]:
 
-        if st.button(
-            "🎯 Genera UDA",
-            key="btn_uda"
-        ):
+        if st.button("🎯 Genera Progettazione UDA"):
 
             st.session_state.uda = run_ai(
-                f"""
-                {prompt_normativo}
-
-                Crea una UDA completa su:
-                {argomento}
-                """
+                f"{prompt_normativo} "
+                f"Struttura l'UDA per '{argomento}': "
+                f"1. Prerequisiti, "
+                f"2. Obiettivi (Conoscenze/Abilità), "
+                f"3. Competenze chiave europee."
             )
 
         if st.session_state.uda:
@@ -379,18 +376,15 @@ with col_main:
 
     with tabs[2]:
 
-        if st.button(
-            "🌍 Genera Compito",
-            key="btn_compito"
-        ):
+        if st.button("🌍 Progetta Compito di Realtà"):
 
             st.session_state.compito_realta = run_ai(
-                f"""
-                {prompt_normativo}
-
-                Crea un compito di realtà su:
-                {argomento}
-                """
+                f"{prompt_normativo} "
+                f"Crea un Compito di Realtà su '{argomento}'. "
+                f"Includi: Scenario reale, "
+                f"Ruolo studenti, "
+                f"Prodotto finale, "
+                f"Fasi e Criteri di valutazione."
             )
 
         if st.session_state.compito_realta:
@@ -402,18 +396,15 @@ with col_main:
 
     with tabs[3]:
 
-        if st.button(
-            "🌈 Genera Inclusione",
-            key="btn_inclusione"
-        ):
+        if st.button("🌈 Genera Piano Inclusivo"):
 
             st.session_state.inclusione = run_ai(
-                f"""
-                {prompt_normativo}
-
-                Crea strumenti inclusivi per:
-                {argomento}
-                """
+                f"{prompt_normativo} "
+                f"Definisci per '{argomento}': "
+                f"Obiettivi minimi, "
+                f"Strumenti compensativi, "
+                f"Misure dispensative "
+                f"e uno schema testuale semplificato."
             )
 
         if st.session_state.inclusione:
@@ -425,18 +416,14 @@ with col_main:
 
     with tabs[4]:
 
-        if st.button(
-            "📝 Genera Quiz",
-            key="btn_quiz"
-        ):
+        if st.button("📝 Genera Quiz (10 Domande) e Griglia"):
 
             st.session_state.quiz = run_ai(
-                f"""
-                {prompt_normativo}
-
-                Genera 10 domande quiz su:
-                {argomento}
-                """
+                f"{prompt_normativo} "
+                f"Crea un test di 10 domande "
+                f"a risposta multipla su '{argomento}' "
+                f"e una griglia valutativa MIUR "
+                f"a 4 livelli alla fine."
             )
 
         if st.session_state.quiz:
@@ -446,9 +433,11 @@ with col_main:
     # TAB 6 INFOGRAFICA
     # =====================================================
 
+    didascalie = st.session_state.didascalie
+
     with tabs[5]:
 
-        st.markdown("### 🖼️ Infografica")
+        st.markdown("### 🖼️ Costruisci l'Infografica")
 
         if immagini_lezione:
 
@@ -456,7 +445,10 @@ with col_main:
 
                 img = Image.open(img_file)
 
-                col_img, col_text = st.columns([1, 2])
+                col_img, col_text = st.columns(
+                    [1, 2],
+                    gap="large"
+                )
 
                 with col_img:
 
@@ -467,59 +459,45 @@ with col_main:
 
                 with col_text:
 
-                    key_desc = f"desc_{img_file.name}"
-
-                    valore = st.session_state.didascalie.get(
-                        img_file.name,
-                        ""
-                    )
-
-                    nuova_desc = st.text_area(
-                        f"Didascalia immagine {idx+1}",
-                        value=valore,
-                        key=key_desc,
+                    didascalie[img_file.name] = st.text_area(
+                        f"Spiegazione per immagine {idx+1}:",
+                        value=didascalie.get(
+                            img_file.name,
+                            ""
+                        ),
+                        key=f"desc_{img_file.name}",
                         height=150
                     )
-
-                    st.session_state.didascalie[
-                        img_file.name
-                    ] = nuova_desc
 
                 st.markdown("---")
 
         else:
 
             st.info(
-                "Carica immagini dalla sidebar."
+                "💡 Carica immagini nella barra laterale."
             )
 
     # =====================================================
-    # TAB 7 EXPORT
+    # TAB EXPORT
     # =====================================================
 
     with tabs[6]:
 
-        st.markdown("### 💾 Esporta Lezione")
+        st.markdown("### 💾 Esporta Lezione Interattiva")
 
-        if st.button(
-            "📦 Genera HTML",
-            key="btn_export"
-        ):
+        if st.button("📦 Scarica File HTML"):
 
             fallback_html = """
-            <div style='padding:40px;
+            <div style='padding:50px;
                         background:#e9ecef;
-                        border-radius:12px;
-                        text-align:center;'>
+                        text-align:center;
+                        border-radius:12px;'>
 
-                ⚠️ Offline: collega internet per il 3D.
+                ⚠️ Offline.
+                Collegati a Internet per il modello 3D.
 
             </div>
             """
-
-            # =================================================
-            # COPERTINA OFFLINE
-            # =================================================
 
             if img_copertina:
 
@@ -536,10 +514,6 @@ with col_main:
                            border-radius:12px;'>
                 """
 
-            # =================================================
-            # GALLERIA
-            # =================================================
-
             html_images = ""
 
             if immagini_lezione:
@@ -552,7 +526,7 @@ with col_main:
                         img_file.read()
                     ).decode()
 
-                    desc = st.session_state.didascalie.get(
+                    desc = didascalie.get(
                         img_file.name,
                         ""
                     )
@@ -562,13 +536,13 @@ with col_main:
 
                         <img
                             src='data:image/png;base64,{b64}'
-                            style='width:100%;
+                            style='max-width:100%;
                                    border-radius:12px;'>
 
-                        <div style='padding:15px;
+                        <div style='margin-top:15px;
+                                    padding:15px;
                                     background:#f5f5f5;
-                                    border-left:5px solid #00d4aa;
-                                    margin-top:10px;'>
+                                    border-left:5px solid #00d4aa;'>
 
                             {desc}
 
@@ -577,11 +551,7 @@ with col_main:
                     </div>
                     """
 
-            # =================================================
-            # HTML FINALE
-            # =================================================
-
-            html_finale = f"""
+            template_html = f"""
             <html>
 
             <head>
@@ -631,6 +601,7 @@ with col_main:
                     <p>
                         <strong>Scuola:</strong>
                         {scuola_tipo}
+
                         <br>
 
                         <strong>Profilo:</strong>
@@ -706,8 +677,8 @@ with col_main:
 
             st.download_button(
                 "⬇️ Scarica HTML",
-                html_finale,
-                file_name=f"{argomento}.html",
+                template_html,
+                file_name=f"Lezione_{argomento}.html",
                 mime="text/html"
             )
 ```
