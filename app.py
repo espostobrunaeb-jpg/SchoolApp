@@ -31,7 +31,6 @@ with st.sidebar.expander("🔑 Come ottenere una API Key gratuita"):
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 🏛️ CONTESTO ISTITUZIONALE")
 
-# MENU AGGIORNATO CON TUTTI I GRADI SCOLASTICI E BIENNIO/TRIENNIO
 scuola_tipo = st.sidebar.selectbox("Indirizzo di Studi:", [
     "Scuola Primaria (Elementari)", 
     "Scuola Secondaria I Grado (Medie)", 
@@ -51,19 +50,103 @@ profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS (Fix Tendine, Tooltip e Layout) ---
-css_style = """
-<style>
-    .stApp { background-color: """ + ("#0f0f0f" if "Scura" in st.session_state.tema_scelto else "#f8f9fa") + """ !important; color: """ + ("#ffffff" if "Scura" in st.session_state.tema_scelto else "#212529") + """ !important; }
-    div[data-testid="stColumn"] { background-color: """ + ("#161616" if "Scura" in st.session_state.tema_scelto else "#ffffff") + """ !important; border-radius: 12px; padding: 20px; border: 1px solid #2d2d2d; }
-    button[data-baseweb="tab"] { font-size: 14px !important; font-weight: 600 !important; }
-    div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #1f1f1f !important; color: #ffffff !important; }
-    li[role="option"]:hover { background-color: #00d4aa !important; color: #000 !important; }
-    div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] > div { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333; }
-    .stButton>button { width: 100%; border-radius: 8px; font-weight: 600; }
-</style>
-"""
-st.markdown(css_style, unsafe_allow_html=True)
+# --- INIEZIONE CSS BLINDATA (Dark Mode & Light Mode assoluti) ---
+if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
+    st.markdown("""
+        <style>
+        /* Sfondo principale e Top Header */
+        .stApp, header[data-testid="stHeader"] { background-color: #0f0f0f !important; color: #ffffff !important; }
+        
+        /* Barra Laterale Completa */
+        section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div { background-color: #161616 !important; border-right: 1px solid #2d2d2d !important; }
+        section[data-testid="stSidebar"] * { color: #ffffff !important; }
+
+        /* Colonne centrali (i box grigio scuro) */
+        div[data-testid="stColumn"] { background-color: #161616 !important; border-radius: 12px; padding: 20px; border: 1px solid #2d2d2d !important; }
+        div[data-testid="stColumn"] p, div[data-testid="stColumn"] span, div[data-testid="stColumn"] label { color: #ffffff !important; }
+
+        /* Titolazioni colorate */
+        h1, h2, h3 { color: #00d4aa !important; font-weight: 600; }
+
+        /* Input generici, Selectbox, Password */
+        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div { background-color: #1f1f1f !important; border-color: #333333 !important; color: #ffffff !important; }
+        input { color: #ffffff !important; background-color: transparent !important; }
+
+        /* MENU A TENDINA (Popover) */
+        div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #1f1f1f !important; color: #ffffff !important; }
+        li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { background-color: #00d4aa !important; color: #0f0f0f !important; }
+
+        /* FILE UPLOADER (Carica file .glb / Immagini) */
+        div[data-testid="stFileUploader"] section, div[data-testid="stFileUploaderDropzone"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px dashed #444 !important; }
+        div[data-testid="stFileUploader"] span, div[data-testid="stFileUploader"] small, div[data-testid="stFileUploader"] label { color: #ffffff !important; }
+
+        /* EXPANDER (Menu a scomparsa) */
+        div[data-testid="stExpander"] details { background-color: #1f1f1f !important; border: 1px solid #333 !important; border-radius: 8px; }
+        div[data-testid="stExpander"] summary { background-color: #1f1f1f !important; color: #00d4aa !important; }
+        div[data-testid="stExpander"] summary:hover { color: #ffffff !important; }
+        div[data-testid="stExpander"] div { color: #e0e0e0 !important; }
+
+        /* CHAT INPUT E MESSAGGI */
+        div[data-testid="stChatInput"] { background-color: transparent !important; }
+        div[data-testid="stChatInput"] > div { background-color: #1f1f1f !important; border: 1px solid #333 !important; }
+        div[data-testid="stChatInput"] textarea, div[data-testid="stChatInput"] input { color: #ffffff !important; background-color: transparent !important; }
+        div[data-testid="stChatMessage"] { background-color: transparent !important; color: #ffffff !important; }
+        div[data-testid="stChatMessage"] * { color: #ffffff !important; }
+
+        /* BOTTONI */
+        .stButton>button { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; border-radius: 8px; font-weight: 600; width: 100%; }
+        .stButton>button:hover { background-color: #00d4aa !important; color: #0f0f0f !important; border-color: #00d4aa !important; }
+
+        /* TABS */
+        button[data-baseweb="tab"] { color: #8a94a6 !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
+        button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
+
+        /* TOOLTIP E INFO BOX */
+        div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
+        div[data-testid="stNotification"] p { color: #0f172a !important; font-weight: 500; }
+        </style>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+        <style>
+        .stApp, header[data-testid="stHeader"] { background-color: #f8f9fa !important; color: #212529 !important; }
+        section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div { background-color: #e9ecef !important; border-right: 1px solid #dee2e6 !important; }
+        section[data-testid="stSidebar"] * { color: #212529 !important; }
+        
+        div[data-testid="stColumn"] { background-color: #ffffff !important; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6 !important; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        div[data-testid="stColumn"] p, div[data-testid="stColumn"] span, div[data-testid="stColumn"] label { color: #212529 !important; }
+        h1, h2, h3 { color: #007a60 !important; font-weight: 600; }
+        
+        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div { background-color: #ffffff !important; border-color: #ced4da !important; color: #212529 !important; }
+        input { color: #212529 !important; background-color: transparent !important; }
+        
+        div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #ffffff !important; color: #212529 !important; }
+        li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { background-color: #007a60 !important; color: #ffffff !important; }
+        
+        div[data-testid="stFileUploader"] section, div[data-testid="stFileUploaderDropzone"] { background-color: #ffffff !important; color: #212529 !important; border: 1px dashed #ced4da !important; }
+        div[data-testid="stFileUploader"] span, div[data-testid="stFileUploader"] small, div[data-testid="stFileUploader"] label { color: #212529 !important; }
+        
+        div[data-testid="stExpander"] details { background-color: #ffffff !important; border: 1px solid #ced4da !important; border-radius: 8px; }
+        div[data-testid="stExpander"] summary { background-color: #ffffff !important; color: #007a60 !important; }
+        div[data-testid="stExpander"] summary:hover { color: #212529 !important; }
+        div[data-testid="stExpander"] div { color: #212529 !important; }
+        
+        div[data-testid="stChatInput"] { background-color: transparent !important; }
+        div[data-testid="stChatInput"] > div { background-color: #ffffff !important; border: 1px solid #ced4da !important; }
+        div[data-testid="stChatInput"] textarea, div[data-testid="stChatInput"] input { color: #212529 !important; background-color: transparent !important; }
+        div[data-testid="stChatMessage"] { background-color: transparent !important; color: #212529 !important; }
+        div[data-testid="stChatMessage"] * { color: #212529 !important; }
+        
+        .stButton>button { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; border-radius: 8px; font-weight: 600; width: 100%; }
+        .stButton>button:hover { background-color: #007a60 !important; color: #ffffff !important; border-color: #007a60 !important; }
+        
+        button[data-baseweb="tab"] { color: #64748b !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
+        button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
+        
+        div[data-testid="stTooltipContent"] { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
+        </style>
+    """, unsafe_allow_html=True)
+
 
 # --- HEADER ---
 st.title("🧪 OmniScience 3D Studio Pro")
@@ -108,7 +191,8 @@ with col_main:
         data_url = f"data:model/gltf-binary;base64,{base64.b64encode(file_3d.getvalue()).decode()}"
     
     bg_v = "#111111" if "Scura" in st.session_state.tema_scelto else "#ffffff"
-    html_3d = f'<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script><model-viewer src="{data_url}" camera-controls auto-rotate style="width: 100%; height: 450px; background-color: {bg_v}; border-radius: 12px;"></model-viewer>'
+    border_v = "#333333" if "Scura" in st.session_state.tema_scelto else "#ced4da"
+    html_3d = f'<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script><model-viewer src="{data_url}" camera-controls auto-rotate style="width: 100%; height: 450px; background-color: {bg_v}; border: 1px solid {border_v}; border-radius: 12px;"></model-viewer>'
     components.html(html_3d, height=460)
 
     # 2. CHAT INTERATTIVA
