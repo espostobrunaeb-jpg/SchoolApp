@@ -10,6 +10,11 @@ st.set_page_config(page_title="OmniScience 3D Studio Pro", layout="wide", initia
 
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 if "tema_scelto" not in st.session_state: st.session_state.tema_scelto = "Modalità Scura (Consigliata)"
+if "spiegazione" not in st.session_state: st.session_state.spiegazione = ""
+if "uda" not in st.session_state: st.session_state.uda = ""
+if "realta" not in st.session_state: st.session_state.realta = ""
+if "inclusione" not in st.session_state: st.session_state.inclusione = ""
+if "quiz" not in st.session_state: st.session_state.quiz = ""
 
 # --- BARRA LATERALE: REGIA DOCENTE ---
 st.sidebar.markdown("## ⚙️ REGIA DOCENTE")
@@ -212,23 +217,33 @@ with col_main:
 
     with tabs[0]:
         if st.button("🚀 Genera Spiegazione Adattiva"): 
-            st.markdown(run_ai(f"{prompt_normativo} Scrivi la spiegazione di '{argomento}'. Inizia con una metafora potente. Adatta rigorosamente linguaggio e formattazione al profilo {profilo}."))
+            st.session_state.spiegazione = run_ai(f"{prompt_normativo} Scrivi la spiegazione di '{argomento}'. Inizia con una metafora potente. Adatta rigorosamente linguaggio e formattazione al profilo {profilo}.")
+        if st.session_state.spiegazione:
+            st.markdown(st.session_state.spiegazione)
 
     with tabs[1]:
         if st.button("🎯 Genera Progettazione UDA"):
-            st.markdown(run_ai(f"{prompt_normativo} Struttura l'UDA per '{argomento}': 1. Prerequisiti, 2. Obiettivi (Conoscenze/Abilità), 3. Competenze chiave europee."))
+            st.session_state.uda = run_ai(f"{prompt_normativo} Struttura l'UDA per '{argomento}': 1. Prerequisiti, 2. Obiettivi (Conoscenze/Abilità), 3. Competenze chiave europee.")
+        if st.session_state.uda:
+            st.markdown(st.session_state.uda)
 
     with tabs[2]:
         if st.button("🌍 Progetta Compito di Realtà"):
-            st.markdown(run_ai(f"{prompt_normativo} Crea un Compito di Realtà su '{argomento}'. Includi: Scenario reale, Ruolo studenti, Prodotto finale, Fasi e Criteri di valutazione."))
+            st.session_state.realta = run_ai(f"{prompt_normativo} Crea un Compito di Realtà su '{argomento}'. Includi: Scenario reale, Ruolo studenti, Prodotto finale, Fasi e Criteri di valutazione.")
+        if st.session_state.realta:
+            st.markdown(st.session_state.realta)
 
     with tabs[3]:
         if st.button("🌈 Genera Piano Inclusivo"):
-            st.markdown(run_ai(f"{prompt_normativo} Definisci per '{argomento}': Obiettivi minimi, Strumenti compensativi, Misure dispensative e uno schema testuale semplificato."))
+            st.session_state.inclusione = run_ai(f"{prompt_normativo} Definisci per '{argomento}': Obiettivi minimi, Strumenti compensativi, Misure dispensative e uno schema testuale semplificato.")
+        if st.session_state.inclusione:
+            st.markdown(st.session_state.inclusione)
 
     with tabs[4]:
         if st.button("📝 Genera Quiz (10 Domande) e Griglia"):
-            st.markdown(run_ai(f"{prompt_normativo} Crea un test di 10 domande a risposta multipla su '{argomento}' e una griglia valutativa MIUR a 4 livelli alla fine."))
+            st.session_state.quiz = run_ai(f"{prompt_normativo} Crea un test di 10 domande a risposta multipla su '{argomento}' e una griglia valutativa MIUR a 4 livelli alla fine.")
+        if st.session_state.quiz:
+            st.markdown(st.session_state.quiz)
 
     didascalie = {}
     with tabs[5]:
@@ -246,84 +261,198 @@ with col_main:
     # TAB ESPORTAZIONE: LOGICA SMART ONLINE/OFFLINE
     with tabs[6]:
         st.markdown("### 💾 Esporta Lezione Interattiva (Smart Offline)")
-        if st.button("📦 Scarica File HTML"):
-            
-            fallback_html = "<div style='padding: 50px; background: #e9ecef; color: #666; text-align: center; border-radius: 12px; border: 2px dashed #ccc; font-size: 1.2em;'>⚠️ Sei offline. Collegati a Internet per visualizzare il modello 3D interattivo.</div>"
-            if img_copertina:
-                img_copertina.seek(0)
-                b64_cover = base64.b64encode(img_copertina.read()).decode()
-                fallback_html = f"<img src='data:image/png;base64,{b64_cover}' style='width: 100%; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>"
+        
+        st.markdown("##### ⚙️ Seleziona i moduli da includere nell'esportazione:")
+        
+        # Gestione etichette dinamiche
+        label_spiegazione = "✨ Spiegazione" if st.session_state.spiegazione else "✨ Spiegazione (Non ancora generata)"
+        label_uda = "🎯 Progettazione UDA" if st.session_state.uda else "🎯 Progettazione UDA (Non ancora generata)"
+        label_realta = "🌍 Compito di Realtà" if st.session_state.realta else "🌍 Compito di Realtà (Non ancora generato)"
+        label_inclusione = "🌈 Inclusione (PDP/PEI)" if st.session_state.inclusione else "🌈 Inclusione (PDP/PEI) (Non ancora generata)"
+        label_quiz = "📝 SuperQuiz 10" if st.session_state.quiz else "📝 SuperQuiz 10 (Non ancora generato)"
+        label_images = "🖼️ Galleria Scientifica (Infografica)" if immagini_lezione else "🖼️ Galleria Scientifica (Nessuna immagine caricata)"
 
-            html_images = ""
-            if immagini_lezione:
-                html_images += "<h2 style='color:#007a60; border-bottom:2px solid #00d4aa; padding-bottom:10px; margin-top: 50px;'>🖼️ Galleria Scientifica</h2>"
-                for img_file in immagini_lezione:
-                    img_file.seek(0)
-                    b64 = base64.b64encode(img_file.read()).decode()
-                    desc = didascalie.get(img_file.name, "").replace("\n", "<br>")
-                    html_images += f"""
-                    <div style='margin-bottom: 40px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background: #fafafa; text-align: center;'>
-                        <img src='data:image/png;base64,{b64}' style='max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>
-                        <div style='margin-top: 15px; font-size: 18px; color: #444; text-align: left; line-height: 1.6; padding: 15px; background: #fff; border-left: 5px solid #00d4aa; border-radius: 4px;'>
-                            {desc if desc else '<i>Nessuna didascalia fornita.</i>'}
-                        </div>
-                    </div>
-                    """
-            
-            template_html = """
-            <html>
-            <head>
-                <title>Lezione: __ARGOMENTO__</title>
-                <style>
-                    body { font-family: 'Segoe UI', sans-serif; padding: 40px; background-color: #f0f4f8; color: #333; }
-                    .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-                    h1 { color: #007a60; text-align: center; font-size: 3em; margin-bottom: 10px; }
-                    .info-box { background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 1.2em; text-align: center; }
-                    #viewer-container { width: 100%; height: 500px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; }
-                    model-viewer { width: 100%; height: 100%; background-color: #111; border-radius: 12px; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <h1>__ARGOMENTO__</h1>
-                    <div class="info-box">
-                        <strong>Target:</strong> __SCUOLA_TIPO__ | <strong>Profilo:</strong> __PROFILO__
-                    </div>
-                    
-                    <div id="offline-fallback">
-                        __FALLBACK_HTML__
-                    </div>
-                    <div id="online-3d" style="display: none;">
-                        <model-viewer src="__DATA_URL_ONLINE__" camera-controls auto-rotate></model-viewer>
-                    </div>
-                    
-                    __HTML_IMAGES__
-                </div>
+        col_chk1, col_chk2 = st.columns(2)
+        with col_chk1:
+            sel_spiegazione = st.checkbox(label_spiegazione, value=bool(st.session_state.spiegazione), disabled=not st.session_state.spiegazione)
+            sel_uda = st.checkbox(label_uda, value=bool(st.session_state.uda), disabled=not st.session_state.uda)
+            sel_realta = st.checkbox(label_realta, value=bool(st.session_state.realta), disabled=not st.session_state.realta)
+        with col_chk2:
+            sel_inclusione = st.checkbox(label_inclusione, value=bool(st.session_state.inclusione), disabled=not st.session_state.inclusione)
+            sel_quiz = st.checkbox(label_quiz, value=bool(st.session_state.quiz), disabled=not st.session_state.quiz)
+            sel_images = st.checkbox(label_images, value=bool(immagini_lezione), disabled=not immagini_lezione)
 
-                <script>
-                    function checkConnection() {
-                        if (navigator.onLine) {
-                            document.getElementById('offline-fallback').style.display = 'none';
-                            document.getElementById('online-3d').style.display = 'block';
-                        } else {
-                            document.getElementById('offline-fallback').style.display = 'block';
-                            document.getElementById('online-3d').style.display = 'none';
-                        }
-                    }
-                    window.addEventListener('online', checkConnection);
-                    window.addEventListener('offline', checkConnection);
-                    checkConnection(); // Esegui subito all'avvio
-                </script>
-                <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-            </body>
-            </html>
+        st.markdown("---")
+
+        fallback_html = "<div style='padding: 50px; background: #e9ecef; color: #666; text-align: center; border-radius: 12px; border: 2px dashed #ccc; font-size: 1.2em;'>⚠️ Sei offline. Collegati a Internet per visualizzare il modello 3D interattivo.</div>"
+        if img_copertina:
+            img_copertina.seek(0)
+            b64_cover = base64.b64encode(img_copertina.read()).decode()
+            fallback_html = f"<img src='data:image/png;base64,{b64_cover}' style='width: 100%; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>"
+
+        html_sections = ""
+        
+        if sel_spiegazione and st.session_state.spiegazione:
+            html_sections += f"""
+            <div class="card">
+                <h2>✨ Spiegazione: {argomento}</h2>
+                <div class="markdown-content">{st.session_state.spiegazione}</div>
+            </div>
+            """
+        
+        if sel_uda and st.session_state.uda:
+            html_sections += f"""
+            <div class="card">
+                <h2>🎯 Progettazione UDA</h2>
+                <div class="markdown-content">{st.session_state.uda}</div>
+            </div>
             """
             
-            lezione_html = template_html.replace("__ARGOMENTO__", argomento)
-            lezione_html = lezione_html.replace("__SCUOLA_TIPO__", scuola_tipo)
-            lezione_html = lezione_html.replace("__PROFILO__", profilo)
-            lezione_html = lezione_html.replace("__FALLBACK_HTML__", fallback_html)
-            lezione_html = lezione_html.replace("__DATA_URL_ONLINE__", data_url_online)
-            lezione_html = lezione_html.replace("__HTML_IMAGES__", html_images)
+        if sel_realta and st.session_state.realta:
+            html_sections += f"""
+            <div class="card">
+                <h2>🌍 Compito di Realtà</h2>
+                <div class="markdown-content">{st.session_state.realta}</div>
+            </div>
+            """
             
-            st.download_button("Scarica Lezione Smart (HTML)", lezione_html, file_name=f"Lezione_{argomento.replace(' ', '_')}.html", mime="text/html")
+        if sel_inclusione and st.session_state.inclusione:
+            html_sections += f"""
+            <div class="card">
+                <h2>🌈 Inclusione (PDP/PEI)</h2>
+                <div class="markdown-content">{st.session_state.inclusione}</div>
+            </div>
+            """
+            
+        if sel_quiz and st.session_state.quiz:
+            html_sections += f"""
+            <div class="card">
+                <h2>📝 SuperQuiz 10</h2>
+                <div class="markdown-content">{st.session_state.quiz}</div>
+            </div>
+            """
+
+        if sel_images and immagini_lezione:
+            html_sections += "<h2 style='color:#007a60; border-bottom:2px solid #00d4aa; padding-bottom:10px; margin-top: 50px;'>🖼️ Galleria Scientifica</h2>"
+            for img_file in immagini_lezione:
+                img_file.seek(0)
+                b64 = base64.b64encode(img_file.read()).decode()
+                desc = didascalie.get(img_file.name, "").replace("\n", "<br>")
+                html_sections += f"""
+                <div style='margin-bottom: 40px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background: #fafafa; text-align: center;'>
+                    <img src='data:image/png;base64,{b64}' style='max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>
+                    <div style='margin-top: 15px; font-size: 18px; color: #444; text-align: left; line-height: 1.6; padding: 15px; background: #fff; border-left: 5px solid #00d4aa; border-radius: 4px;'>
+                        {desc if desc else '<i>Nessuna didascalia fornita.</i>'}
+                    </div>
+                </div>
+                """
+        
+        template_html = """
+        <html>
+        <head>
+            <title>Lezione: __ARGOMENTO__</title>
+            <style>
+                body { font-family: 'Segoe UI', sans-serif; padding: 40px; background-color: #f0f4f8; color: #333; }
+                .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+                h1 { color: #007a60; text-align: center; font-size: 3em; margin-bottom: 10px; }
+                .info-box { background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 1.2em; text-align: center; }
+                #viewer-container { width: 100%; height: 500px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; background-color: #111; border-radius: 12px; }
+                model-viewer { width: 100%; height: 100%; background-color: #111; border-radius: 12px; }
+                .card {
+                    background: #fdfdfd;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 12px;
+                    padding: 30px;
+                    margin-bottom: 30px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+                }
+                .card h2 {
+                    color: #007a60;
+                    border-bottom: 2px solid #eef2f5;
+                    padding-bottom: 10px;
+                    margin-top: 0;
+                }
+                .markdown-content {
+                    line-height: 1.7;
+                    font-size: 1.1em;
+                    color: #444;
+                }
+                .markdown-content p { margin-bottom: 1em; }
+                .markdown-content ul, .markdown-content ol { padding-left: 20px; margin-bottom: 1em; }
+                .markdown-content li { margin-bottom: 0.5em; }
+                .markdown-content strong { color: #111; }
+                .markdown-content code { background-color: #f1f3f5; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+                .markdown-content pre { background-color: #f1f3f5; padding: 15px; border-radius: 8px; overflow-x: auto; }
+            </style>
+            <!-- Carica Marked.js per renderizzare il Markdown a runtime -->
+            <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        </head>
+        <body>
+            <div class="container">
+                <h1>__ARGOMENTO__</h1>
+                <div class="info-box">
+                    <strong>Target:</strong> __SCUOLA_TIPO__ | <strong>Profilo:</strong> __PROFILO__
+                </div>
+                
+                <div id="viewer-container">
+                    <div id="offline-fallback" style="width: 100%; height: 100%;">
+                        __FALLBACK_HTML__
+                    </div>
+                    <div id="online-3d" style="display: none; width: 100%; height: 100%;">
+                        <model-viewer src="__DATA_URL_ONLINE__" camera-controls auto-rotate></model-viewer>
+                    </div>
+                </div>
+                
+                <div id="lesson-content">
+                    __HTML_SECTIONS__
+                </div>
+            </div>
+
+            <script>
+                function checkConnection() {
+                    if (navigator.onLine) {
+                        document.getElementById('offline-fallback').style.display = 'none';
+                        document.getElementById('online-3d').style.display = 'block';
+                    } else {
+                        document.getElementById('offline-fallback').style.display = 'block';
+                        document.getElementById('online-3d').style.display = 'none';
+                    }
+                }
+                window.addEventListener('online', checkConnection);
+                window.addEventListener('offline', checkConnection);
+                checkConnection(); // Esegui subito all'avvio
+
+                // Rende il Markdown HTML a runtime se marked è caricato, altrimenti mantiene pre-wrap per i ritorni a capo
+                if (typeof marked !== 'undefined') {
+                    document.querySelectorAll('.markdown-content').forEach(el => {
+                        el.innerHTML = marked.parse(el.textContent);
+                    });
+                } else {
+                    document.querySelectorAll('.markdown-content').forEach(el => {
+                        el.style.whiteSpace = 'pre-wrap';
+                    });
+                }
+            </script>
+            <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+        </body>
+        </html>
+        """
+        
+        lezione_html = template_html.replace("__ARGOMENTO__", argomento)
+        lezione_html = lezione_html.replace("__SCUOLA_TIPO__", scuola_tipo)
+        lezione_html = lezione_html.replace("__PROFILO__", profilo)
+        lezione_html = lezione_html.replace("__FALLBACK_HTML__", fallback_html)
+        lezione_html = lezione_html.replace("__DATA_URL_ONLINE__", data_url_online)
+        lezione_html = lezione_html.replace("__HTML_SECTIONS__", html_sections)
+        
+        # Mostra il pulsante di download se c'è almeno qualcosa di selezionato da esportare
+        abilitato_export = (sel_spiegazione or sel_uda or sel_realta or sel_inclusione or sel_quiz or sel_images)
+        if abilitato_export:
+            st.download_button(
+                "📦 Scarica Lezione Smart (HTML)", 
+                lezione_html, 
+                file_name=f"Lezione_{argomento.replace(' ', '_')}.html", 
+                mime="text/html"
+            )
+        else:
+            st.warning("⚠️ Seleziona almeno un contenuto generato o un'immagine per procedere con l'esportazione.")
