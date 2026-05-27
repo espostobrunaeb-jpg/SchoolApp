@@ -132,7 +132,6 @@ with col_regia:
     st.markdown("### 📦 CARICA MODELLO 3D")
     file_3d = st.file_uploader("1. Seleziona file .glb (Opzionale):", type=["glb"])
     
-    # NUOVO CARICATORE PER LA COPERTINA OFFLINE
     img_copertina = st.file_uploader("2. Copertina Offline (Opzionale):", type=["jpg", "png", "jpeg"], help="Immagine che verrà mostrata nell'esportazione se apri il file senza connessione internet.")
     
     with st.expander("🔍 Guida ai file .glb e Risorse Gratuite"):
@@ -249,38 +248,62 @@ with col_main:
                     </div>
                     """
             
-            # 3. Assemblaggio HTML con Script Rilevamento Rete
-            lezione_html = f"""
+            # 3. Assemblaggio HTML senza f-string per evitare errori di sintassi CSS/JS
+            template_html = """
             <html>
             <head>
-                <title>Lezione: {argomento}</title>
+                <title>Lezione: __ARGOMENTO__</title>
                 <style>
-                    body {{ font-family: 'Segoe UI', sans-serif; padding: 40px; background-color: #f0f4f8; color: #333; }}
-                    .container {{ max-width: 900px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }}
-                    h1 {{ color: #007a60; text-align: center; font-size: 3em; margin-bottom: 10px; }}
-                    .info-box {{ background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 1.2em; text-align: center; }}
-                    #viewer-container {{ width: 100%; height: 500px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; }}
-                    model-viewer {{ width: 100%; height: 100%; background-color: #111; border-radius: 12px; }}
+                    body { font-family: 'Segoe UI', sans-serif; padding: 40px; background-color: #f0f4f8; color: #333; }
+                    .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+                    h1 { color: #007a60; text-align: center; font-size: 3em; margin-bottom: 10px; }
+                    .info-box { background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 1.2em; text-align: center; }
+                    #viewer-container { width: 100%; height: 500px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; }
+                    model-viewer { width: 100%; height: 100%; background-color: #111; border-radius: 12px; }
                 </style>
             </head>
             <body>
                 <div class="container">
-                    <h1>{argomento}</h1>
+                    <h1>__ARGOMENTO__</h1>
                     <div class="info-box">
-                        <strong>Target:</strong> {scuola_tipo} | <strong>Profilo:</strong> {profilo}
+                        <strong>Target:</strong> __SCUOLA_TIPO__ | <strong>Profilo:</strong> __PROFILO__
                     </div>
                     
                     <div id="offline-fallback">
-                        {fallback_html}
+                        __FALLBACK_HTML__
                     </div>
                     <div id="online-3d" style="display: none;">
-                        <model-viewer src="{data_url_online}" camera-controls auto-rotate></model-viewer>
+                        <model-viewer src="__DATA_URL_ONLINE__" camera-controls auto-rotate></model-viewer>
                     </div>
                     
-                    {html_images}
+                    __HTML_IMAGES__
                 </div>
 
                 <script>
-                    function checkConnection() {{
-                        if (navigator.onLine) {{
-                            document.getElementById
+                    function checkConnection() {
+                        if (navigator.onLine) {
+                            document.getElementById('offline-fallback').style.display = 'none';
+                            document.getElementById('online-3d').style.display = 'block';
+                        } else {
+                            document.getElementById('offline-fallback').style.display = 'block';
+                            document.getElementById('online-3d').style.display = 'none';
+                        }
+                    }
+                    window.addEventListener('online', checkConnection);
+                    window.addEventListener('offline', checkConnection);
+                    checkConnection(); // Esegui subito all'avvio
+                </script>
+                <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+            </body>
+            </html>
+            """
+            
+            # Sostituzione sicura dei dati
+            lezione_html = template_html.replace("__ARGOMENTO__", argomento)
+            lezione_html = lezione_html.replace("__SCUOLA_TIPO__", scuola_tipo)
+            lezione_html = lezione_html.replace("__PROFILO__", profilo)
+            lezione_html = lezione_html.replace("__FALLBACK_HTML__", fallback_html)
+            lezione_html = lezione_html.replace("__DATA_URL_ONLINE__", data_url_online)
+            lezione_html = lezione_html.replace("__HTML_IMAGES__", html_images)
+            
+            st.download_button("Scarica Lezione Smart (HTML)", lezione_html, file_name=f"Lezione_{argomento.replace(' ', '_')}.html", mime="text/html")
