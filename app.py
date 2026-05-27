@@ -12,7 +12,7 @@ if "chat_history" not in st.session_state: st.session_state.chat_history = []
 if "tema_scelto" not in st.session_state: st.session_state.tema_scelto = "Modalità Scura (Consigliata)"
 
 # --- BARRA LATERALE: REGIA DOCENTE ---
-st.sidebar.markdown("## ⚙️ REGIA DOCENTE (A050)")
+st.sidebar.markdown("## ⚙️ REGIA DOCENTE")
 tema = st.sidebar.selectbox("🎨 Tema Visivo:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
 st.session_state.tema_scelto = tema
 
@@ -158,7 +158,7 @@ else:
 
 # --- HEADER ---
 st.title("🧪 OmniScience 3D Studio Pro")
-st.caption(f"🔬 *Laboratorio e Progettazione Didattica MIUR | Classe A050*")
+st.caption(f"🔬 *Laboratorio e Progettazione Didattica | ESPOSTO BRUNA Classe A050*")
 
 col_regia, col_main = st.columns([0.27, 0.73], gap="large")
 
