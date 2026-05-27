@@ -98,8 +98,28 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         div[data-testid="stChatInput"] textarea, div[data-testid="stChatInput"] input { color: #ffffff !important; background-color: transparent !important; }
         div[data-testid="stChatMessage"] { background-color: transparent !important; color: #ffffff !important; }
         div[data-testid="stChatMessage"] * { color: #ffffff !important; }
-        .stButton>button { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; border-radius: 8px; font-weight: 600; width: 100%; }
-        .stButton>button:hover { background-color: #00d4aa !important; color: #0f0f0f !important; border-color: #00d4aa !important; }
+        
+        /* FIX PULSANTE DOWNLOAD E PULSANTI GENERALI */
+        .stButton>button, .stDownloadButton>button, div[data-testid="stDownloadButton"] button, .st-key-download_btn button { 
+            background-color: #1f1f1f !important; 
+            color: #ffffff !important; 
+            border: 1px solid #333 !important; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            width: 100%; 
+        }
+        .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * {
+            color: #ffffff !important;
+        }
+        .stButton>button:hover, .stDownloadButton>button:hover, div[data-testid="stDownloadButton"] button:hover, .st-key-download_btn button:hover { 
+            background-color: #00d4aa !important; 
+            color: #0f0f0f !important; 
+            border-color: #00d4aa !important; 
+        }
+        .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * {
+            color: #0f0f0f !important;
+        }
+        
         button[data-baseweb="tab"] { color: #8a94a6 !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
@@ -139,8 +159,28 @@ else:
         div[data-testid="stChatInput"] textarea, div[data-testid="stChatInput"] input { color: #212529 !important; background-color: transparent !important; }
         div[data-testid="stChatMessage"] { background-color: transparent !important; color: #212529 !important; }
         div[data-testid="stChatMessage"] * { color: #212529 !important; }
-        .stButton>button { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; border-radius: 8px; font-weight: 600; width: 100%; }
-        .stButton>button:hover { background-color: #007a60 !important; color: #ffffff !important; border-color: #007a60 !important; }
+        
+        /* FIX PULSANTE DOWNLOAD E PULSANTI GENERALI */
+        .stButton>button, .stDownloadButton>button, div[data-testid="stDownloadButton"] button, .st-key-download_btn button { 
+            background-color: #ffffff !important; 
+            color: #212529 !important; 
+            border: 1px solid #ced4da !important; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            width: 100%; 
+        }
+        .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * {
+            color: #212529 !important;
+        }
+        .stButton>button:hover, .stDownloadButton>button:hover, div[data-testid="stDownloadButton"] button:hover, .st-key-download_btn button:hover { 
+            background-color: #007a60 !important; 
+            color: #ffffff !important; 
+            border-color: #007a60 !important; 
+        }
+        .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * {
+            color: #ffffff !important;
+        }
+        
         button[data-baseweb="tab"] { color: #64748b !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
         div[data-testid="stTooltipContent"] { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
@@ -452,7 +492,8 @@ with col_main:
                 "📦 Scarica Lezione Smart (HTML)", 
                 lezione_html, 
                 file_name=f"Lezione_{argomento.replace(' ', '_')}.html", 
-                mime="text/html"
+                mime="text/html",
+                key="download_btn"
             )
         else:
             st.warning("⚠️ Seleziona almeno un contenuto generato o un'immagine per procedere con l'esportazione.")
