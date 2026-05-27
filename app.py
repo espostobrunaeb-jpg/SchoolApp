@@ -18,7 +18,7 @@ st.session_state.tema_scelto = tema
 
 api_key = st.sidebar.text_input("Gemini API Key:", type="password")
 
-# NUOVA SCELTA DEL MODELLO
+# SCELTA DEL MODELLO
 modello_gemini = st.sidebar.selectbox("🤖 Modello AI:", [
     "gemini-2.5-flash",
     "gemini-2.5-pro",
@@ -52,24 +52,32 @@ scuola_tipo = st.sidebar.selectbox("Indirizzo di Studi:", [
 ], index=3)
 
 profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
-    "Classe Standard (Nessun PDP/PEI)", 
+    "Standard (Nessun PDP/PEI)", 
     "DSA (Legge 170/2010 - PDP)", 
     "BES (Dir. Min. 2012 - PDP)", 
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS BLINDATA ---
+# --- INIEZIONE CSS BLINDATA (Correzione Freccia + Occhiello Password) ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
         .stApp, header[data-testid="stHeader"] { background-color: #0f0f0f !important; color: #ffffff !important; }
         section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div { background-color: #161616 !important; border-right: 1px solid #2d2d2d !important; }
         section[data-testid="stSidebar"] * { color: #ffffff !important; }
+        
+        /* FIX PULSANTE APRI/CHIUDI BARRA LATERALE */
+        [data-testid="collapsedControl"], [data-testid="stSidebarCollapseButton"] { background-color: #1f1f1f !important; border-radius: 8px !important; border: 1px solid #333333 !important; }
+        [data-testid="collapsedControl"] svg, [data-testid="stSidebarCollapseButton"] svg { fill: #00d4aa !important; stroke: #00d4aa !important; color: #00d4aa !important; }
+        
         div[data-testid="stColumn"] { background-color: #161616 !important; border-radius: 12px; padding: 20px; border: 1px solid #2d2d2d !important; }
         div[data-testid="stColumn"] p, div[data-testid="stColumn"] span, div[data-testid="stColumn"] label { color: #ffffff !important; }
         h1, h2, h3 { color: #00d4aa !important; font-weight: 600; }
-        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div, div[data-baseweb="textarea"] > div { background-color: #1f1f1f !important; border-color: #333333 !important; color: #ffffff !important; }
+        
+        /* FIX INPUT E OCCHIELLO PASSWORD */
+        div[data-baseweb="input"], div[data-baseweb="input"] > div, div[data-baseweb="input"] > div > div, div[data-baseweb="select"] > div, div[data-baseweb="textarea"] > div { background-color: #1f1f1f !important; border-color: #333333 !important; color: #ffffff !important; }
         input, textarea { color: #ffffff !important; background-color: transparent !important; }
+        
         div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #1f1f1f !important; color: #ffffff !important; }
         li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { background-color: #00d4aa !important; color: #0f0f0f !important; }
         div[data-testid="stFileUploader"] section, div[data-testid="stFileUploaderDropzone"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px dashed #444 !important; }
@@ -98,11 +106,19 @@ else:
         .stApp, header[data-testid="stHeader"] { background-color: #f8f9fa !important; color: #212529 !important; }
         section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div { background-color: #e9ecef !important; border-right: 1px solid #dee2e6 !important; }
         section[data-testid="stSidebar"] * { color: #212529 !important; }
+        
+        /* FIX PULSANTE APRI/CHIUDI BARRA LATERALE */
+        [data-testid="collapsedControl"], [data-testid="stSidebarCollapseButton"] { background-color: #ffffff !important; border-radius: 8px !important; border: 1px solid #ced4da !important; }
+        [data-testid="collapsedControl"] svg, [data-testid="stSidebarCollapseButton"] svg { fill: #007a60 !important; stroke: #007a60 !important; color: #007a60 !important; }
+        
         div[data-testid="stColumn"] { background-color: #ffffff !important; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6 !important; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         div[data-testid="stColumn"] p, div[data-testid="stColumn"] span, div[data-testid="stColumn"] label { color: #212529 !important; }
         h1, h2, h3 { color: #007a60 !important; font-weight: 600; }
-        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div, div[data-baseweb="textarea"] > div { background-color: #ffffff !important; border-color: #ced4da !important; color: #212529 !important; }
+        
+        /* FIX INPUT E OCCHIELLO PASSWORD */
+        div[data-baseweb="input"], div[data-baseweb="input"] > div, div[data-baseweb="input"] > div > div, div[data-baseweb="select"] > div, div[data-baseweb="textarea"] > div { background-color: #ffffff !important; border-color: #ced4da !important; color: #212529 !important; }
         input, textarea { color: #212529 !important; background-color: transparent !important; }
+        
         div[data-baseweb="popover"] > div, ul[role="listbox"], li[role="option"] { background-color: #ffffff !important; color: #212529 !important; }
         li[role="option"]:hover, li[role="option"]:focus, li[aria-selected="true"] { background-color: #007a60 !important; color: #ffffff !important; }
         div[data-testid="stFileUploader"] section, div[data-testid="stFileUploaderDropzone"] { background-color: #ffffff !important; color: #212529 !important; border: 1px dashed #ced4da !important; }
@@ -175,7 +191,6 @@ with col_main:
             st.session_state.chat_history.append({"role": "user", "content": prompt_chat})
             if api_key:
                 client = genai.Client(api_key=api_key)
-                # Qui usiamo il modello scelto dall'utente!
                 resp = client.models.generate_content(model=modello_gemini, contents=f"Rispondi in prima persona come '{argomento}' parlando a un alunno di {scuola_tipo} (Profilo {profilo}). Domanda: {prompt_chat}")
                 st.session_state.chat_history.append({"role": "assistant", "content": resp.text})
                 st.rerun()
@@ -192,7 +207,6 @@ with col_main:
         if not api_key: return "⚠️ Inserisci API Key nella barra laterale."
         try:
             client = genai.Client(api_key=api_key)
-            # Qui usiamo il modello scelto dall'utente!
             return client.models.generate_content(model=modello_gemini, contents=p).text
         except Exception as e: return f"❌ Errore tecnico: {e}"
 
