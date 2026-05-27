@@ -1,0 +1,81 @@
+Manuale Operativo: OmniScience 3D Studio Pro
+Strumento di Didattica Integrata per la Classe A050
+
+Il software OmniScience 3D Studio Pro è un ecosistema progettato per supportare il docente di scienze nella progettazione didattica, nella visualizzazione scientifica e nella gestione inclusiva della classe (normative Legge 170/2010 e 104/92).
+
+1. Configurazione Iniziale: Ottenere la API Key
+Per utilizzare le funzioni di Intelligenza Artificiale, è necessario collegare l'applicazione a un motore di calcolo gratuito messo a disposizione da Google.
+
+Registrazione: Acceda al sito Google AI Studio con il suo account Google.
+
+Creazione Chiave:
+
+Nel menu a sinistra, clicchi su "Get API key".
+
+Selezioni "Create API key in a new project".
+
+Copie la stringa alfanumerica generata.
+
+Configurazione Software: Incolli questa stringa nel campo "Gemini API Key" situato nella Barra Laterale (Regia Docente) del programma.
+
+2. Reperire Modelli 3D (Formato .glb)
+Il formato .glb è lo standard per la visualizzazione 3D leggera sul web. Ecco dove scaricare risorse gratuite e legali:
+
+Sketchfab (sketchfab.com):
+
+Utilizzi la barra di ricerca (in inglese, es: plant cell, volcano, molecule).
+
+Fondamentale: attivi il filtro "Downloadable" per vedere solo i modelli gratuiti.
+
+Scelga il formato "gLTF" o "GLB" durante il download.
+
+Archivi Istituzionali (NASA & Smithsonian):
+
+NASA 3D Resources: Astronomia e geologia spaziale.
+
+Smithsonian 3D: Fossili e reperti biologici reali.
+
+Generazione con I.A. (Tripo3D):
+
+Se il modello non esiste, vada su tripo3d.ai.
+
+Scriva una descrizione testuale (es: 3D model of a methane molecule) e scarichi il risultato in .glb.
+
+3. Guida all'Interfaccia
+Il software è diviso in tre sezioni logiche:
+
+A. Regia Docente (Barra Laterale)
+Contesto Istituzionale: Imposti l'ordine di scuola e il profilo inclusivo (DSA, BES, Sostegno) per calibrare automaticamente la difficoltà e il linguaggio delle risposte dell'I.A.
+
+Caricamento: Carichi il modello .glb e, facoltativamente, un'immagine di copertina (utilizzata per visualizzare l'anteprima in caso di utilizzo offline).
+
+B. Visualizzatore Centrale
+Modello 3D: Può ruotare e ingrandire l'oggetto.
+
+Chat Interattiva: Può simulare un colloquio con l'oggetto (es: "Perché sei fondamentale per la fotosintesi?").
+
+C. Dashboard Didattica (I 7 Tab)
+Ogni tab esegue compiti specifici basati sulla normativa MIUR:
+
+Spiegazione: Genera lezioni adattive (metafore, linguaggio semplificato).
+
+Progettazione UDA: Prerequisiti, abilità, conoscenze e competenze chiave europee.
+
+Compito di Realtà: Scenari autentici di risoluzione problemi.
+
+Inclusione (PDP/PEI): Misure dispensative e compensative.
+
+SuperQuiz 10: Verifica a risposta multipla con soluzioni commentate.
+
+Infografica: Gestione della galleria immagini per l'esportazione.
+
+Esporta: Genera un file HTML "intelligente".
+
+4. Esportazione "Smart Offline"
+Una delle funzioni più potenti è la creazione di lezioni portabili:
+
+Carichi le immagini nel Tab Infografica e inserisca le didascalie.
+
+Clicchi sul Tab Esporta e poi su "Scarica File HTML".
+
+Come funziona: Il file scaricato contiene tutto. Se lei apre il file in classe senza internet, vedrà le immagini, le didascalie e la copertina. Se il computer è connesso a internet, il file "caricherà" automaticamente anche il modello 3D interattivo in tempo reale.
