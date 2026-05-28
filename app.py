@@ -29,7 +29,7 @@ modello_gemini = st.sidebar.selectbox("🤖 Modello AI:", [
     "gemini-2.5-pro",
     "gemini-1.5-flash",
     "gemini-1.5-pro"
-], index=0, help="Scegli la potenza dell'IA. 'Flash' è velocissimo, 'Pro' è più profondo nei ragionamenti complessi.")
+], index=0, help="Scegli la potenza dell'IA. 'Flash' è velocissimo, 'Pro' è più profondo nei ragionamenti complexes.")
 
 # GUIDA PER L'API KEY
 with st.sidebar.expander("🔑 Come ottenere una API Key gratuita"):
@@ -62,7 +62,7 @@ profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS BLINDATA (FIX CONTRASTO MANIACALE BIANCO DIALOG IN DARK MODE) ---
+# --- INIEZIONE CSS BLINDATA (CON FIX CONTRASTO DIALOG E CODE INLINE) ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
@@ -118,7 +118,7 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
         
-        /* --- ARMA SEGRETA: COMPLETA SOVRASCRITTURA DI ST.DIALOG IN DARK MODE --- */
+        /* FIX TOTAL PER IL CONTRASTO DELLA FINESTRA DIALOG (ST.DIALOG) IN MODALITÀ SCURA */
         div[role="dialog"], div[data-testid="stDialog"] { 
             background-color: #161616 !important; 
             border: 1px solid #2d2d2d !important; 
@@ -128,13 +128,11 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
             color: #00d4aa !important; 
             font-weight: 600 !important; 
         }
-        /* Forza spietatamente qualsiasi foglio di stile ereditato ad assumere il colore BIANCO candido */
         div[role="dialog"] *, div[data-testid="stDialog"] *, div[data-testid="stDialog"] .stMarkdown p, div[data-testid="stDialog"] li { 
             color: #ffffff !important; 
             opacity: 1 !important;
-            -webkit-text-fill-color: #ffffff !important; /* Disintegra i glitch di opacità dei browser */
+            -webkit-text-fill-color: #ffffff !important;
         }
-        /* Preserva l'ereditarietà cromatica corretta per i pulsanti interni alla modale */
         div[role="dialog"] button, div[data-testid="stDialog"] button, div[role="dialog"] button * { 
             color: #00d4aa !important; 
             -webkit-text-fill-color: #00d4aa !important;
@@ -142,6 +140,22 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         div[role="dialog"] button:hover, div[data-testid="stDialog"] button:hover, div[role="dialog"] button:hover * { 
             color: #0f0f0f !important; 
             -webkit-text-fill-color: #0f0f0f !important;
+        }
+        
+        /* FIX CONTRASTO PER I CODICI INLINE (Esempio `.glb`) */
+        code {
+            background-color: #2b2b2b !important;
+            color: #00d4aa !important;
+            padding: 3px 6px !important;
+            border-radius: 6px !important;
+            font-family: monospace !important;
+            font-size: 0.95em !important;
+            -webkit-text-fill-color: #00d4aa !important;
+        }
+        div[role="dialog"] code, div[data-testid="stDialog"] code {
+            background-color: #2b2b2b !important;
+            color: #00d4aa !important;
+            -webkit-text-fill-color: #00d4aa !important;
         }
 
         /* Tabelle Markdown */
@@ -209,15 +223,19 @@ else:
         div[role="dialog"] { background-color: #ffffff !important; border: 1px solid #dee2e6 !important; color: #212529 !important; border-radius: 12px !important; box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; }
         div[role="dialog"] h3, div[role="dialog"] h1, div[role="dialog"] h2 { color: #007a60 !important; }
         div[role="dialog"] p, div[role="dialog"] li, div[role="dialog"] span, div[role="dialog"] strong { color: #212529 !important; }
-
-        /* Tabelle Markdown */
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th { background-color: #e9ecef; color: #007a60; font-weight: bold; padding: 10px; border: 1px solid #dee2e6; }
-        td { padding: 10px; border: 1px solid #dee2e6; background-color: #ffffff; }
+        
+        code {
+            background-color: #f1f3f5 !important;
+            color: #007a60 !important;
+            padding: 3px 6px !important;
+            border-radius: 6px !important;
+            font-family: monospace !important;
+            font-size: 0.95em !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 
-# --- FINESTRA DIALOG POP-UP NATALIZIA CON TESTO BIANCO GARANTITO ---
+# --- FINESTRA DIALOG POP-UP GUIDA ---
 @st.dialog("🏛️ OmniScience 3D Studio - Guida Funzionale", width="large")
 def mostra_guida_dialog():
     st.markdown("""
@@ -232,7 +250,7 @@ def mostra_guida_dialog():
     if st.button("Capito, chiudi ✕", key="close_dialog_inner_btn"):
         st.rerun()
 
-# --- HEADER CON BOTTONE INFO IN STILE CARICAMENTO ---
+# --- HEADER CON BOTTONE INFO IN STILE UPLOAD ---
 col_titolo, col_info = st.columns([0.85, 0.15], vertical_alignment="center")
 with col_titolo:
     st.title("🧪 OmniScience 3D Studio Pro")
@@ -638,8 +656,9 @@ with col_main:
         lezione_html = lezione_html.replace("__DATA_URL_ONLINE__", data_url_online)
         lezione_html = lezione_html.replace("__HTML_SECTIONS__", html_sections)
         
+        # VARIABILE NATIVA INTERAMENTE UNIFORMATA (FIX CONTROL ERROR)
         abilitato_export = (sel_spiegazione or sel_uda or sel_realta or sel_inclusione or sel_quiz or sel_images)
-        if habilitato_export:
+        if abilitato_export:
             st.download_button(
                 "📦 Scarica Lezione Smart (HTML)", 
                 lezione_html, 
