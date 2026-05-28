@@ -330,55 +330,77 @@ with col_main:
             b64_cover = base64.b64encode(img_copertina.read()).decode()
             fallback_html = f"<img src='data:image/png;base64,{b64_cover}' style='width: 100%; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>"
 
-        html_sections = ""
+        # Costruzione dinamica delle tab nell'HTML esportato
+        html_tab_buttons = ""
+        html_tab_contents = ""
+        active_class_added = False
         
         if sel_spiegazione and st.session_state.spiegazione:
-            html_sections += f"""
-            <div class="card">
+            active_class = " active" if not active_class_added else ""
+            active_class_added = True
+            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-spiegazione\')">✨ Spiegazione</button>\n'
+            html_tab_contents += f"""
+            <div id="tab-spiegazione" class="tab-content{active_class}">
                 <h2>✨ Spiegazione: {argomento}</h2>
                 <div class="markdown-content">{st.session_state.spiegazione}</div>
             </div>
             """
         
         if sel_uda and st.session_state.uda:
-            html_sections += f"""
-            <div class="card">
+            active_class = " active" if not active_class_added else ""
+            active_class_added = True
+            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-uda\')">🎯 Progettazione UDA</button>\n'
+            html_tab_contents += f"""
+            <div id="tab-uda" class="tab-content{active_class}">
                 <h2>🎯 Progettazione UDA</h2>
                 <div class="markdown-content">{st.session_state.uda}</div>
             </div>
             """
             
         if sel_realta and st.session_state.realta:
-            html_sections += f"""
-            <div class="card">
+            active_class = " active" if not active_class_added else ""
+            active_class_added = True
+            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-realta\')">🌍 Compito di Realtà</button>\n'
+            html_tab_contents += f"""
+            <div id="tab-realta" class="tab-content{active_class}">
                 <h2>🌍 Compito di Realtà</h2>
                 <div class="markdown-content">{st.session_state.realta}</div>
             </div>
             """
             
         if sel_inclusione and st.session_state.inclusione:
-            html_sections += f"""
-            <div class="card">
+            active_class = " active" if not active_class_added else ""
+            active_class_added = True
+            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-inclusione\')">🌈 Inclusione (PDP/PEI)</button>\n'
+            html_tab_contents += f"""
+            <div id="tab-inclusione" class="tab-content{active_class}">
                 <h2>🌈 Inclusione (PDP/PEI)</h2>
                 <div class="markdown-content">{st.session_state.inclusione}</div>
             </div>
             """
             
         if sel_quiz and st.session_state.quiz:
-            html_sections += f"""
-            <div class="card">
+            active_class = " active" if not active_class_added else ""
+            active_class_added = True
+            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-quiz\')">📝 SuperQuiz 10</button>\n'
+            html_tab_contents += f"""
+            <div id="tab-quiz" class="tab-content{active_class}">
                 <h2>📝 SuperQuiz 10</h2>
                 <div class="markdown-content">{st.session_state.quiz}</div>
             </div>
             """
 
         if sel_images and immagini_lezione:
-            html_sections += "<h2 style='color:#007a60; border-bottom:2px solid #00d4aa; padding-bottom:10px; margin-top: 50px;'>🖼️ Galleria Scientifica</h2>"
+            active_class = " active" if not active_class_added else ""
+            active_class_added = True
+            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-galleria\')">🖼️ Galleria Scientifica</button>\n'
+            
+            html_images_list = ""
             for img_file in immagini_lezione:
                 img_file.seek(0)
                 b64 = base64.b64encode(img_file.read()).decode()
                 desc = didascalie.get(img_file.name, "").replace("\n", "<br>")
-                html_sections += f"""
+                html_images_list += f"""
                 <div style='margin-bottom: 40px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background: #fafafa; text-align: center;'>
                     <img src='data:image/png;base64,{b64}' style='max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>
                     <div style='margin-top: 15px; font-size: 18px; color: #444; text-align: left; line-height: 1.6; padding: 15px; background: #fff; border-left: 5px solid #00d4aa; border-radius: 4px;'>
@@ -386,6 +408,23 @@ with col_main:
                     </div>
                 </div>
                 """
+            html_tab_contents += f"""
+            <div id="tab-galleria" class="tab-content{active_class}">
+                <h2>🖼️ Galleria Scientifica</h2>
+                {html_images_list}
+            </div>
+            """
+
+        html_sections = f"""
+        <div class="tabs-container">
+            <div class="tab-buttons">
+                {html_tab_buttons}
+            </div>
+            <div class="tab-contents">
+                {html_tab_contents}
+            </div>
+        </div>
+        """
         
         template_html = """
         <html>
@@ -398,20 +437,6 @@ with col_main:
                 .info-box { background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 1.2em; text-align: center; }
                 #viewer-container { width: 100%; height: 500px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; background-color: #111; border-radius: 12px; }
                 model-viewer { width: 100%; height: 100%; background-color: #111; border-radius: 12px; }
-                .card {
-                    background: #fdfdfd;
-                    border: 1px solid #e0e0e0;
-                    border-radius: 12px;
-                    padding: 30px;
-                    margin-bottom: 30px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-                }
-                .card h2 {
-                    color: #007a60;
-                    border-bottom: 2px solid #eef2f5;
-                    padding-bottom: 10px;
-                    margin-top: 0;
-                }
                 .markdown-content {
                     line-height: 1.7;
                     font-size: 1.1em;
@@ -423,6 +448,59 @@ with col_main:
                 .markdown-content strong { color: #111; }
                 .markdown-content code { background-color: #f1f3f5; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
                 .markdown-content pre { background-color: #f1f3f5; padding: 15px; border-radius: 8px; overflow-x: auto; }
+                
+                /* STILI PER LE TAB DELL'HTML ESPORTATO */
+                .tabs-container {
+                    margin-top: 30px;
+                }
+                .tab-buttons {
+                    display: flex;
+                    flex-wrap: wrap;
+                    border-bottom: 2px solid #dee2e6;
+                    margin-bottom: 25px;
+                    gap: 5px;
+                }
+                .tab-button {
+                    background-color: transparent;
+                    border: none;
+                    border-bottom: 3px solid transparent;
+                    padding: 12px 20px;
+                    font-size: 1.1em;
+                    font-weight: 600;
+                    color: #6c757d;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+                .tab-button:hover {
+                    color: #007a60;
+                    border-bottom: 3px solid #b2dfdb;
+                }
+                .tab-button.active {
+                    color: #007a60;
+                    border-bottom: 3px solid #007a60;
+                }
+                .tab-content {
+                    display: none;
+                    animation: fadeIn 0.4s ease;
+                    background: #fdfdfd;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 12px;
+                    padding: 30px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+                }
+                .tab-content h2 {
+                    color: #007a60;
+                    border-bottom: 2px solid #eef2f5;
+                    padding-bottom: 10px;
+                    margin-top: 0;
+                }
+                .tab-content.active {
+                    display: block;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(8px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
             </style>
             <!-- Carica Marked.js per renderizzare il Markdown a runtime -->
             <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -461,6 +539,22 @@ with col_main:
                 window.addEventListener('online', checkConnection);
                 window.addEventListener('offline', checkConnection);
                 checkConnection(); // Esegui subito all'avvio
+
+                // Funzione per cambiare tab nell'HTML
+                function openTab(evt, tabId) {
+                    var tabContents = document.getElementsByClassName("tab-content");
+                    for (var i = 0; i < tabContents.length; i++) {
+                        tabContents[i].classList.remove("active");
+                    }
+                    
+                    var tabButtons = document.getElementsByClassName("tab-button");
+                    for (var i = 0; i < tabButtons.length; i++) {
+                        tabButtons[i].classList.remove("active");
+                    }
+                    
+                    document.getElementById(tabId).classList.add("active");
+                    evt.currentTarget.classList.add("active");
+                }
 
                 // Rende il Markdown HTML a runtime se marked è caricato, altrimenti mantiene pre-wrap per i ritorni a capo
                 if (typeof marked !== 'undefined') {
