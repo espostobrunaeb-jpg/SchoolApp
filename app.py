@@ -62,7 +62,7 @@ profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS BLINDATA (CON FIX PER IL PULSANTE INFORMATIVO POP-UP) ---
+# --- INIEZIONE CSS BLINDATA (CON NUOVO FIX RADICALE PER L'ICONA INFO) ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
@@ -107,43 +107,65 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
              font-weight: 600; 
              width: 100%; 
          }
-        .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * {
-            color: #ffffff !important;
-        }
+        .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * { color: #ffffff !important; }
         .stButton>button:hover, .stDownloadButton>button:hover, div[data-testid="stDownloadButton"] button:hover, .st-key-download_btn button:hover { 
              background-color: #00d4aa !important; 
              color: #0f0f0f !important; 
              border-color: #00d4aa !important; 
          }
-        .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * {
-            color: #0f0f0f !important;
-        }
+        .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * { color: #0f0f0f !important; }
         
         button[data-baseweb="tab"] { color: #8a94a6 !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
         
-        /* CRITICO: FIX TOTALE PER IL PULSANTE INFORMATIVO POP-UP NELLA VERSIONE DARK */
+        /* FIX DEFINITIVO E RADICALE PER IL BOTTONE "i" IN DARK MODE */
+        div[data-testid="stPopover"] { background-color: transparent !important; display: flex !important; justify-content: flex-end !important; }
         div[data-testid="stPopover"] > button {
             background-color: #1f1f1f !important;
             border: 1px solid #333333 !important;
             color: #00d4aa !important;
-            font-size: 1.3rem !important;
-            border-radius: 8px !important;
-            padding: 8px 16px !important;
-            width: auto !important;
+            font-size: 1.4rem !important;
+            border-radius: 50% !important; /* Forza la forma circolare perfetta */
+            width: 45px !important;
+            height: 45px !important;
+            min-width: 45px !important;
+            min-height: 45px !important;
+            padding: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
         }
         div[data-testid="stPopover"] > button:hover { 
             background-color: #00d4aa !important; 
             color: #0f0f0f !important; 
             border-color: #00d4aa !important;
         }
-        div[data-testid="stPopover"] > button p { color: inherit !important; }
+        /* Rimuove freccette o svg integrati da Streamlit che generano glitch visivi */
+        div[data-testid="stPopover"] > button svg { display: none !important; }
+        div[data-testid="stPopover"] > button p { color: inherit !important; font-size: 1.4rem !important; margin: 0 !important; padding: 0 !important; font-weight: bold !important; line-height: 1 !important; }
 
-        /* Stile Tabelle Markdown per l'interfaccia scura di Streamlit */
+        /* PULSANTE DI CHIUSURA "X" INTERNO (DARK) */
+        .close-popover-btn button {
+            background-color: transparent !important;
+            border: 1px solid #444444 !important;
+            color: #ff5555 !important;
+            border-radius: 6px !important;
+            font-weight: bold !important;
+            float: right !important;
+            width: 35px !important;
+            height: 35px !important;
+            padding: 0 !important;
+            margin-top: -10px;
+        }
+        .close-popover-btn button:hover {
+            background-color: #ff5555 !important;
+            color: #ffffff !important;
+            border-color: #ff5555 !important;
+        }
+
+        /* Tabelle Markdown Dark */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; color: #ffffff; }
         th { background-color: #1f1f1f; color: #00d4aa; font-weight: bold; padding: 10px; border: 1px solid #333333; }
         td { padding: 10px; border: 1px solid #333333; background-color: #161616; }
@@ -193,53 +215,82 @@ else:
              font-weight: 600; 
              width: 100%; 
          }
-        .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * {
-            color: #212529 !important;
-        }
+        .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * { color: #212529 !important; }
         .stButton>button:hover, .stDownloadButton>button:hover, div[data-testid="stDownloadButton"] button:hover, .st-key-download_btn button:hover { 
              background-color: #007a60 !important; 
              color: #ffffff !important; 
              border-color: #007a60 !important; 
          }
-        .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * {
-            color: #ffffff !important;
-        }
+        .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * { color: #ffffff !important; }
         
-        /* FIX PULSANTE INFORMATIVO POP-UP IN MODALITÀ CHIARA */
+        /* FIX BOTTONE "i" IN MODALITÀ CHIARA */
+        div[data-testid="stPopover"] { display: flex !important; justify-content: flex-end !important; }
         div[data-testid="stPopover"] > button {
             background-color: #ffffff !important;
             border: 1px solid #ced4da !important;
             color: #007a60 !important;
-            font-size: 1.3rem !important;
-            border-radius: 8px !important;
-            padding: 8px 16px !important;
-            width: auto !important;
+            font-size: 1.4rem !important;
+            border-radius: 50% !important;
+            width: 45px !important;
+            height: 45px !important;
+            min-width: 45px !important;
+            min-height: 45px !important;
+            padding: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
         }
         div[data-testid="stPopover"] > button:hover { 
             background-color: #007a60 !important; 
             color: #ffffff !important; 
             border-color: #007a60 !important;
         }
-        div[data-testid="stPopover"] > button p { color: inherit !important; }
+        div[data-testid="stPopover"] > button svg { display: none !important; }
+        div[data-testid="stPopover"] > button p { color: inherit !important; font-size: 1.4rem !important; margin: 0 !important; padding: 0 !important; font-weight: bold !important; line-height: 1 !important; }
 
-        /* Stile Tabelle Markdown per l'interfaccia chiara */
+        /* PULSANTE DI CHIUSURA "X" INTERNO (LIGHT) */
+        .close-popover-btn button {
+            background-color: transparent !important;
+            border: 1px solid #ced4da !important;
+            color: #dc3545 !important;
+            border-radius: 6px !important;
+            font-weight: bold !important;
+            float: right !important;
+            width: 35px !important;
+            height: 35px !important;
+            padding: 0 !important;
+            margin-top: -10px;
+        }
+        .close-popover-btn button:hover {
+            background-color: #dc3545 !important;
+            color: #ffffff !important;
+            border-color: #dc3545 !important;
+        }
+
+        /* Tabelle Markdown Light */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
         th { background-color: #e9ecef; color: #007a60; font-weight: bold; padding: 10px; border: 1px solid #dee2e6; }
         td { padding: 10px; border: 1px solid #dee2e6; background-color: #ffffff; }
         </style>
     """, unsafe_allow_html=True)
 
-# --- HEADER CON ICONA INFORMATIVA POP-UP ---
+# --- HEADER CON ICONA INFORMATIVA POP-UP CIRCOLARE PERFECT ---
 col_titolo, col_info = st.columns([0.88, 0.12], vertical_alignment="center")
 with col_titolo:
     st.title("🧪 OmniScience 3D Studio Pro")
 with col_info:
-    # Popover perfettamente stilizzato sia in Light che in Dark Mode
+    # Il popover usa la stringa "ⓘ", trasformata in etichetta centrale pulita via CSS priva di artefatti nativi
     with st.popover("ⓘ", help="Clicca per scoprire come funziona l'applicazione"):
-        st.markdown("### 🏛️ Come Funziona il Software?")
+        col_pop_title, col_pop_close = st.columns([0.85, 0.15])
+        with col_pop_title:
+            st.markdown("### 🏛️ Guia Rapida")
+        with col_pop_close:
+            st.markdown('<div class="close-popover-btn">', unsafe_allow_html=True)
+            if st.button("✕", key="close_popover_trigger"):
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         st.markdown("""
         **OmniScience 3D Studio Pro** è un assistente didattico avanzato basato su AI pensato per i docenti di Scienze Naturali (A050).
         
@@ -310,7 +361,6 @@ with col_main:
     
     prompt_normativo = f"Agisci come un Esperto Docente di Scienze (A050) italiano. Target: {scuola_tipo}. Profilo: {profilo}. Usa terminologia MIUR (UDA, rubriche, competenze chiave)."
     
-    # Funzione Helper per gestire barre di caricamento fluide
     def run_ai_with_progress(prompt_text, success_msg):
         if not api_key:
             st.error("⚠️ Inserisci API Key nella barra laterale.")
@@ -426,12 +476,11 @@ with col_main:
         else:
             st.info("💡 Carica le immagini nella barra laterale per costruire l'infografica.")
 
-    # TAB ESPORTAZIONE: LOGICA SMART ONLINE/OFFLINE
+    # TAB ESPORTAZIONE
     with tabs[6]:
         st.markdown("### 💾 Esporta Lezione Interattiva (Smart Offline)")
         st.markdown("##### ⚙️ Seleziona i moduli da includere nell'esportazione:")
         
-        # Gestione etichette dinamiche
         label_spiegazione = "✨ Spiegazione" if st.session_state.spiegazione else "✨ Spiegazione (Non ancora generata)"
         label_uda = "🎯 Progettazione UDA" if st.session_state.uda else "🎯 Progettazione UDA (Non ancora generata)"
         label_realta = "🌍 Compito di Realtà" if st.session_state.realta else "🌍 Compito di Realtà (Non ancora generato)"
@@ -457,7 +506,6 @@ with col_main:
             b64_cover = base64.b64encode(img_copertina.read()).decode()
             fallback_html = f"<img src='data:image/png;base64,{b64_cover}' style='width: 100%; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>"
 
-        # Costruzione dinamica delle tab nell'HTML esportato
         html_tab_buttons = ""
         html_tab_contents = ""
         active_class_added = False
@@ -564,11 +612,7 @@ with col_main:
                 .info-box { background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 1.2em; text-align: center; }
                 #viewer-container { width: 100%; height: 500px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; background-color: #111; border-radius: 12px; }
                 model-viewer { width: 100%; height: 100%; background-color: #111; border-radius: 12px; }
-                .markdown-content {
-                    line-height: 1.7;
-                    font-size: 1.1em;
-                    color: #444;
-                }
+                .markdown-content { line-height: 1.7; font-size: 1.1em; color: #444; }
                 .markdown-content p { margin-bottom: 1em; }
                 .markdown-content ul, .markdown-content ol { padding-left: 20px; margin-bottom: 1em; }
                 .markdown-content li { margin-bottom: 0.5em; }
@@ -576,66 +620,21 @@ with col_main:
                 .markdown-content code { background-color: #f1f3f5; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
                 .markdown-content pre { background-color: #f1f3f5; padding: 15px; border-radius: 8px; overflow-x: auto; }
                 
-                /* STILI PER LE TABELLE MARKOVN NELL'HTML ESPORTATO */
                 .markdown-content table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 1em; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
                 .markdown-content th { background-color: #007a60; color: white; padding: 12px 15px; text-align: left; border: 1px solid #dee2e6; }
                 .markdown-content td { padding: 12px 15px; border: 1px solid #dee2e6; background-color: #fafafa; }
                 .markdown-content tr:nth-child(even) td { background-color: #f1f5f4; }
                                 
-                /* STILI PER LE TAB DELL'HTML ESPORTATO */
-                .tabs-container {
-                    margin-top: 30px;
-                }
-                .tab-buttons {
-                    display: flex;
-                    flex-wrap: wrap;
-                    border-bottom: 2px solid #dee2e6;
-                    margin-bottom: 25px;
-                    gap: 5px;
-                }
-                .tab-button {
-                    background-color: transparent;
-                    border: none;
-                    border-bottom: 3px solid transparent;
-                    padding: 12px 20px;
-                    font-size: 1.1em;
-                    font-weight: 600;
-                    color: #6c757d;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                }
-                .tab-button:hover {
-                    color: #007a60;
-                    border-bottom: 3px solid #b2dfdb;
-                }
-                .tab-button.active {
-                    color: #007a60;
-                    border-bottom: 3px solid #007a60;
-                }
-                .tab-content {
-                    display: none;
-                    animation: fadeIn 0.4s ease;
-                    background: #fdfdfd;
-                    border: 1px solid #e0e0e0;
-                    border-radius: 12px;
-                    padding: 30px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-                }
-                .tab-content h2 {
-                    color: #007a60;
-                    border-bottom: 2px solid #eef2f5;
-                    padding-bottom: 10px;
-                    margin-top: 0;
-                }
-                .tab-content.active {
-                    display: block;
-                }
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(8px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
+                .tabs-container { margin-top: 30px; }
+                .tab-buttons { display: flex; flex-wrap: wrap; border-bottom: 2px solid #dee2e6; margin-bottom: 25px; gap: 5px; }
+                .tab-button { background-color: transparent; border: none; border-bottom: 3px solid transparent; padding: 12px 20px; font-size: 1.1em; font-weight: 600; color: #6c757d; cursor: pointer; transition: all 0.2s ease; }
+                .tab-button:hover { color: #007a60; border-bottom: 3px solid #b2dfdb; }
+                .tab-button.active { color: #007a60; border-bottom: 3px solid #007a60; }
+                .tab-content { display: none; animation: fadeIn 0.4s ease; background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+                .tab-content h2 { color: #007a60; border-bottom: 2px solid #eef2f5; padding-bottom: 10px; margin-top: 0; }
+                .tab-content.active { display: block; }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
             </style>
-            <!-- Carica Marked.js per renderizzare il Markdown a runtime -->
             <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         </head>
         <body>
@@ -670,38 +669,22 @@ with col_main:
                 }
                 window.addEventListener('online', checkConnection);
                 window.addEventListener('offline', checkConnection);
-                checkConnection(); // Esegui subito all'avvio
+                checkConnection();
 
-                // Funzione per cambiare tab nell'HTML
                 function openTab(evt, tabId) {
                     var tabContents = document.getElementsByClassName("tab-content");
-                    for (var i = 0; i < tabContents.length; i++) {
-                        tabContents[i].classList.remove("active");
-                    }
-                    
+                    for (var i = 0; i < tabContents.length; i++) { tabContents[i].classList.remove("active"); }
                     var tabButtons = document.getElementsByClassName("tab-button");
-                    for (var i = 0; i < tabButtons.length; i++) {
-                        tabButtons[i].classList.remove("active");
-                    }
-                    
+                    for (var i = 0; i < tabButtons.length; i++) { tabButtons[i].classList.remove("active"); }
                     document.getElementById(tabId).classList.add("active");
                     evt.currentTarget.classList.add("active");
                 }
 
-                // Rende il Markdown HTML a runtime se marked è caricato
                 if (typeof marked !== 'undefined') {
-                    marked.setOptions({
-                        gfm: true,
-                        breaks: true
-                    });
-                    
-                    document.querySelectorAll('.markdown-content').forEach(el => {
-                        el.innerHTML = marked.parse(el.textContent);
-                    });
+                    marked.setOptions({ gfm: true, breaks: true });
+                    document.querySelectorAll('.markdown-content').forEach(el => { el.innerHTML = marked.parse(el.textContent); });
                 } else {
-                    document.querySelectorAll('.markdown-content').forEach(el => {
-                        el.style.whiteSpace = 'pre-wrap';
-                    });
+                    document.querySelectorAll('.markdown-content').forEach(el => { el.style.whiteSpace = 'pre-wrap'; });
                 }
             </script>
             <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
@@ -716,9 +699,8 @@ with col_main:
         lezione_html = lezione_html.replace("__DATA_URL_ONLINE__", data_url_online)
         lezione_html = lezione_html.replace("__HTML_SECTIONS__", html_sections)
         
-        # Mostra il pulsante di download se c'è almeno qualcosa di selezionato da esportare
         abilitato_export = (sel_spiegazione or sel_uda or sel_realta or sel_inclusione or sel_quiz or sel_images)
-        if abilitato_export:
+        if habilitato_export:
             st.download_button(
                 "📦 Scarica Lezione Smart (HTML)", 
                 lezione_html, 
