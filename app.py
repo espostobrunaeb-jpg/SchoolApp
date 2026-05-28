@@ -120,19 +120,6 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
             color: #0f0f0f !important;
         }
         
-        /* PULSANTE HELP CIRCOLARE */
-        .st-key-help_btn button {
-            border-radius: 50% !important;
-            width: 40px !important;
-            height: 40px !important;
-            padding: 0 !important;
-            font-size: 20px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            margin-top: 12px !important;
-        }
-        
         button[data-baseweb="tab"] { color: #8a94a6 !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
@@ -194,78 +181,14 @@ else:
             color: #ffffff !important;
         }
         
-        /* PULSANTE HELP CIRCOLARE */
-        .st-key-help_btn button {
-            border-radius: 50% !important;
-            width: 40px !important;
-            height: 40px !important;
-            padding: 0 !important;
-            font-size: 20px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            margin-top: 12px !important;
-        }
-        
         button[data-baseweb="tab"] { color: #64748b !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
         div[data-testid="stTooltipContent"] { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
         </style>
     """, unsafe_allow_html=True)
 
-# --- DIALOG DI AIUTO ---
-if hasattr(st, "dialog"):
-    @st.dialog("ℹ️ Guida all'uso: OmniScience 3D Studio Pro")
-    def show_help_modal():
-        st.markdown("""
-        ### 🧪 Come funziona OmniScience 3D Studio Pro
-        
-        Questo strumento ti permette di progettare lezioni scientifiche interattive unendo modelli 3D e intelligenza artificiale (Gemini).
-        
-        #### 1. Configurazione (Barra Laterale)
-        - **Tema Visivo**: Scegli tra la modalità Chiara o Scura.
-        - **Gemini API Key**: Inserisci la tua chiave API di Google.
-        - **Contesto Normativo e Istituzionale**: Imposta il target di studenti (es. *Liceo*) e l'eventuale profilo normativo (es. *DSA - PDP*). L'IA adatterà automaticamente testi e risposte.
-        
-        #### 2. Preparazione
-        - Definisci l'**Oggetto Scientifico** (es. *Mitosi e Meiosi*).
-        - Carica un file 3D in formato **.glb** (opzionale).
-        - Carica le immagini scientifiche e scrivi le didascalie nell'area *Galleria*.
-        
-        #### 3. Chat Interattiva
-        - Consente agli studenti di chattare direttamente con l'oggetto scientifico. L'IA risponderà in prima persona interpretando l'oggetto scientifico (es. parlando come una cellula) e personalizzando il linguaggio in base al profilo selezionato.
-        
-        #### 4. Progettazione e Metodologia (Tab Centrali)
-        - **Genera Spiegazione**: Spiegazione con metafora iniziale adattata al profilo dell'alunno.
-        - **Progettazione UDA**: Crea obiettivi, prerequisiti e competenze chiave.
-        - **Compito di Realtà**: Genera un compito basato sul mondo reale con rubrica valutativa.
-        - **Inclusione**: Definisce schemi, obiettivi minimi e strumenti compensativi/dispensativi.
-        - **SuperQuiz 10**: Genera un test di 10 domande con griglia di valutazione finale.
-        
-        #### 5. Esportazione
-        - Seleziona nella tab *Esporta* i contenuti che desideri includere.
-        - Scarica un file HTML autoportante a schede, ideale per le lezioni a scuola, che funziona anche offline!
-        """)
-else:
-    def show_help_modal():
-        st.info("""
-        ### 🧪 Guida Rapida all'Uso
-        1. **Configura la barra laterale**: Inserisci l'API Key Gemini e seleziona il profilo alunno.
-        2. **Imposta l'argomento e carica il modello 3D** (file `.glb`).
-        3. **Utilizza la chat** per far interagire gli alunni con l'oggetto.
-        4. **Genera spiegazioni, UDA, quiz e compiti** nelle tab centrali.
-        5. **Esporta la lezione** come file HTML a schede autoportante nella tab *Esporta*.
-        """)
-
 # --- HEADER ---
-col_title, col_help = st.columns([0.9, 0.1])
-with col_title:
-    st.title("🧪 OmniScience 3D Studio Pro")
-with col_help:
-    st.write("") # Piccolo offset per allineamento verticale
-    if st.button("ℹ️", key="help_btn", help="Clicca per vedere la guida all'uso"):
-        show_help_modal()
-
+st.title("🧪 OmniScience 3D Studio Pro")
 st.caption(f"🔬 *Laboratorio e Progettazione Didattica | ESPOSTO BRUNA Classe A050*")
 
 col_regia, col_main = st.columns([0.27, 0.73], gap="large")
@@ -407,77 +330,55 @@ with col_main:
             b64_cover = base64.b64encode(img_copertina.read()).decode()
             fallback_html = f"<img src='data:image/png;base64,{b64_cover}' style='width: 100%; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>"
 
-        # Costruzione dinamica delle tab nell'HTML esportato
-        html_tab_buttons = ""
-        html_tab_contents = ""
-        active_class_added = False
+        html_sections = ""
         
         if sel_spiegazione and st.session_state.spiegazione:
-            active_class = " active" if not active_class_added else ""
-            active_class_added = True
-            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-spiegazione\')">✨ Spiegazione</button>\n'
-            html_tab_contents += f"""
-            <div id="tab-spiegazione" class="tab-content{active_class}">
+            html_sections += f"""
+            <div class="card">
                 <h2>✨ Spiegazione: {argomento}</h2>
                 <div class="markdown-content">{st.session_state.spiegazione}</div>
             </div>
             """
         
         if sel_uda and st.session_state.uda:
-            active_class = " active" if not active_class_added else ""
-            active_class_added = True
-            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-uda\')">🎯 Progettazione UDA</button>\n'
-            html_tab_contents += f"""
-            <div id="tab-uda" class="tab-content{active_class}">
+            html_sections += f"""
+            <div class="card">
                 <h2>🎯 Progettazione UDA</h2>
                 <div class="markdown-content">{st.session_state.uda}</div>
             </div>
             """
             
         if sel_realta and st.session_state.realta:
-            active_class = " active" if not active_class_added else ""
-            active_class_added = True
-            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-realta\')">🌍 Compito di Realtà</button>\n'
-            html_tab_contents += f"""
-            <div id="tab-realta" class="tab-content{active_class}">
+            html_sections += f"""
+            <div class="card">
                 <h2>🌍 Compito di Realtà</h2>
                 <div class="markdown-content">{st.session_state.realta}</div>
             </div>
             """
             
         if sel_inclusione and st.session_state.inclusione:
-            active_class = " active" if not active_class_added else ""
-            active_class_added = True
-            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-inclusione\')">🌈 Inclusione (PDP/PEI)</button>\n'
-            html_tab_contents += f"""
-            <div id="tab-inclusione" class="tab-content{active_class}">
+            html_sections += f"""
+            <div class="card">
                 <h2>🌈 Inclusione (PDP/PEI)</h2>
                 <div class="markdown-content">{st.session_state.inclusione}</div>
             </div>
             """
             
         if sel_quiz and st.session_state.quiz:
-            active_class = " active" if not active_class_added else ""
-            active_class_added = True
-            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-quiz\')">📝 SuperQuiz 10</button>\n'
-            html_tab_contents += f"""
-            <div id="tab-quiz" class="tab-content{active_class}">
+            html_sections += f"""
+            <div class="card">
                 <h2>📝 SuperQuiz 10</h2>
                 <div class="markdown-content">{st.session_state.quiz}</div>
             </div>
             """
 
         if sel_images and immagini_lezione:
-            active_class = " active" if not active_class_added else ""
-            active_class_added = True
-            html_tab_buttons += f'<button class="tab-button{active_class}" onclick="openTab(event, \'tab-galleria\')">🖼️ Galleria Scientifica</button>\n'
-            
-            html_images_list = ""
+            html_sections += "<h2 style='color:#007a60; border-bottom:2px solid #00d4aa; padding-bottom:10px; margin-top: 50px;'>🖼️ Galleria Scientifica</h2>"
             for img_file in immagini_lezione:
                 img_file.seek(0)
                 b64 = base64.b64encode(img_file.read()).decode()
                 desc = didascalie.get(img_file.name, "").replace("\n", "<br>")
-                html_images_list += f"""
+                html_sections += f"""
                 <div style='margin-bottom: 40px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background: #fafafa; text-align: center;'>
                     <img src='data:image/png;base64,{b64}' style='max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>
                     <div style='margin-top: 15px; font-size: 18px; color: #444; text-align: left; line-height: 1.6; padding: 15px; background: #fff; border-left: 5px solid #00d4aa; border-radius: 4px;'>
@@ -485,23 +386,6 @@ with col_main:
                     </div>
                 </div>
                 """
-            html_tab_contents += f"""
-            <div id="tab-galleria" class="tab-content{active_class}">
-                <h2>🖼️ Galleria Scientifica</h2>
-                {html_images_list}
-            </div>
-            """
-
-        html_sections = f"""
-        <div class="tabs-container">
-            <div class="tab-buttons">
-                {html_tab_buttons}
-            </div>
-            <div class="tab-contents">
-                {html_tab_contents}
-            </div>
-        </div>
-        """
         
         template_html = """
         <html>
@@ -514,6 +398,20 @@ with col_main:
                 .info-box { background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 40px; font-size: 1.2em; text-align: center; }
                 #viewer-container { width: 100%; height: 500px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; background-color: #111; border-radius: 12px; }
                 model-viewer { width: 100%; height: 100%; background-color: #111; border-radius: 12px; }
+                .card {
+                    background: #fdfdfd;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 12px;
+                    padding: 30px;
+                    margin-bottom: 30px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+                }
+                .card h2 {
+                    color: #007a60;
+                    border-bottom: 2px solid #eef2f5;
+                    padding-bottom: 10px;
+                    margin-top: 0;
+                }
                 .markdown-content {
                     line-height: 1.7;
                     font-size: 1.1em;
@@ -525,59 +423,6 @@ with col_main:
                 .markdown-content strong { color: #111; }
                 .markdown-content code { background-color: #f1f3f5; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
                 .markdown-content pre { background-color: #f1f3f5; padding: 15px; border-radius: 8px; overflow-x: auto; }
-                
-                /* STILI PER LE TAB DELL'HTML ESPORTATO */
-                .tabs-container {
-                    margin-top: 30px;
-                }
-                .tab-buttons {
-                    display: flex;
-                    flex-wrap: wrap;
-                    border-bottom: 2px solid #dee2e6;
-                    margin-bottom: 25px;
-                    gap: 5px;
-                }
-                .tab-button {
-                    background-color: transparent;
-                    border: none;
-                    border-bottom: 3px solid transparent;
-                    padding: 12px 20px;
-                    font-size: 1.1em;
-                    font-weight: 600;
-                    color: #6c757d;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                }
-                .tab-button:hover {
-                    color: #007a60;
-                    border-bottom: 3px solid #b2dfdb;
-                }
-                .tab-button.active {
-                    color: #007a60;
-                    border-bottom: 3px solid #007a60;
-                }
-                .tab-content {
-                    display: none;
-                    animation: fadeIn 0.4s ease;
-                    background: #fdfdfd;
-                    border: 1px solid #e0e0e0;
-                    border-radius: 12px;
-                    padding: 30px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-                }
-                .tab-content h2 {
-                    color: #007a60;
-                    border-bottom: 2px solid #eef2f5;
-                    padding-bottom: 10px;
-                    margin-top: 0;
-                }
-                .tab-content.active {
-                    display: block;
-                }
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(8px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
             </style>
             <!-- Carica Marked.js per renderizzare il Markdown a runtime -->
             <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -616,22 +461,6 @@ with col_main:
                 window.addEventListener('online', checkConnection);
                 window.addEventListener('offline', checkConnection);
                 checkConnection(); // Esegui subito all'avvio
-
-                // Funzione per cambiare tab nell'HTML
-                function openTab(evt, tabId) {
-                    var tabContents = document.getElementsByClassName("tab-content");
-                    for (var i = 0; i < tabContents.length; i++) {
-                        tabContents[i].classList.remove("active");
-                    }
-                    
-                    var tabButtons = document.getElementsByClassName("tab-button");
-                    for (var i = 0; i < tabButtons.length; i++) {
-                        tabButtons[i].classList.remove("active");
-                    }
-                    
-                    document.getElementById(tabId).classList.add("active");
-                    evt.currentTarget.classList.add("active");
-                }
 
                 // Rende il Markdown HTML a runtime se marked è caricato, altrimenti mantiene pre-wrap per i ritorni a capo
                 if (typeof marked !== 'undefined') {
