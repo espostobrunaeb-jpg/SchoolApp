@@ -62,7 +62,7 @@ profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS BLINDATA ---
+# --- INIEZIONE CSS BLINDATA (FIX CONTRASTO MANIACALE BIANCO DIALOG IN DARK MODE) ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
@@ -98,7 +98,7 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         div[data-testid="stChatMessage"] { background-color: transparent !important; color: #ffffff !important; }
         div[data-testid="stChatMessage"] * { color: #ffffff !important; }
         
-        /* FIX PULSANTI STRUTTURALI (E ANCHE DELLA NUOVA "i" NATALIZIA) */
+        /* FIX PULSANTI STRUTTURALI GENERALI */
         .stButton>button, .stDownloadButton>button, div[data-testid="stDownloadButton"] button, .st-key-download_btn button { 
              background-color: #1f1f1f !important; 
              color: #00d4aa !important; 
@@ -118,9 +118,31 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
         
-        /* STILIZZAZIONE MODALE DI STREAMLIT (DIALOG SCURA) */
-        div[role="dialog"] { background-color: #161616 !important; border: 1px solid #2d2d2d !important; color: #ffffff !important; border-radius: 12px !important; }
-        div[role="dialog"] h3, div[role="dialog"] h1 { color: #00d4aa !important; }
+        /* --- ARMA SEGRETA: COMPLETA SOVRASCRITTURA DI ST.DIALOG IN DARK MODE --- */
+        div[role="dialog"], div[data-testid="stDialog"] { 
+            background-color: #161616 !important; 
+            border: 1px solid #2d2d2d !important; 
+            border-radius: 12px !important; 
+        }
+        div[role="dialog"] h3, div[role="dialog"] h1, div[role="dialog"] h2, div[data-testid="stDialog"] h3 { 
+            color: #00d4aa !important; 
+            font-weight: 600 !important; 
+        }
+        /* Forza spietatamente qualsiasi foglio di stile ereditato ad assumere il colore BIANCO candido */
+        div[role="dialog"] *, div[data-testid="stDialog"] *, div[data-testid="stDialog"] .stMarkdown p, div[data-testid="stDialog"] li { 
+            color: #ffffff !important; 
+            opacity: 1 !important;
+            -webkit-text-fill-color: #ffffff !important; /* Disintegra i glitch di opacità dei browser */
+        }
+        /* Preserva l'ereditarietà cromatica corretta per i pulsanti interni alla modale */
+        div[role="dialog"] button, div[data-testid="stDialog"] button, div[role="dialog"] button * { 
+            color: #00d4aa !important; 
+            -webkit-text-fill-color: #00d4aa !important;
+        }
+        div[role="dialog"] button:hover, div[data-testid="stDialog"] button:hover, div[role="dialog"] button:hover * { 
+            color: #0f0f0f !important; 
+            -webkit-text-fill-color: #0f0f0f !important;
+        }
 
         /* Tabelle Markdown */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; color: #ffffff; }
@@ -183,9 +205,10 @@ else:
         button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
         div[data-testid="stTooltipContent"] { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
         
-        /* STILIZZAZIONE MODALE DI STREAMLIT (DIALOG LIGHT) */
+        /* MODALE DI STREAMLIT (DIALOG LIGHT) */
         div[role="dialog"] { background-color: #ffffff !important; border: 1px solid #dee2e6 !important; color: #212529 !important; border-radius: 12px !important; box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; }
-        div[role="dialog"] h3, div[role="dialog"] h1 { color: #007a60 !important; }
+        div[role="dialog"] h3, div[role="dialog"] h1, div[role="dialog"] h2 { color: #007a60 !important; }
+        div[role="dialog"] p, div[role="dialog"] li, div[role="dialog"] span, div[role="dialog"] strong { color: #212529 !important; }
 
         /* Tabelle Markdown */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
@@ -194,7 +217,7 @@ else:
         </style>
     """, unsafe_allow_html=True)
 
-# --- DEFINIZIONE DELLA FINESTRA POP-UP NATALIZIA TRAMITE DIALOG MODALE ---
+# --- FINESTRA DIALOG POP-UP NATALIZIA CON TESTO BIANCO GARANTITO ---
 @st.dialog("🏛️ OmniScience 3D Studio - Guida Funzionale", width="large")
 def mostra_guida_dialog():
     st.markdown("""
@@ -209,12 +232,11 @@ def mostra_guida_dialog():
     if st.button("Capito, chiudi ✕", key="close_dialog_inner_btn"):
         st.rerun()
 
-# --- HEADER NATIVO CON PULSANTE "i" COERENTE AL 100% ---
-col_titolo, col_info = st.columns([0.88, 0.12], vertical_alignment="center")
+# --- HEADER CON BOTTONE INFO IN STILE CARICAMENTO ---
+col_titolo, col_info = st.columns([0.85, 0.15], vertical_alignment="center")
 with col_titolo:
     st.title("🧪 OmniScience 3D Studio Pro")
 with col_info:
-    # Generato esattamente come il pulsante upload o scarica, solido e bellissimo
     if st.button("ⓘ Info Software", key="info_studio_trigger_native"):
         mostra_guida_dialog()
 
