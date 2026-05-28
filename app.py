@@ -281,7 +281,7 @@ with col_main:
 
     with tabs[4]:
         if st.button("📝 Genera Quiz (10 Domande) e Griglia"):
-            st.session_state.quiz = run_ai(f"{prompt_normativo} Crea un test di 10 domande a risposta multipla su '{argomento}' e una griglia valutativa MIUR a 4 livelli alla fine.")
+            st.session_state.quiz = run_ai(f"{prompt_normativo} Crea un test di 10 domande a risposta multipla su '{argomento}' con relative soluzioni e una griglia valutativa MIUR a 4 livelli alla fine.")
         if st.session_state.quiz:
             st.markdown(st.session_state.quiz)
 
