@@ -62,7 +62,7 @@ profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS BLINDATA ---
+# --- INIEZIONE CSS BLINDATA (CON FIX PER IL PULSANTE INFORMATIVO POP-UP) ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
@@ -123,16 +123,25 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
         
-        /* Custom design per il popover informativo */
+        /* CRITICO: FIX TOTALE PER IL PULSANTE INFORMATIVO POP-UP NELLA VERSIONE DARK */
         div[data-testid="stPopover"] > button {
-            background: transparent !important;
-            border: none !important;
+            background-color: #1f1f1f !important;
+            border: 1px solid #333333 !important;
             color: #00d4aa !important;
-            font-size: 1.5rem !important;
-            padding: 0 !important;
-            margin-top: 10px !important;
+            font-size: 1.3rem !important;
+            border-radius: 8px !important;
+            padding: 8px 16px !important;
+            width: auto !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
-        div[data-testid="stPopover"] > button:hover { color: #ffffff !important; }
+        div[data-testid="stPopover"] > button:hover { 
+            background-color: #00d4aa !important; 
+            color: #0f0f0f !important; 
+            border-color: #00d4aa !important;
+        }
+        div[data-testid="stPopover"] > button p { color: inherit !important; }
 
         /* Stile Tabelle Markdown per l'interfaccia scura di Streamlit */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; color: #ffffff; }
@@ -196,20 +205,25 @@ else:
             color: #ffffff !important;
         }
         
-        button[data-baseweb="tab"] { color: #64748b !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
-        button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
-        div[data-testid="stTooltipContent"] { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
-        
-        /* Custom design per il popover informativo */
+        /* FIX PULSANTE INFORMATIVO POP-UP IN MODALITÀ CHIARA */
         div[data-testid="stPopover"] > button {
-            background: transparent !important;
-            border: none !important;
+            background-color: #ffffff !important;
+            border: 1px solid #ced4da !important;
             color: #007a60 !important;
-            font-size: 1.5rem !important;
-            padding: 0 !important;
-            margin-top: 10px !important;
+            font-size: 1.3rem !important;
+            border-radius: 8px !important;
+            padding: 8px 16px !important;
+            width: auto !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
-        div[data-testid="stPopover"] > button:hover { color: #212529 !important; }
+        div[data-testid="stPopover"] > button:hover { 
+            background-color: #007a60 !important; 
+            color: #ffffff !important; 
+            border-color: #007a60 !important;
+        }
+        div[data-testid="stPopover"] > button p { color: inherit !important; }
 
         /* Stile Tabelle Markdown per l'interfaccia chiara */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
@@ -223,7 +237,7 @@ col_titolo, col_info = st.columns([0.88, 0.12], vertical_alignment="center")
 with col_titolo:
     st.title("🧪 OmniScience 3D Studio Pro")
 with col_info:
-    # Popover Streamlit travestito da icona info "ⓘ"
+    # Popover perfettamente stilizzato sia in Light che in Dark Mode
     with st.popover("ⓘ", help="Clicca per scoprire come funziona l'applicazione"):
         st.markdown("### 🏛️ Come Funziona il Software?")
         st.markdown("""
@@ -307,7 +321,6 @@ with col_main:
         
         try:
             with st.spinner(f"🤖 L'intelligenza Artificiale sta elaborando..."):
-                # Animazione simulata iniziale per dare feedback visivo immediato
                 for percent_complete in range(1, 35):
                     time.sleep(0.01)
                     progress_bar.progress(percent_complete)
@@ -327,7 +340,6 @@ with col_main:
                     progress_bar.progress(percent_complete)
                     status_text.text(f"Finalizzazione e formattazione... {percent_complete}%")
                 
-                # Pulisce la barra alla fine del processo
                 progress_bar.empty()
                 status_text.empty()
                 st.success(success_msg)
@@ -623,6 +635,7 @@ with col_main:
                     to { opacity: 1; transform: translateY(0); }
                 }
             </style>
+            <!-- Carica Marked.js per renderizzare il Markdown a runtime -->
             <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         </head>
         <body>
@@ -677,7 +690,6 @@ with col_main:
 
                 // Rende il Markdown HTML a runtime se marked è caricato
                 if (typeof marked !== 'undefined') {
-                    // CONFIGURAZIONE ATTIVA PER IL PARSING CORRETTO DELLE TABELLE GFM
                     marked.setOptions({
                         gfm: true,
                         breaks: true
