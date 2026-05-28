@@ -98,58 +98,29 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         div[data-testid="stChatMessage"] { background-color: transparent !important; color: #ffffff !important; }
         div[data-testid="stChatMessage"] * { color: #ffffff !important; }
         
-        /* FIX PULSANTE DOWNLOAD E PULSANTI GENERALI */
+        /* FIX PULSANTI STRUTTURALI (E ANCHE DELLA NUOVA "i" NATALIZIA) */
         .stButton>button, .stDownloadButton>button, div[data-testid="stDownloadButton"] button, .st-key-download_btn button { 
              background-color: #1f1f1f !important; 
-             color: #ffffff !important; 
+             color: #00d4aa !important; 
              border: 1px solid #333 !important; 
              border-radius: 8px; 
              font-weight: 600; 
              width: 100%; 
          }
-        .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * { color: #ffffff !important; }
+        .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * { color: inherit !important; }
         .stButton>button:hover, .stDownloadButton>button:hover, div[data-testid="stDownloadButton"] button:hover, .st-key-download_btn button:hover { 
              background-color: #00d4aa !important; 
              color: #0f0f0f !important; 
              border-color: #00d4aa !important; 
          }
-        .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * { color: #0f0f0f !important; }
         
         button[data-baseweb="tab"] { color: #8a94a6 !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
         
-        /* STILIZZAZIONE DEFINITIVA ICONA INFO CIRCOLARE SENZA RETTANGOLO BIANCO */
-        .info-button-container button {
-            background-color: #1f1f1f !important;
-            border: 1px solid #333333 !important;
-            color: #00d4aa !important;
-            font-size: 1.4rem !important;
-            border-radius: 50% !important;
-            width: 45px !important;
-            height: 45px !important;
-            padding: 0 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
-            float: right;
-        }
-        .info-button-container button:hover {
-            background-color: #00d4aa !important;
-            color: #0f0f0f !important;
-            border-color: #00d4aa !important;
-        }
-        .info-button-container button div p { color: inherit !important; font-size: 1.4rem !important; font-weight: bold !important; }
-
-        /* BOX GUIDA APERTA SCIENZE */
-        .guide-box {
-            background-color: #161616 !important;
-            border: 1px solid #2d2d2d !important;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
+        /* STILIZZAZIONE MODALE DI STREAMLIT (DIALOG SCURA) */
+        div[role="dialog"] { background-color: #161616 !important; border: 1px solid #2d2d2d !important; color: #ffffff !important; border-radius: 12px !important; }
+        div[role="dialog"] h3, div[role="dialog"] h1 { color: #00d4aa !important; }
 
         /* Tabelle Markdown */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; color: #ffffff; }
@@ -192,55 +163,29 @@ else:
         div[data-testid="stChatMessage"] { background-color: transparent !important; color: #212529 !important; }
         div[data-testid="stChatMessage"] * { color: #212529 !important; }
         
-        /* FIX PULSANTE DOWNLOAD E PULSANTI GENERALI */
+        /* FIX PULSANTI STRUTTURALI (LIGHT) */
         .stButton>button, .stDownloadButton>button, div[data-testid="stDownloadButton"] button, .st-key-download_btn button { 
              background-color: #ffffff !important; 
-             color: #212529 !important; 
+             color: #007a60 !important; 
              border: 1px solid #ced4da !important; 
              border-radius: 8px; 
              font-weight: 600; 
              width: 100%; 
          }
-        .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * { color: #212529 !important; }
+        .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * { color: inherit !important; }
         .stButton>button:hover, .stDownloadButton>button:hover, div[data-testid="stDownloadButton"] button:hover, .st-key-download_btn button:hover { 
              background-color: #007a60 !important; 
              color: #ffffff !important; 
              border-color: #007a60 !important; 
          }
-        .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * { color: #ffffff !important; }
         
-        /* ICONA INFO CIRCOLARE (LIGHT) */
-        .info-button-container button {
-            background-color: #ffffff !important;
-            border: 1px solid #ced4da !important;
-            color: #007a60 !important;
-            font-size: 1.4rem !important;
-            border-radius: 50% !important;
-            width: 45px !important;
-            height: 45px !important;
-            padding: 0 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
-            float: right;
-        }
-        .info-button-container button:hover {
-            background-color: #007a60 !important;
-            color: #ffffff !important;
-            border-color: #007a60 !important;
-        }
-        .info-button-container button div p { color: inherit !important; font-size: 1.4rem !important; font-weight: bold !important; }
-
-        /* BOX GUIDA APERTA LIGHT */
-        .guide-box {
-            background-color: #ffffff !important;
-            border: 1px solid #dee2e6 !important;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-        }
+        button[data-baseweb="tab"] { color: #64748b !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
+        button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
+        div[data-testid="stTooltipContent"] { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
+        
+        /* STILIZZAZIONE MODALE DI STREAMLIT (DIALOG LIGHT) */
+        div[role="dialog"] { background-color: #ffffff !important; border: 1px solid #dee2e6 !important; color: #212529 !important; border-radius: 12px !important; box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; }
+        div[role="dialog"] h3, div[role="dialog"] h1 { color: #007a60 !important; }
 
         /* Tabelle Markdown */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
@@ -249,34 +194,11 @@ else:
         </style>
     """, unsafe_allow_html=True)
 
-# Instanziamo una variabile di stato per controllare l'apertura manuale protetta della finestra informativa
-if "mostra_guida" not in st.session_state:
-    st.session_state.mostra_guida = False
-
-# --- HEADER CON INTERRUTTORE DI STATO PER LA GUIDA ---
-col_titolo, col_info = st.columns([0.88, 0.12], vertical_alignment="center")
-with col_titolo:
-    st.title("🧪 OmniScience 3D Studio Pro")
-with col_info:
-    st.markdown('<div class="info-button-container">', unsafe_allow_html=True)
-    if st.button("ⓘ", key="info_studio_trigger", help="Clicca per visualizzare o chiudere la guida"):
-        st.session_state.mostra_guida = not st.session_state.mostra_guida
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# Rendering condizionale della finestra Guida (Pannello Unificato e protetto da rettangoli bianchi)
-if st.session_state.mostra_guida:
-    st.markdown('<div class="guide-box">', unsafe_allow_html=True)
-    col_pop_title, col_pop_close = st.columns([0.85, 0.15])
-    with col_pop_title:
-        st.markdown("### 🏛️ Come Funziona il Software?")
-    with col_pop_close:
-        if st.button("Chiudi Guida ✕", key="close_guide_box"):
-            st.session_state.mostra_guida = False
-            st.rerun()
-            
+# --- DEFINIZIONE DELLA FINESTRA POP-UP NATALIZIA TRAMITE DIALOG MODALE ---
+@st.dialog("🏛️ OmniScience 3D Studio - Guida Funzionale", width="large")
+def mostra_guida_dialog():
     st.markdown("""
-    **OmniScience 3D Studio Pro** è un assistente didattico avanzato basato su AI pensato per i docenti di Scienze Naturali (A050).
+    Benvenuto nel pannello di controllo avanzato. Ecco i passaggi essenziali per operare sul software:
     
     * **1. Configurazione:** Inserisci la tua *Gemini API Key* e imposta l'indirizzo scolastico e il profilo dello studente (es. BES, DSA, Standard) nella barra laterale.
     * **2. Laboratorio 3D:** Carica un file `.glb` per mostrare strutture biologiche o chimiche tridimensionali direttamente nel visualizzatore integrato. Gli studenti possono dialogare direttamente con l'oggetto scientifico tramite la chat.
@@ -284,7 +206,17 @@ if st.session_state.mostra_guida:
     * **4. Verifiche Flawless:** La tab *SuperQuiz* genera 10 domande con soluzioni e compila una griglia di valutazione MIUR a 4 livelli senza errori di formattazione.
     * **5. Esportazione Unificata:** Nella scheda *Esporta*, seleziona i moduli generati e scarica una lezione interattiva HTML standalone, funzionante anche offline.
     """)
-    st.markdown('</div>', unsafe_allow_html=True)
+    if st.button("Capito, chiudi ✕", key="close_dialog_inner_btn"):
+        st.rerun()
+
+# --- HEADER NATIVO CON PULSANTE "i" COERENTE AL 100% ---
+col_titolo, col_info = st.columns([0.88, 0.12], vertical_alignment="center")
+with col_titolo:
+    st.title("🧪 OmniScience 3D Studio Pro")
+with col_info:
+    # Generato esattamente come il pulsante upload o scarica, solido e bellissimo
+    if st.button("ⓘ Info Software", key="info_studio_trigger_native"):
+        mostra_guida_dialog()
 
 st.caption(f"🔬 *Laboratorio e Progettazione Didattica | ESPOSTO BRUNA Classe A050*")
 
@@ -685,7 +617,7 @@ with col_main:
         lezione_html = lezione_html.replace("__HTML_SECTIONS__", html_sections)
         
         abilitato_export = (sel_spiegazione or sel_uda or sel_realta or sel_inclusione or sel_quiz or sel_images)
-        if abilitato_export:
+        if habilitato_export:
             st.download_button(
                 "📦 Scarica Lezione Smart (HTML)", 
                 lezione_html, 
