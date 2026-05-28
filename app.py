@@ -120,6 +120,19 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
             color: #0f0f0f !important;
         }
         
+        /* PULSANTE HELP CIRCOLARE */
+        .st-key-help_btn button {
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            padding: 0 !important;
+            font-size: 20px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin-top: 12px !important;
+        }
+        
         button[data-baseweb="tab"] { color: #8a94a6 !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
@@ -181,14 +194,78 @@ else:
             color: #ffffff !important;
         }
         
+        /* PULSANTE HELP CIRCOLARE */
+        .st-key-help_btn button {
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            padding: 0 !important;
+            font-size: 20px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin-top: 12px !important;
+        }
+        
         button[data-baseweb="tab"] { color: #64748b !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
         div[data-testid="stTooltipContent"] { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
         </style>
     """, unsafe_allow_html=True)
 
+# --- DIALOG DI AIUTO ---
+if hasattr(st, "dialog"):
+    @st.dialog("ℹ️ Guida all'uso: OmniScience 3D Studio Pro")
+    def show_help_modal():
+        st.markdown("""
+        ### 🧪 Come funziona OmniScience 3D Studio Pro
+        
+        Questo strumento ti permette di progettare lezioni scientifiche interattive unendo modelli 3D e intelligenza artificiale (Gemini).
+        
+        #### 1. Configurazione (Barra Laterale)
+        - **Tema Visivo**: Scegli tra la modalità Chiara o Scura.
+        - **Gemini API Key**: Inserisci la tua chiave API di Google.
+        - **Contesto Normativo e Istituzionale**: Imposta il target di studenti (es. *Liceo*) e l'eventuale profilo normativo (es. *DSA - PDP*). L'IA adatterà automaticamente testi e risposte.
+        
+        #### 2. Preparazione
+        - Definisci l'**Oggetto Scientifico** (es. *Mitosi e Meiosi*).
+        - Carica un file 3D in formato **.glb** (opzionale).
+        - Carica le immagini scientifiche e scrivi le didascalie nell'area *Galleria*.
+        
+        #### 3. Chat Interattiva
+        - Consente agli studenti di chattare direttamente con l'oggetto scientifico. L'IA risponderà in prima persona interpretando l'oggetto scientifico (es. parlando come una cellula) e personalizzando il linguaggio in base al profilo selezionato.
+        
+        #### 4. Progettazione e Metodologia (Tab Centrali)
+        - **Genera Spiegazione**: Spiegazione con metafora iniziale adattata al profilo dell'alunno.
+        - **Progettazione UDA**: Crea obiettivi, prerequisiti e competenze chiave.
+        - **Compito di Realtà**: Genera un compito basato sul mondo reale con rubrica valutativa.
+        - **Inclusione**: Definisce schemi, obiettivi minimi e strumenti compensativi/dispensativi.
+        - **SuperQuiz 10**: Genera un test di 10 domande con griglia di valutazione finale.
+        
+        #### 5. Esportazione
+        - Seleziona nella tab *Esporta* i contenuti che desideri includere.
+        - Scarica un file HTML autoportante a schede, ideale per le lezioni a scuola, che funziona anche offline!
+        """)
+else:
+    def show_help_modal():
+        st.info("""
+        ### 🧪 Guida Rapida all'Uso
+        1. **Configura la barra laterale**: Inserisci l'API Key Gemini e seleziona il profilo alunno.
+        2. **Imposta l'argomento e carica il modello 3D** (file `.glb`).
+        3. **Utilizza la chat** per far interagire gli alunni con l'oggetto.
+        4. **Genera spiegazioni, UDA, quiz e compiti** nelle tab centrali.
+        5. **Esporta la lezione** come file HTML a schede autoportante nella tab *Esporta*.
+        """)
+
 # --- HEADER ---
-st.title("🧪 OmniScience 3D Studio Pro")
+col_title, col_help = st.columns([0.9, 0.1])
+with col_title:
+    st.title("🧪 OmniScience 3D Studio Pro")
+with col_help:
+    st.write("") # Piccolo offset per allineamento verticale
+    if st.button("ℹ️", key="help_btn", help="Clicca per vedere la guida all'uso"):
+        show_help_modal()
+
 st.caption(f"🔬 *Laboratorio e Progettazione Didattica | ESPOSTO BRUNA Classe A050*")
 
 col_regia, col_main = st.columns([0.27, 0.73], gap="large")
