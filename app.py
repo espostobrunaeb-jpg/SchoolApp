@@ -62,7 +62,7 @@ profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS BLINDATA (CON NUOVO FIX RADICALE PER L'ICONA INFO) ---
+# --- INIEZIONE CSS BLINDATA (CON SOLUZIONE DEFINITIVA RETTANGOLO BIANCO) ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
@@ -119,32 +119,41 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
         
-        /* FIX DEFINITIVO E RADICALE PER IL BOTTONE "i" IN DARK MODE */
-        div[data-testid="stPopover"] { background-color: transparent !important; display: flex !important; justify-content: flex-end !important; }
+        /* SOLUZIONE RADICALE POPOVER (DARK) */
+        div[data-testid="stPopover"] { display: flex !important; justify-content: flex-end !important; background: transparent !important; }
         div[data-testid="stPopover"] > button {
             background-color: #1f1f1f !important;
             border: 1px solid #333333 !important;
-            color: #00d4aa !important;
-            font-size: 1.4rem !important;
-            border-radius: 50% !important; /* Forza la forma circolare perfetta */
+            border-radius: 50% !important;
             width: 45px !important;
             height: 45px !important;
             min-width: 45px !important;
             min-height: 45px !important;
-            padding: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
+            position: relative !important;
+            overflow: hidden !important;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
         }
-        div[data-testid="stPopover"] > button:hover { 
-            background-color: #00d4aa !important; 
-            color: #0f0f0f !important; 
+        div[data-testid="stPopover"] > button * { display: none !important; }
+        
+        div[data-testid="stPopover"] > button::before {
+            content: "ⓘ" !important;
+            display: block !important;
+            color: #00d4aa !important;
+            font-size: 1.4rem !important;
+            font-weight: bold !important;
+            line-height: 1 !important;
+            background: transparent !important;
+        }
+        div[data-testid="stPopover"] > button:hover {
+            background-color: #00d4aa !important;
             border-color: #00d4aa !important;
         }
-        /* Rimuove freccette o svg integrati da Streamlit che generano glitch visivi */
-        div[data-testid="stPopover"] > button svg { display: none !important; }
-        div[data-testid="stPopover"] > button p { color: inherit !important; font-size: 1.4rem !important; margin: 0 !important; padding: 0 !important; font-weight: bold !important; line-height: 1 !important; }
+        div[data-testid="stPopover"] > button:hover::before {
+            color: #0f0f0f !important;
+        }
 
         /* PULSANTE DI CHIUSURA "X" INTERNO (DARK) */
         .close-popover-btn button {
@@ -165,7 +174,7 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
             border-color: #ff5555 !important;
         }
 
-        /* Tabelle Markdown Dark */
+        /* Tabelle Markdown */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; color: #ffffff; }
         th { background-color: #1f1f1f; color: #00d4aa; font-weight: bold; padding: 10px; border: 1px solid #333333; }
         td { padding: 10px; border: 1px solid #333333; background-color: #161616; }
@@ -223,31 +232,40 @@ else:
          }
         .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * { color: #ffffff !important; }
         
-        /* FIX BOTTONE "i" IN MODALITÀ CHIARA */
+        /* SOLUZIONE RADICALE POPOVER (LIGHT) */
         div[data-testid="stPopover"] { display: flex !important; justify-content: flex-end !important; }
         div[data-testid="stPopover"] > button {
             background-color: #ffffff !important;
             border: 1px solid #ced4da !important;
-            color: #007a60 !important;
-            font-size: 1.4rem !important;
             border-radius: 50% !important;
             width: 45px !important;
             height: 45px !important;
             min-width: 45px !important;
             min-height: 45px !important;
-            padding: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
+            position: relative !important;
+            overflow: hidden !important;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+        }
+        div[data-testid="stPopover"] > button * { display: none !important; }
+        div[data-testid="stPopover"] > button::before {
+            content: "ⓘ" !important;
+            display: block !important;
+            color: #007a60 !important;
+            font-size: 1.4rem !important;
+            font-weight: bold !important;
+            line-height: 1 !important;
+            background: transparent !important;
         }
         div[data-testid="stPopover"] > button:hover { 
             background-color: #007a60 !important; 
-            color: #ffffff !important; 
             border-color: #007a60 !important;
         }
-        div[data-testid="stPopover"] > button svg { display: none !important; }
-        div[data-testid="stPopover"] > button p { color: inherit !important; font-size: 1.4rem !important; margin: 0 !important; padding: 0 !important; font-weight: bold !important; line-height: 1 !important; }
+        div[data-testid="stPopover"] > button:hover::before {
+            color: #ffffff !important;
+        }
 
         /* PULSANTE DI CHIUSURA "X" INTERNO (LIGHT) */
         .close-popover-btn button {
@@ -268,20 +286,19 @@ else:
             border-color: #dc3545 !important;
         }
 
-        /* Tabelle Markdown Light */
+        /* Tabelle Markdown */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
         th { background-color: #e9ecef; color: #007a60; font-weight: bold; padding: 10px; border: 1px solid #dee2e6; }
         td { padding: 10px; border: 1px solid #dee2e6; background-color: #ffffff; }
         </style>
     """, unsafe_allow_html=True)
 
-# --- HEADER CON ICONA INFORMATIVA POP-UP CIRCOLARE PERFECT ---
+# --- HEADER CON ICONA INFORMATIVA POP-UP ---
 col_titolo, col_info = st.columns([0.88, 0.12], vertical_alignment="center")
 with col_titolo:
     st.title("🧪 OmniScience 3D Studio Pro")
 with col_info:
-    # Il popover usa la stringa "ⓘ", trasformata in etichetta centrale pulita via CSS priva di artefatti nativi
-    with st.popover("ⓘ", help="Clicca per scoprire come funziona l'applicazione"):
+    with st.popover("Guida", help="Clicca per scoprire come funziona l'applicazione"):
         col_pop_title, col_pop_close = st.columns([0.85, 0.15])
         with col_pop_title:
             st.markdown("### 🏛️ Guia Rapida")
@@ -359,7 +376,7 @@ with col_main:
     st.markdown(f"## 📚 PROGETTAZIONE E METODOLOGIA")
     tabs = st.tabs(["✨ Spiegazione", "🎯 Progettazione UDA", "🌍 Compito di Realtà", "🌈 Inclusione (PDP/PEI)", "📝 SuperQuiz 10", "🖼️ Infografica", "💾 Esporta"])
     
-    prompt_normativo = f"Agisci come un Esperto Docente di Scienze (A050) italiano. Target: {scuola_tipo}. Profilo: {profilo}. Usa terminologia MIUR (UDA, rubriche, competenze chiave)."
+    prompt_normativo = f"Agisci come un Expert Docente di Scienze (A050) italiano. Target: {scuola_tipo}. Profilo: {profilo}. Usa terminologia MIUR (UDA, rubriche, competenze chiave)."
     
     def run_ai_with_progress(prompt_text, success_msg):
         if not api_key:
@@ -699,8 +716,9 @@ with col_main:
         lezione_html = lezione_html.replace("__DATA_URL_ONLINE__", data_url_online)
         lezione_html = lezione_html.replace("__HTML_SECTIONS__", html_sections)
         
+        # FIX UNIFORMITÀ VARIABILE: Abilitato esportazione
         abilitato_export = (sel_spiegazione or sel_uda or sel_realta or sel_inclusione or sel_quiz or sel_images)
-        if habilitato_export:
+        if abilitato_export:
             st.download_button(
                 "📦 Scarica Lezione Smart (HTML)", 
                 lezione_html, 
