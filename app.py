@@ -62,7 +62,7 @@ profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS BLINDATA (CON SOLUZIONE DEFINITIVA RETTANGOLO BIANCO) ---
+# --- INIEZIONE CSS BLINDATA ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
@@ -119,59 +119,36 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
         
-        /* SOLUZIONE RADICALE POPOVER (DARK) */
-        div[data-testid="stPopover"] { display: flex !important; justify-content: flex-end !important; background: transparent !important; }
-        div[data-testid="stPopover"] > button {
+        /* STILIZZAZIONE DEFINITIVA ICONA INFO CIRCOLARE SENZA RETTANGOLO BIANCO */
+        .info-button-container button {
             background-color: #1f1f1f !important;
             border: 1px solid #333333 !important;
+            color: #00d4aa !important;
+            font-size: 1.4rem !important;
             border-radius: 50% !important;
             width: 45px !important;
             height: 45px !important;
-            min-width: 45px !important;
-            min-height: 45px !important;
+            padding: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            position: relative !important;
-            overflow: hidden !important;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+            float: right;
         }
-        div[data-testid="stPopover"] > button * { display: none !important; }
-        
-        div[data-testid="stPopover"] > button::before {
-            content: "ⓘ" !important;
-            display: block !important;
-            color: #00d4aa !important;
-            font-size: 1.4rem !important;
-            font-weight: bold !important;
-            line-height: 1 !important;
-            background: transparent !important;
-        }
-        div[data-testid="stPopover"] > button:hover {
+        .info-button-container button:hover {
             background-color: #00d4aa !important;
+            color: #0f0f0f !important;
             border-color: #00d4aa !important;
         }
-        div[data-testid="stPopover"] > button:hover::before {
-            color: #0f0f0f !important;
-        }
+        .info-button-container button div p { color: inherit !important; font-size: 1.4rem !important; font-weight: bold !important; }
 
-        /* PULSANTE DI CHIUSURA "X" INTERNO (DARK) */
-        .close-popover-btn button {
-            background-color: transparent !important;
-            border: 1px solid #444444 !important;
-            color: #ff5555 !important;
-            border-radius: 6px !important;
-            font-weight: bold !important;
-            float: right !important;
-            width: 35px !important;
-            height: 35px !important;
-            padding: 0 !important;
-            margin-top: -10px;
-        }
-        .close-popover-btn button:hover {
-            background-color: #ff5555 !important;
-            color: #ffffff !important;
-            border-color: #ff5555 !important;
+        /* BOX GUIDA APERTA SCIENZE */
+        .guide-box {
+            background-color: #161616 !important;
+            border: 1px solid #2d2d2d !important;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
         }
 
         /* Tabelle Markdown */
@@ -232,58 +209,37 @@ else:
          }
         .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * { color: #ffffff !important; }
         
-        /* SOLUZIONE RADICALE POPOVER (LIGHT) */
-        div[data-testid="stPopover"] { display: flex !important; justify-content: flex-end !important; }
-        div[data-testid="stPopover"] > button {
+        /* ICONA INFO CIRCOLARE (LIGHT) */
+        .info-button-container button {
             background-color: #ffffff !important;
             border: 1px solid #ced4da !important;
+            color: #007a60 !important;
+            font-size: 1.4rem !important;
             border-radius: 50% !important;
             width: 45px !important;
             height: 45px !important;
-            min-width: 45px !important;
-            min-height: 45px !important;
+            padding: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            position: relative !important;
-            overflow: hidden !important;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+            float: right;
         }
-        div[data-testid="stPopover"] > button * { display: none !important; }
-        div[data-testid="stPopover"] > button::before {
-            content: "ⓘ" !important;
-            display: block !important;
-            color: #007a60 !important;
-            font-size: 1.4rem !important;
-            font-weight: bold !important;
-            line-height: 1 !important;
-            background: transparent !important;
-        }
-        div[data-testid="stPopover"] > button:hover { 
-            background-color: #007a60 !important; 
+        .info-button-container button:hover {
+            background-color: #007a60 !important;
+            color: #ffffff !important;
             border-color: #007a60 !important;
         }
-        div[data-testid="stPopover"] > button:hover::before {
-            color: #ffffff !important;
-        }
+        .info-button-container button div p { color: inherit !important; font-size: 1.4rem !important; font-weight: bold !important; }
 
-        /* PULSANTE DI CHIUSURA "X" INTERNO (LIGHT) */
-        .close-popover-btn button {
-            background-color: transparent !important;
-            border: 1px solid #ced4da !important;
-            color: #dc3545 !important;
-            border-radius: 6px !important;
-            font-weight: bold !important;
-            float: right !important;
-            width: 35px !important;
-            height: 35px !important;
-            padding: 0 !important;
-            margin-top: -10px;
-        }
-        .close-popover-btn button:hover {
-            background-color: #dc3545 !important;
-            color: #ffffff !important;
-            border-color: #dc3545 !important;
+        /* BOX GUIDA APERTA LIGHT */
+        .guide-box {
+            background-color: #ffffff !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
 
         /* Tabelle Markdown */
@@ -293,30 +249,42 @@ else:
         </style>
     """, unsafe_allow_html=True)
 
-# --- HEADER CON ICONA INFORMATIVA POP-UP ---
+# Instanziamo una variabile di stato per controllare l'apertura manuale protetta della finestra informativa
+if "mostra_guida" not in st.session_state:
+    st.session_state.mostra_guida = False
+
+# --- HEADER CON INTERRUTTORE DI STATO PER LA GUIDA ---
 col_titolo, col_info = st.columns([0.88, 0.12], vertical_alignment="center")
 with col_titolo:
     st.title("🧪 OmniScience 3D Studio Pro")
 with col_info:
-    with st.popover("Guida", help="Clicca per scoprire come funziona l'applicazione"):
-        col_pop_title, col_pop_close = st.columns([0.85, 0.15])
-        with col_pop_title:
-            st.markdown("### 🏛️ Guia Rapida")
-        with col_pop_close:
-            st.markdown('<div class="close-popover-btn">', unsafe_allow_html=True)
-            if st.button("✕", key="close_popover_trigger"):
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div class="info-button-container">', unsafe_allow_html=True)
+    if st.button("ⓘ", key="info_studio_trigger", help="Clicca per visualizzare o chiudere la guida"):
+        st.session_state.mostra_guida = not st.session_state.mostra_guida
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# Rendering condizionale della finestra Guida (Pannello Unificato e protetto da rettangoli bianchi)
+if st.session_state.mostra_guida:
+    st.markdown('<div class="guide-box">', unsafe_allow_html=True)
+    col_pop_title, col_pop_close = st.columns([0.85, 0.15])
+    with col_pop_title:
+        st.markdown("### 🏛️ Come Funziona il Software?")
+    with col_pop_close:
+        if st.button("Chiudi Guida ✕", key="close_guide_box"):
+            st.session_state.mostra_guida = False
+            st.rerun()
             
-        st.markdown("""
-        **OmniScience 3D Studio Pro** è un assistente didattico avanzato basato su AI pensato per i docenti di Scienze Naturali (A050).
-        
-        * **1. Configurazione:** Inserisci la tua *Gemini API Key* e imposta l'indirizzo scolastico e il profilo dello studente (es. BES, DSA, Standard) nella barra laterale.
-        * **2. Laboratorio 3D:** Carica un file `.glb` per mostrare strutture biologiche o chimiche tridimensionali direttamente nel visualizzatore integrato. Gli studenti possono dialogare direttamente con l'oggetto scientifico tramite la chat.
-        * **3. Progettazione Automatica:** Naviga tra le schede per generare Spiegazioni adattive, Unità di Apprendimento (UDA), Compiti di realtà completi e Piani didattici inclusivi.
-        * **4. Verifiche Flawless:** La tab *SuperQuiz* genera 10 domande con soluzioni e compila una griglia di valutazione MIUR a 4 livelli senza errori di formattazione.
-        * **5. Esportazione Unificata:** Nella scheda *Esporta*, seleziona i moduli generati e scarica una lezione interattiva HTML standalone, funzionante anche offline.
-        """)
+    st.markdown("""
+    **OmniScience 3D Studio Pro** è un assistente didattico avanzato basato su AI pensato per i docenti di Scienze Naturali (A050).
+    
+    * **1. Configurazione:** Inserisci la tua *Gemini API Key* e imposta l'indirizzo scolastico e il profilo dello studente (es. BES, DSA, Standard) nella barra laterale.
+    * **2. Laboratorio 3D:** Carica un file `.glb` per mostrare strutture biologiche o chimiche tridimensionali direttamente nel visualizzatore integrato. Gli studenti possono dialogare direttamente con l'oggetto scientifico tramite la chat.
+    * **3. Progettazione Automatica:** Naviga tra le schede per generare Spiegazioni adattive, Unità di Apprendimento (UDA), Compiti di realtà completi e Piani didattici inclusivi.
+    * **4. Verifiche Flawless:** La tab *SuperQuiz* genera 10 domande con soluzioni e compila una griglia di valutazione MIUR a 4 livelli senza errori di formattazione.
+    * **5. Esportazione Unificata:** Nella scheda *Esporta*, seleziona i moduli generati e scarica una lezione interattiva HTML standalone, funzionante anche offline.
+    """)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 st.caption(f"🔬 *Laboratorio e Progettazione Didattica | ESPOSTO BRUNA Classe A050*")
 
@@ -376,7 +344,7 @@ with col_main:
     st.markdown(f"## 📚 PROGETTAZIONE E METODOLOGIA")
     tabs = st.tabs(["✨ Spiegazione", "🎯 Progettazione UDA", "🌍 Compito di Realtà", "🌈 Inclusione (PDP/PEI)", "📝 SuperQuiz 10", "🖼️ Infografica", "💾 Esporta"])
     
-    prompt_normativo = f"Agisci come un Expert Docente di Scienze (A050) italiano. Target: {scuola_tipo}. Profilo: {profilo}. Usa terminologia MIUR (UDA, rubriche, competenze chiave)."
+    prompt_normativo = f"Agisci come un Esperto Docente di Scienze (A050) italiano. Target: {scuola_tipo}. Profilo: {profilo}. Usa terminologia MIUR (UDA, rubriche, competenze chiave)."
     
     def run_ai_with_progress(prompt_text, success_msg):
         if not api_key:
@@ -716,7 +684,6 @@ with col_main:
         lezione_html = lezione_html.replace("__DATA_URL_ONLINE__", data_url_online)
         lezione_html = lezione_html.replace("__HTML_SECTIONS__", html_sections)
         
-        # FIX UNIFORMITÀ VARIABILE: Abilitato esportazione
         abilitato_export = (sel_spiegazione or sel_uda or sel_realta or sel_inclusione or sel_quiz or sel_images)
         if abilitato_export:
             st.download_button(
