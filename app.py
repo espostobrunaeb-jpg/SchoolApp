@@ -20,7 +20,6 @@ if "quiz" not in st.session_state: st.session_state.quiz = ""
 st.sidebar.markdown("## ⚙️ REGIA DOCENTE")
 tema = st.sidebar.selectbox("🎨 Tema Visivo:", ["Modalità Scura (Consigliata)", "Modalità Chiara"], key="tema_selector")
 st.session_state.tema_scelto = tema
-
 api_key = st.sidebar.text_input("Gemini API Key:", type="password")
 
 # SCELTA DEL MODELLO
@@ -43,7 +42,6 @@ with st.sidebar.expander("🔑 Come ottenere una API Key gratuita"):
 # --- CONTESTO NORMATIVO E ISTITUZIONALE ---
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 🏛️ CONTESTO ISTITUZIONALE")
-
 scuola_tipo = st.sidebar.selectbox("Indirizzo di Studi:", [
     "Scuola Primaria (Elementari)", 
     "Scuola Secondaria I Grado (Medie)", 
@@ -63,7 +61,7 @@ profilo = st.sidebar.selectbox("Profilo Normativo (MIUR):", [
     "Sostegno (Legge 104/92 - PEI)"
 ])
 
-# --- INIEZIONE CSS BLINDATA (Correzione Freccia + Occhiello Password) ---
+# --- INIEZIONE CSS BLINDATA ---
 if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
     st.markdown("""
         <style>
@@ -101,21 +99,21 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         
         /* FIX PULSANTE DOWNLOAD E PULSANTI GENERALI */
         .stButton>button, .stDownloadButton>button, div[data-testid="stDownloadButton"] button, .st-key-download_btn button { 
-            background-color: #1f1f1f !important; 
-            color: #ffffff !important; 
-            border: 1px solid #333 !important; 
-            border-radius: 8px; 
-            font-weight: 600; 
-            width: 100%; 
-        }
+             background-color: #1f1f1f !important; 
+             color: #ffffff !important; 
+             border: 1px solid #333 !important; 
+             border-radius: 8px; 
+             font-weight: 600; 
+             width: 100%; 
+         }
         .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * {
             color: #ffffff !important;
         }
         .stButton>button:hover, .stDownloadButton>button:hover, div[data-testid="stDownloadButton"] button:hover, .st-key-download_btn button:hover { 
-            background-color: #00d4aa !important; 
-            color: #0f0f0f !important; 
-            border-color: #00d4aa !important; 
-        }
+             background-color: #00d4aa !important; 
+             color: #0f0f0f !important; 
+             border-color: #00d4aa !important; 
+         }
         .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * {
             color: #0f0f0f !important;
         }
@@ -123,6 +121,11 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         button[data-baseweb="tab"] { color: #8a94a6 !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
+        
+        /* Stile Tabelle Markdown per l'interfaccia scura di Streamlit */
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; color: #ffffff; }
+        th { background-color: #1f1f1f; color: #00d4aa; font-weight: bold; padding: 10px; border: 1px solid #333333; }
+        td { padding: 10px; border: 1px solid #333333; background-color: #161616; }
         </style>
     """, unsafe_allow_html=True)
 else:
@@ -162,21 +165,21 @@ else:
         
         /* FIX PULSANTE DOWNLOAD E PULSANTI GENERALI */
         .stButton>button, .stDownloadButton>button, div[data-testid="stDownloadButton"] button, .st-key-download_btn button { 
-            background-color: #ffffff !important; 
-            color: #212529 !important; 
-            border: 1px solid #ced4da !important; 
-            border-radius: 8px; 
-            font-weight: 600; 
-            width: 100%; 
-        }
+             background-color: #ffffff !important; 
+             color: #212529 !important; 
+             border: 1px solid #ced4da !important; 
+             border-radius: 8px; 
+             font-weight: 600; 
+             width: 100%; 
+         }
         .stButton>button *, .stDownloadButton>button *, div[data-testid="stDownloadButton"] button *, .st-key-download_btn button * {
             color: #212529 !important;
         }
         .stButton>button:hover, .stDownloadButton>button:hover, div[data-testid="stDownloadButton"] button:hover, .st-key-download_btn button:hover { 
-            background-color: #007a60 !important; 
-            color: #ffffff !important; 
-            border-color: #007a60 !important; 
-        }
+             background-color: #007a60 !important; 
+             color: #ffffff !important; 
+             border-color: #007a60 !important; 
+         }
         .stButton>button:hover *, .stDownloadButton>button:hover *, div[data-testid="stDownloadButton"] button:hover *, .st-key-download_btn button:hover * {
             color: #ffffff !important;
         }
@@ -184,6 +187,11 @@ else:
         button[data-baseweb="tab"] { color: #64748b !important; font-weight: 600 !important; font-size: 14px !important; background-color: transparent !important; }
         button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
         div[data-testid="stTooltipContent"] { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
+        
+        /* Stile Tabelle Markdown per l'interfaccia chiara */
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background-color: #e9ecef; color: #007a60; font-weight: bold; padding: 10px; border: 1px solid #dee2e6; }
+        td { padding: 10px; border: 1px solid #dee2e6; background-color: #ffffff; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -210,7 +218,7 @@ with col_regia:
         * 🏛️ **NASA 3D & Smithsonian:** (3d.si.edu).
         * 🤖 **Tripo3D (tripo3d.ai):** Genera modelli 3D con intelligenza artificiale.
         """)
-    
+        
     st.markdown("---")
     st.markdown("### 🖼️ GALLERIA IMMAGINI")
     st.caption("Carica immagini per l'infografica finale.")
@@ -223,9 +231,10 @@ with col_main:
     if file_3d:
         file_3d.seek(0)
         data_url_online = f"data:model/gltf-binary;base64,{base64.b64encode(file_3d.read()).decode()}"
-    
+        
     bg_v = "#111111" if "Scura" in st.session_state.tema_scelto else "#ffffff"
     border_v = "#333333" if "Scura" in st.session_state.tema_scelto else "#ced4da"
+    
     html_3d = f'<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script><model-viewer src="{data_url_online}" camera-controls auto-rotate style="width: 100%; height: 450px; background-color: {bg_v}; border: 1px solid {border_v}; border-radius: 12px;"></model-viewer>'
     components.html(html_3d, height=460)
 
@@ -257,7 +266,7 @@ with col_main:
 
     with tabs[0]:
         if st.button("🚀 Genera Spiegazione Adattiva"): 
-            st.session_state.spiegazione = run_ai(f"{prompt_normativo} Scrivi la spiegazione di '{argomento}'. Inizia con una metafora potente. Adatta rigorosamente linguaggio e formattazione al profilo {profilo}.")
+             st.session_state.spiegazione = run_ai(f"{prompt_normativo} Scrivi la spiegazione di '{argomento}'. Inizia con una metafora potente. Adatta rigorosamente linguaggio e formattazione al profilo {profilo}.")
         if st.session_state.spiegazione:
             st.markdown(st.session_state.spiegazione)
 
@@ -281,7 +290,23 @@ with col_main:
 
     with tabs[4]:
         if st.button("📝 Genera Quiz (10 Domande) e Griglia"):
-            st.session_state.quiz = run_ai(f"{prompt_normativo} Crea un test di 10 domande a risposta multipla su '{argomento}' con relative soluzioni e una griglia valutativa MIUR a 4 livelli alla fine.")
+            prompt_quiz_ottimizzato = f"""
+            {prompt_normativo} 
+            Crea un test di 10 domande a risposta multipla su '{argomento}' con relative soluzioni.
+            
+            Alla fine del quiz, inserisci tassativamente una **Griglia di Valutazione MIUR a 4 livelli** formattata come una vera tabella Markdown standard.
+            Usa esattamente questa struttura per l'intestazione e i separatori della tabella, compilando opportunamente i contenuti senza saltare righe o aggiungere trattini infiniti:
+            
+            | Livello | Punteggio (Risposte Corrette) | Descrittori Specifici per la Valutazione delle Competenze (MIUR) | Valutazione |
+            | :--- | :--- | :--- | :--- |
+            | **Avanzato** | 10 risposte corrette | L'alunno manifesta un'elevata padronanza concettuale... | Eccellente / Ottimo (9-10) |
+            | **Intermedio** | 8-9 risposte corrette | L'alunno dimostra una buona e solida comprensione... | Buono / Distinto (8) |
+            | **Base** | 6-7 risposte corrette | L'alunno applica le conoscenze in contesti noti o esecutivi... | Sufficiente (6-7) |
+            | **In Via di Prima Acquisizione** | 0-5 risposte corrette | L'alunno si orienta nel modulo didattico solo se supportato... | Non Sufficiente (4-5) |
+            
+            Assicurati che non ci siano interruzioni orizzontali anomale o stringhe di soli trattini slegate dai pipe '|'.
+            """
+            st.session_state.quiz = run_ai(prompt_quiz_ottimizzato)
         if st.session_state.quiz:
             st.markdown(st.session_state.quiz)
 
@@ -301,7 +326,6 @@ with col_main:
     # TAB ESPORTAZIONE: LOGICA SMART ONLINE/OFFLINE
     with tabs[6]:
         st.markdown("### 💾 Esporta Lezione Interattiva (Smart Offline)")
-        
         st.markdown("##### ⚙️ Seleziona i moduli da includere nell'esportazione:")
         
         # Gestione etichette dinamiche
@@ -449,6 +473,12 @@ with col_main:
                 .markdown-content code { background-color: #f1f3f5; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
                 .markdown-content pre { background-color: #f1f3f5; padding: 15px; border-radius: 8px; overflow-x: auto; }
                 
+                /* STILI PER LE TABELLE MARKOVN NELL'HTML ESPORTATO */
+                .markdown-content table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 1em; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+                .markdown-content th { background-color: #007a60; color: white; padding: 12px 15px; text-align: left; border: 1px solid #dee2e6; }
+                .markdown-content td { padding: 12px 15px; border: 1px solid #dee2e6; background-color: #fafafa; }
+                .markdown-content tr:nth-child(even) td { background-color: #f1f5f4; }
+                                
                 /* STILI PER LE TAB DELL'HTML ESPORTATO */
                 .tabs-container {
                     margin-top: 30px;
@@ -502,7 +532,6 @@ with col_main:
                     to { opacity: 1; transform: translateY(0); }
                 }
             </style>
-            <!-- Carica Marked.js per renderizzare il Markdown a runtime -->
             <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         </head>
         <body>
@@ -525,7 +554,6 @@ with col_main:
                     __HTML_SECTIONS__
                 </div>
             </div>
-
             <script>
                 function checkConnection() {
                     if (navigator.onLine) {
@@ -556,8 +584,14 @@ with col_main:
                     evt.currentTarget.classList.add("active");
                 }
 
-                // Rende il Markdown HTML a runtime se marked è caricato, altrimenti mantiene pre-wrap per i ritorni a capo
+                // Rende il Markdown HTML a runtime se marked è caricato
                 if (typeof marked !== 'undefined') {
+                    // CONFIGURAZIONE ATTIVA PER IL PARSING CORRETTO DELLE TABELLE GFM
+                    marked.setOptions({
+                        gfm: true,
+                        breaks: true
+                    });
+                    
                     document.querySelectorAll('.markdown-content').forEach(el => {
                         el.innerHTML = marked.parse(el.textContent);
                     });
