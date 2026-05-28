@@ -4,6 +4,7 @@ from google import genai
 import base64
 from PIL import Image
 import io
+import time
 
 # 1. CONFIGURAZIONE INTERFACCIA
 st.set_page_config(page_title="OmniScience 3D Studio Pro", layout="wide", initial_sidebar_state="expanded")
@@ -122,6 +123,17 @@ if st.session_state.tema_scelto == "Modalità Scura (Consigliata)":
         button[data-baseweb="tab"][aria-selected="true"] { color: #00d4aa !important; border-bottom: 3px solid #00d4aa !important; }
         div[data-testid="stTooltipContent"] { background-color: #1f1f1f !important; color: #ffffff !important; border: 1px solid #333 !important; }
         
+        /* Custom design per il popover informativo */
+        div[data-testid="stPopover"] > button {
+            background: transparent !important;
+            border: none !important;
+            color: #00d4aa !important;
+            font-size: 1.5rem !important;
+            padding: 0 !important;
+            margin-top: 10px !important;
+        }
+        div[data-testid="stPopover"] > button:hover { color: #ffffff !important; }
+
         /* Stile Tabelle Markdown per l'interfaccia scura di Streamlit */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; color: #ffffff; }
         th { background-color: #1f1f1f; color: #00d4aa; font-weight: bold; padding: 10px; border: 1px solid #333333; }
@@ -188,6 +200,17 @@ else:
         button[data-baseweb="tab"][aria-selected="true"] { color: #007a60 !important; border-bottom: 3px solid #007a60 !important; }
         div[data-testid="stTooltipContent"] { background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; }
         
+        /* Custom design per il popover informativo */
+        div[data-testid="stPopover"] > button {
+            background: transparent !important;
+            border: none !important;
+            color: #007a60 !important;
+            font-size: 1.5rem !important;
+            padding: 0 !important;
+            margin-top: 10px !important;
+        }
+        div[data-testid="stPopover"] > button:hover { color: #212529 !important; }
+
         /* Stile Tabelle Markdown per l'interfaccia chiara */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
         th { background-color: #e9ecef; color: #007a60; font-weight: bold; padding: 10px; border: 1px solid #dee2e6; }
@@ -195,8 +218,24 @@ else:
         </style>
     """, unsafe_allow_html=True)
 
-# --- HEADER ---
-st.title("🧪 OmniScience 3D Studio Pro")
+# --- HEADER CON ICONA INFORMATIVA POP-UP ---
+col_titolo, col_info = st.columns([0.88, 0.12], vertical_alignment="center")
+with col_titolo:
+    st.title("🧪 OmniScience 3D Studio Pro")
+with col_info:
+    # Popover Streamlit travestito da icona info "ⓘ"
+    with st.popover("ⓘ", help="Clicca per scoprire come funziona l'applicazione"):
+        st.markdown("### 🏛️ Come Funziona il Software?")
+        st.markdown("""
+        **OmniScience 3D Studio Pro** è un assistente didattico avanzato basato su AI pensato per i docenti di Scienze Naturali (A050).
+        
+        * **1. Configurazione:** Inserisci la tua *Gemini API Key* e imposta l'indirizzo scolastico e il profilo dello studente (es. BES, DSA, Standard) nella barra laterale.
+        * **2. Laboratorio 3D:** Carica un file `.glb` per mostrare strutture biologiche o chimiche tridimensionali direttamente nel visualizzatore integrato. Gli studenti possono dialogare direttamente con l'oggetto scientifico tramite la chat.
+        * **3. Progettazione Automatica:** Naviga tra le schede per generare Spiegazioni adattive, Unità di Apprendimento (UDA), Compiti di realtà completi e Piani didattici inclusivi.
+        * **4. Verifiche Flawless:** La tab *SuperQuiz* genera 10 domande con soluzioni e compila una griglia di valutazione MIUR a 4 livelli senza errori di formattazione.
+        * **5. Esportazione Unificata:** Nella scheda *Esporta*, seleziona i moduli generati e scarica una lezione interattiva HTML standalone, funzionante anche offline.
+        """)
+
 st.caption(f"🔬 *Laboratorio e Progettazione Didattica | ESPOSTO BRUNA Classe A050*")
 
 col_regia, col_main = st.columns([0.27, 0.73], gap="large")
@@ -257,34 +296,85 @@ with col_main:
     
     prompt_normativo = f"Agisci come un Esperto Docente di Scienze (A050) italiano. Target: {scuola_tipo}. Profilo: {profilo}. Usa terminologia MIUR (UDA, rubriche, competenze chiave)."
     
-    def run_ai(p):
-        if not api_key: return "⚠️ Inserisci API Key nella barra laterale."
+    # Funzione Helper per gestire barre di caricamento fluide
+    def run_ai_with_progress(prompt_text, success_msg):
+        if not api_key:
+            st.error("⚠️ Inserisci API Key nella barra laterale.")
+            return None
+        
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
         try:
-            client = genai.Client(api_key=api_key)
-            return client.models.generate_content(model=modello_gemini, contents=p).text
-        except Exception as e: return f"❌ Errore tecnico: {e}"
+            with st.spinner(f"🤖 L'intelligenza Artificiale sta elaborando..."):
+                # Animazione simulata iniziale per dare feedback visivo immediato
+                for percent_complete in range(1, 35):
+                    time.sleep(0.01)
+                    progress_bar.progress(percent_complete)
+                    status_text.text(f"Analisi del contesto normativo... {percent_complete}%")
+                
+                client = genai.Client(api_key=api_key)
+                
+                for percent_complete in range(35, 70):
+                    time.sleep(0.005)
+                    progress_bar.progress(percent_complete)
+                    status_text.text(f"Generazione dei contenuti didattici... {percent_complete}%")
+                
+                response = client.models.generate_content(model=modello_gemini, contents=prompt_text).text
+                
+                for percent_complete in range(70, 101):
+                    time.sleep(0.005)
+                    progress_bar.progress(percent_complete)
+                    status_text.text(f"Finalizzazione e formattazione... {percent_complete}%")
+                
+                # Pulisce la barra alla fine del processo
+                progress_bar.empty()
+                status_text.empty()
+                st.success(success_msg)
+                return response
+        except Exception as e:
+            progress_bar.empty()
+            status_text.empty()
+            st.error(f"❌ Errore tecnico durante la generazione: {e}")
+            return None
 
     with tabs[0]:
         if st.button("🚀 Genera Spiegazione Adattiva"): 
-             st.session_state.spiegazione = run_ai(f"{prompt_normativo} Scrivi la spiegazione di '{argomento}'. Inizia con una metafora potente. Adatta rigorosamente linguaggio e formattazione al profilo {profilo}.")
+             res = run_ai_with_progress(
+                 f"{prompt_normativo} Scrivi la spiegazione di '{argomento}'. Inizia con una metafora potente. Adatta rigorosamente linguaggio e formattazione al profilo {profilo}.",
+                 "✨ Spiegazione creata con successo!"
+             )
+             if res: st.session_state.spiegazione = res
         if st.session_state.spiegazione:
             st.markdown(st.session_state.spiegazione)
 
     with tabs[1]:
         if st.button("🎯 Genera Progettazione UDA"):
-            st.session_state.uda = run_ai(f"{prompt_normativo} Struttura l'UDA per '{argomento}': 1. Prerequisiti, 2. Obiettivi (Conoscenze/Abilità), 3. Competenze chiave europee.")
+            res = run_ai_with_progress(
+                f"{prompt_normativo} Struttura l'UDA per '{argomento}': 1. Prerequisiti, 2. Obiettivi (Conoscenze/Abilità), 3. Competenze chiave europee.",
+                "🎯 Unità di Apprendimento strutturata!"
+            )
+            if res: st.session_state.uda = res
         if st.session_state.uda:
             st.markdown(st.session_state.uda)
 
     with tabs[2]:
         if st.button("🌍 Progetta Compito di Realtà"):
-            st.session_state.realta = run_ai(f"{prompt_normativo} Crea un Compito di Realtà su '{argomento}'. Includi: Scenario reale, Ruolo studenti, Prodotto finale, Fasi e Criteri di valutazione.")
+            res = run_ai_with_progress(
+                f"{prompt_normativo} Crea un Compito di Realtà su '{argomento}'. Includi: Scenario reale, Ruolo studenti, Prodotto finale, Fasi e Criteri di valutazione.",
+                "🌍 Compito di realtà generato!"
+            )
+            if res: st.session_state.realta = res
         if st.session_state.realta:
             st.markdown(st.session_state.realta)
 
     with tabs[3]:
         if st.button("🌈 Genera Piano Inclusivo"):
-            st.session_state.inclusione = run_ai(f"{prompt_normativo} Definisci per '{argomento}': Obiettivi minimi, Strumenti compensativi, Misure dispensative e uno schema testuale semplificato.")
+            res = run_ai_with_progress(
+                f"{prompt_normativo} Definisci per '{argomento}': Obiettivi minimi, Strumenti compensativi, Misure dispensative e uno schema testuale semplificato.",
+                "🌈 Piano personalizzato completato!"
+            )
+            if res: st.session_state.inclusione = res
         if st.session_state.inclusione:
             st.markdown(st.session_state.inclusione)
 
@@ -306,7 +396,8 @@ with col_main:
             
             Assicurati che non ci siano interruzioni orizzontali anomale o stringhe di soli trattini slegate dai pipe '|'.
             """
-            st.session_state.quiz = run_ai(prompt_quiz_ottimizzato)
+            res = run_ai_with_progress(prompt_quiz_ottimizzato, "📝 Quiz e tabella di valutazione pronti!")
+            if res: st.session_state.quiz = res
         if st.session_state.quiz:
             st.markdown(st.session_state.quiz)
 
